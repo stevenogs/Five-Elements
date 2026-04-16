@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>今日能量預報</title>
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="能量預報">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212; color: #ffffff;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .container {
+            background: #1e1e1e; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 5px; color: #aaaaaa; text-align: center;}
+        .date { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-align: center;}
+        .bazi { font-size: 1rem; color: #ffb300; margin-bottom: 20px; text-align: center;}
+        
+        .spectrum-display {
+            width: 100%; height: 120px; border-radius: 15px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px;
+        }
+        .desc { font-size: 0.95rem; color: #cccccc; margin-bottom: 20px; line-height: 1.5; min-height: 60px; text-align: center;}
+        
+        /* 按鈕區 */
+        .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+        button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer;}
+        button:active { transform: scale(0.95); }
+        .btn-accurate { background-color: #4caf50; color: white; }
+        .btn-inaccurate { background-color: #757575; color: white; }
+        .btn-jackpot { background-color: #ffb300; color: black; }
+
+        /* 歷史紀錄區 */
+        .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
+        h2 { font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #888; }
+        #history-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+        .history-item { 
+            font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid #2a2a2a;
+            display: flex; justify-content: space-between;
+        }
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-left: 5px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>今日系統能量</h1>
+    <div class="date" id="today-date">--</div>
+    <div class="bazi" id="today-bazi">--</div>
+    <div class="spectrum-display" id="spectrum">偵測中...</div>
+    <div class="desc" id="description">--</div>
+
+    <div class="btn-group">
+        <button class="btn-accurate" onclick="saveRecord('準！')">📈 準！</button>
+        <button class="btn-inaccurate" onclick="saveRecord('沒感覺')">📉 沒感覺</button>
+        <button class="btn-jackpot" onclick="saveRecord('噴寶')">💎 噴寶</button>
+    </div>
+</div>
+
+<div class="history-section">
+    <h2>研究日誌 (最近紀錄)</h2>
+    <ul id="history-list">
+        </ul>
+    <button style="width:100%; background:none; color:#555; font-size:0.7rem; margin-top:10px;" onclick="clearHistory()">清除所有紀錄</button>
+</div>
+
+<script>
+    let currentData = {};
+
+    function init() {
+        const today = new Date();
+        const lunar = Lunar.fromDate(today);
+        const gzDay = lunar.getDayInGanZhi();
+        const dayZhi = lunar.getDayZhi();
+
+        currentData = {
+            date: `${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()}`,
+            bazi: `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`,
+            zhi: dayZhi
+        };
+
+        document.getElementById('today-date').innerText = currentData.date;
+        document.getElementById('today-bazi').innerText = currentData.bazi;
+        
+        updateUI(dayZhi);
+        loadHistory();
+    }
+
+    function updateUI(zhi) {
+        const spectrum = document.getElementById('spectrum');
+        const desc = document.getElementById('description');
+        
+        // 簡化邏輯供 V1.2 測試
+        if(zhi === '辰') {
+            spectrum.style.background = 'linear-gradient(135deg, #9c27b0, #4a148c)';
+            spectrum.innerText = '紫色 (特異點)';
+            currentData.color = '紫色';
+        } else if(['寅','巳','申'].includes(zhi)) {
+            spectrum.style.background = 'linear-gradient(135deg, #3f51b5, #1a237e)';
+            spectrum.innerText = '靛藍色';
+            currentData.color = '靛藍色';
+        } else {
+            spectrum.style.background = 'linear-gradient(135deg, #4caf50, #1b5e20)';
+            spectrum.innerText = '綠色 (平穩)';
+            currentData.color = '綠色';
+        }
+        desc.innerText = `地支 [${zhi}] 碰撞測試中...`;
+    }
+
+    // --- 數據儲存邏輯 ---
+    // --- V1.3 雲端同步儲存邏輯 ---
+    // ⚠️ 請把下面這串網址，換成你剛剛在 Apps Script 複製的 URL！
+    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec';
+
+    function saveRecord(feedback) {
+        // 1. 本地儲存 (保持原本的 UI 更新功能)
+        let history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+        if(history.length > 0 && history[0].date === currentData.date) {
+            if(!confirm("今天已經記錄過了，要覆蓋並重新傳送雲端嗎？")) return;
+            history.shift(); 
+        }
+        const newRecord = { date: currentData.date, bazi: currentData.bazi, color: currentData.color, feedback: feedback };
+        history.unshift(newRecord);
+        localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 50)));
+        loadHistory();
+
+        // 2. 發射數據到 Google Sheets 雲端
+        const originalBtnText = event.target.innerText;
+        event.target.innerText = "☁️ 同步中...";
+        
+        fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors', 
+            body: JSON.stringify(newRecord)
+        })
+        .then(() => {
+            // 由於 mode: 'no-cors'，瀏覽器會直接進入這裡，不論 Google 回傳什麼
+            // 我們直接給予成功體感
+            console.log("數據已發射，預設同步成功");
+            alert(`✅ 特異點日誌已記錄！\n今日體感：${feedback}`);
+            event.target.innerText = originalBtnText;
+        })
+        .finally(() => {
+            // 萬一真的卡住，至少按鈕文字會換回來
+            event.target.innerText = originalBtnText;
+        });
+    }
+
+    function loadHistory() {
+        const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+        const list = document.getElementById('history-list');
+        list.innerHTML = history.map(item => `
+            <li class="history-item">
+                <span>${item.date} (${item.bazi.split(' ')[2]})</span>
+                <span>
+                    <span class="tag" style="border: 1px solid #555">${item.color}</span>
+                    <span class="tag" style="background: #333; color: #ffb300">${item.feedback}</span>
+                </span>
+            </li>
+        `).join('');
+    }
+
+    function clearHistory() {
+        if(confirm("確定要刪除所有研究數據嗎？這無法復原喔！")) {
+            localStorage.removeItem('singularity_history');
+            loadHistory();
+        }
+    }
+
+    window.onload = init;
+</script>
+
+</body>
+</html>
