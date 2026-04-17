@@ -127,13 +127,19 @@ function updateUI(gzDay, zhi) {
 
     const energy = baziLogic[gan] || { name: '偵測', action: '待機', color: '#333', text: '系統同步中...' };
 
-    // 2. 判定環境 Vibe (加入官殺偵測)
+// 2. 判定環境 Vibe (優化偵測邏輯)
     let vibeIcon = "⚓";
     let vibeText = "穩扎穩打";
-    if (['寅', '卯'].includes(zhi)) {
-        vibeIcon = "🌲"; vibeText = "紀律與成長";
+
+    if (['壬', '癸'].includes(gan) || ['亥', '子'].includes(zhi)) {
+        vibeIcon = "🌊"; // 財星水旺
+        vibeText = "財源滾滾";
+    } else if (['寅', '卯'].includes(zhi)) {
+        vibeIcon = "🌲"; 
+        vibeText = "紀律與成長";
     } else if (['寅', '申', '巳', '亥'].includes(zhi)) {
-        vibeIcon = "⚡️"; vibeText = "動能全開";
+        vibeIcon = "⚡️"; 
+        vibeText = "動能全開";
     }
 
     // 3. 財星特別偵測 (天干壬癸 或 地支亥子)
