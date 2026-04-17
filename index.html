@@ -92,30 +92,45 @@
         document.getElementById('today-date').innerText = currentData.date;
         document.getElementById('today-bazi').innerText = currentData.bazi;
         
-        updateUI(dayZhi);
+        updateUI(gzDay, dayZhi);
         loadHistory();
     }
 
-    function updateUI(zhi) {
-        const spectrum = document.getElementById('spectrum');
-        const desc = document.getElementById('description');
-        
-        // 簡化邏輯供 V1.2 測試
-        if(zhi === '辰') {
-            spectrum.style.background = 'linear-gradient(135deg, #9c27b0, #4a148c)';
-            spectrum.innerText = '紫色 (特異點)';
-            currentData.color = '紫色';
-        } else if(['寅','巳','申'].includes(zhi)) {
-            spectrum.style.background = 'linear-gradient(135deg, #3f51b5, #1a237e)';
-            spectrum.innerText = '靛藍色';
-            currentData.color = '靛藍色';
-        } else {
-            spectrum.style.background = 'linear-gradient(135deg, #4caf50, #1b5e20)';
-            spectrum.innerText = '綠色 (平穩)';
-            currentData.color = '綠色';
-        }
-        desc.innerText = `地支 [${zhi}] 碰撞測試中...`;
-    }
+    function updateUI(gzDay, zhi) {
+    const spectrum = document.getElementById('spectrum');
+    const desc = document.getElementById('description');
+    
+    // 取得今日天干 (日干)
+    const gan = gzDay.substring(0, 1);
+    
+    // 定義戊土人的十神與能量色彩
+    const baziLogic = {
+        '甲': { name: '七殺', type: '壓力/突破', color: 'linear-gradient(135deg, #455a64, #263238)', text: '今日壓力較大，適合處理硬骨頭任務，注意自律。' },
+        '乙': { name: '正官', type: '自律/名望', color: 'linear-gradient(135deg, #5c6bc0, #303f9f)', text: '官星入命，做事條理分明，適合與主管或官方打交道。' },
+        '丙': { name: '偏印', type: '領悟/奇想', color: 'linear-gradient(135deg, #ff7043, #d84315)', text: '偏印暖局，靈感爆棚！適合鑽研 AI 或玄學專案。' },
+        '丁': { name: '正印', type: '守護/穩定', color: 'linear-gradient(135deg, #fb8c00, #e65100)', text: '正印生身，貴人運佳，心境平和，適合學習與輸入。' },
+        '戊': { name: '比肩', type: '同輩/自我', color: 'linear-gradient(135deg, #8d6e63, #4e342e)', text: '能量持平，適合與朋友交流，但要注意不必要的支出。' },
+        '己': { name: '劫財', type: '競爭/消耗', color: 'linear-gradient(135deg, #795548, #3e2723)', text: '劫財出現，容易有社交開銷，建議保持低調避免衝動。' },
+        '庚': { name: '食神', type: '才華/享樂', color: 'linear-gradient(135deg, #26a69a, #00695c)', text: '食神洩秀，才華洋溢！非常適合寫 Code 或構思新 App。' },
+        '辛': { name: '傷官', type: '開拓/變革', color: 'linear-gradient(135deg, #00acc1, #006064)', text: '傷官主事，點子極多但容易鋒芒太露，說話留三分。' },
+        '壬': { name: '偏財', type: '驚喜/噴寶', color: 'linear-gradient(135deg, #fdd835, #f57f17)', text: '偏財透出！今日對金錢嗅覺靈敏，大膽執行財務規劃。' },
+        '癸': { name: '正財', type: '穩健/收成', color: 'linear-gradient(135deg, #fbc02d, #f9a825)', text: '正財敲門，努力必有回報，適合處理帳務或簽約。' }
+    };
+
+    const energy = baziLogic[gan] || { name: '未知', color: '#333', text: '偵測中...' };
+
+    // 更新 UI
+    spectrum.style.background = energy.color;
+    spectrum.innerText = `${energy.name}：${energy.type}`;
+    
+    // 結合地支增加環境描述
+    let extraDesc = "";
+    if(['寅','申','巳','亥'].includes(zhi)) extraDesc = " (動能較強，宜主動出擊)";
+    if(['辰','戌','丑','未'].includes(zhi)) extraDesc = " (能量穩定，宜固本培元)";
+    
+    desc.innerText = `${energy.text}${extraDesc}`;
+    currentData.color = energy.name; // 儲存到歷史紀錄中
+}
 
     // --- 數據儲存邏輯 ---
     // --- V1.3 雲端同步儲存邏輯 ---
