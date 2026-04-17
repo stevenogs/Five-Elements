@@ -88,23 +88,7 @@
 </div>
 
 <script>
-    //
-    function init() {
-    const today = new Date();
-    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunar = Lunar.fromSolar(solar);
-    
-    // 這裡最重要：gzDay 是天干地支（如：辛卯），dayZhi 是地支（如：卯）
-    const gzDay = lunar.getDayInGanZhi(); 
-    const dayZhi = lunar.getDayZhi();
-    
-    // 呼叫 updateUI 時，必須傳入這兩個參數
-    updateUI(gzDay, dayZhi);
-    
-    // 更新介面上的日期文字
-    document.getElementById('date-display').innerText = `${today.toLocaleDateString()} (${lunar.getDayInGanZhi()}日)`;
-}
-    // --- 核心資料矩陣 ---
+// --- 核心資料矩陣 ---
 const ELEMENT_MAP = {
     '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', 
     '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
@@ -115,7 +99,6 @@ const ZHI_ELEMENT_MAP = {
     '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土'
 };
 
-// 十神生剋關係矩陣 [日主五行][流年五行]
 const RELATION_MAP = {
     '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
     '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
@@ -124,22 +107,45 @@ const RELATION_MAP = {
     '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
 };
 
-// 全域變數，預設為您（戊土）
 let userDayGan = localStorage.getItem('user_day_gan') || '戊';
+let currentData = { bazi: '', color: '' };
 
-function updateUserBazi() {
-    const birthDate = document.getElementById('birth-date').value;
-    if (!birthDate) return alert("請輸入生日！");
+// 1. 初始化函數 (修正錯誤的核心)
+function init() {
+    const today = new Date();
+    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunar = Lunar.fromSolar(solar);
     
-    const d = new Date(birthDate);
-    const lunar = Lunar.fromSolar(Solar.fromYmd(d.getFullYear(), d.getMonth() + 1, d.getDate()));
-    userDayGan = lunar.getDayGan();
+    const gzDay = lunar.getDayInGanZhi(); 
+    const dayZhi = lunar.getDayZhi();
     
-    localStorage.setItem('user_day_gan', userDayGan);
-    alert(`引擎已啟動！您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
-    init(); // 重新渲染 UI
+    currentData.bazi = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`;
+    
+    // 更新日期文字顯示
+    document.getElementById('date-display').innerText = `${today.toLocaleDateString()} (${gzDay}日)`;
+    
+    updateUI(gzDay, dayZhi);
+    loadHistory();
 }
 
+// 2. 更新使用者八字
+function updateUserBazi() {
+    const birthDate = document.getElementById('birth-date').value;
+    if (!birthDate) return alert("請選擇生日日期");
+
+    const dateArr = birthDate.split('-');
+    const lunar = Lunar.fromSolar(
+        Solar.fromYmd(parseInt(dateArr[0]), parseInt(dateArr[1]), parseInt(dateArr[2]))
+    );
+    
+    userDayGan = lunar.getDayGan();
+    localStorage.setItem('user_day_gan', userDayGan); 
+    
+    alert(`引擎啟動！偵測到您的日主為：【${userDayGan}】`);
+    init(); 
+}
+
+// 3. UI 渲染引擎
 function updateUI(gzDay, zhi) {
     const spectrum = document.getElementById('spectrum');
     const desc = document.getElementById('description');
@@ -150,10 +156,8 @@ function updateUI(gzDay, zhi) {
     const todayGanElement = ELEMENT_MAP[todayGan];
     const todayZhiElement = ZHI_ELEMENT_MAP[zhi];
     
-    // 1. 計算十神關係
     const relation = RELATION_MAP[userElement][todayGanElement];
 
-    // 2. 定義各關係的 UI 表現
     const themeMap = {
         '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏，適合執行財務規劃。' },
         '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '官殺入命。壓力與名望並存，適合建立紀律或處理硬骨頭任務。' },
@@ -164,15 +168,12 @@ function updateUI(gzDay, zhi) {
 
     const energy = themeMap[relation];
 
-    // 3. 動態 Vibe 偵測 (萬用版)
+    // Vibe 與 財星動態偵測
     let vibeIcon = "⚓";
     let vibeText = "穩扎穩打";
-    
-    // 找出使用者的「財星」與「官殺」五行是什麼
     const myWealth = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '財星');
     const myOfficer = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '官殺');
 
-    // 判斷今日環境
     if (todayGanElement === myWealth || todayZhiElement === myWealth) {
         vibeIcon = "🌊"; vibeText = "財源滾滾";
         jackpotBtn.style.animation = "pulse-gold 1.5s infinite";
@@ -188,13 +189,47 @@ function updateUI(gzDay, zhi) {
         vibeIcon = "⚡️"; vibeText = "動能全開";
     }
 
-    // 4. 更新 UI
     spectrum.style.background = energy.color;
     spectrum.innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br>${energy.action}`;
     desc.innerHTML = `<b style="color: #fff;">${vibeIcon} ${vibeText}</b><br>${energy.text}`;
     
     currentData.color = `${relation}(${energy.action})`; 
 }
+
+// 4. 點擊記錄功能
+function logJackpot() {
+    const feedback = prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發");
+    if (!feedback) return;
+
+    const newRecord = {
+        date: new Date().toLocaleString(),
+        bazi: currentData.bazi,
+        color: currentData.color,
+        feedback: feedback
+    };
+
+    const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+    history.unshift(newRecord);
+    localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 10)));
+    
+    alert(`✅ 已記錄特異點日誌！`);
+    loadHistory();
+}
+
+function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+    const list = document.getElementById('history-list');
+    if(list) {
+        list.innerHTML = history.map(item => `
+            <li class="history-item" style="list-style:none; font-size: 0.8rem; margin-bottom: 5px; padding: 5px; background: #222; border-radius: 5px;">
+                <span>${item.date} - ${item.color}</span><br>
+                <span style="color: #ffb300">${item.feedback}</span>
+            </li>
+        `).join('');
+    }
+}
+
+window.onload = init;
 
     // --- 數據儲存邏輯 ---
     // --- V1.3 雲端同步儲存邏輯 ---
