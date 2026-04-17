@@ -63,6 +63,11 @@
 
 <div class="container">
     <h1>今日系統能量</h1>
+    <div id="user-config" style="background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444;">
+    <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生日期</p>
+    <input type="date" id="birth-date" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; margin-bottom: 10px; box-sizing: border-box;">
+    <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
+</div>
     <div class="date" id="today-date">--</div>
     <div class="bazi" id="today-bazi">--</div>
     <div class="spectrum-display" id="spectrum">偵測中...</div>
@@ -83,70 +88,77 @@
 </div>
 
 <script>
-    let currentData = {};
+    // --- 核心資料矩陣 ---
+const ELEMENT_MAP = {
+    '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', 
+    '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
+};
 
-    function init() {
-        const today = new Date();
-        const lunar = Lunar.fromDate(today);
-        const gzDay = lunar.getDayInGanZhi();
-        const dayZhi = lunar.getDayZhi();
+const ZHI_ELEMENT_MAP = {
+    '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', 
+    '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土'
+};
 
-        currentData = {
-            date: `${today.getFullYear()}/${today.getMonth()+1}/${today.getDate()}`,
-            bazi: `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`,
-            zhi: dayZhi
-        };
+// 十神生剋關係矩陣 [日主五行][流年五行]
+const RELATION_MAP = {
+    '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
+    '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
+    '土': { '木': '官殺', '火': '印星', '土': '比劫', '金': '食傷', '水': '財星' },
+    '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
+    '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
+};
 
-        document.getElementById('today-date').innerText = currentData.date;
-        document.getElementById('today-bazi').innerText = currentData.bazi;
-        
-        updateUI(gzDay, dayZhi);
-        loadHistory();
-    }
+// 全域變數，預設為您（戊土）
+let userDayGan = localStorage.getItem('user_day_gan') || '戊';
+
+function updateUserBazi() {
+    const birthDate = document.getElementById('birth-date').value;
+    if (!birthDate) return alert("請輸入生日！");
+    
+    const d = new Date(birthDate);
+    const lunar = Lunar.fromSolar(Solar.fromYmd(d.getFullYear(), d.getMonth() + 1, d.getDate()));
+    userDayGan = lunar.getDayGan();
+    
+    localStorage.setItem('user_day_gan', userDayGan);
+    alert(`引擎已啟動！您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
+    init(); // 重新渲染 UI
+}
 
 function updateUI(gzDay, zhi) {
     const spectrum = document.getElementById('spectrum');
     const desc = document.getElementById('description');
-    const jackpotBtn = document.querySelector('.btn-jackpot'); // 抓取噴寶按鈕
+    const jackpotBtn = document.querySelector('.btn-jackpot');
     
-    const gan = gzDay.substring(0, 1);
+    const todayGan = gzDay.substring(0, 1);
+    const userElement = ELEMENT_MAP[userDayGan];
+    const todayGanElement = ELEMENT_MAP[todayGan];
+    const todayZhiElement = ZHI_ELEMENT_MAP[zhi];
     
-    // 1. 硬核十神邏輯定義 (戊土人專屬)
-    const baziLogic = {
-        '甲': { name: '七殺', action: '突破', color: 'linear-gradient(135deg, #2c3e50, #000000)', text: '【硬仗日】強力克制。這是壓力最大的一天，但也最容易有大突破。' },
-        '乙': { name: '正官', action: '定標', color: 'linear-gradient(135deg, #1e3c72, #2a5298)', text: '【自律日】文明約束。適合建立制度、制定計劃或進行正式談判。' },
-        '丙': { name: '偏印', action: '奇思', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '【靈感日】直覺極強。適合研發、寫 Code、探索 AI 新領域。' },
-        '丁': { name: '正印', action: '吸收', color: 'linear-gradient(135deg, #f39c12, #d35400)', text: '【貴人日】能量補給。適合讀書、聽課，主動尋求前輩指點。' },
-        '戊': { name: '比肩', action: '聚力', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '【社交日】平級合作。適合團隊討論，注意預防不必要的支出。' },
-        '己': { name: '劫財', action: '防守', color: 'linear-gradient(135deg, #3e2723, #1b110a)', text: '【穩健日】競爭激烈。守住口袋，避免無謂的爭論與比較。' },
-        '庚': { name: '食神', action: '輸出', color: 'linear-gradient(135deg, #16a085, #1abc9c)', text: '【才華日】創意變現。適合寫 APP 邏輯、享受美食與生活。' },
-        '辛': { name: '傷官', action: '變革', color: 'linear-gradient(135deg, #2980b9, #3498db)', text: '【突破日】不破不立。點子噴發，但溝通時語氣要記得溫和。' },
-        '壬': { name: '偏財', action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '【財富日】偏財入庫。投資敏感度最高，適合執行財務操作。' },
-        '癸': { name: '正財', action: '收成', color: 'linear-gradient(135deg, #fbc02d, #f9a825)', text: '【穩定日】勞有所得。適合結算帳務、處理瑣碎但重要的公事。' }
+    // 1. 計算十神關係
+    const relation = RELATION_MAP[userElement][todayGanElement];
+
+    // 2. 定義各關係的 UI 表現
+    const themeMap = {
+        '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏，適合執行財務規劃。' },
+        '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '官殺入命。壓力與名望並存，適合建立紀律或處理硬骨頭任務。' },
+        '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '印星護航。貴人運佳，適合學習與補充內在能量。' },
+        '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text: '食傷洩秀。才華橫溢，點子極多，適合創作與寫 code。' },
+        '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '比劫共振。能量充沛，適合交流合作，但需注意預算開支。' }
     };
 
-    const energy = baziLogic[gan] || { name: '偵測', action: '待機', color: '#333', text: '系統同步中...' };
+    const energy = themeMap[relation];
 
-// 2. 判定環境 Vibe (優化偵測邏輯)
+    // 3. 動態 Vibe 偵測 (萬用版)
     let vibeIcon = "⚓";
     let vibeText = "穩扎穩打";
+    
+    // 找出使用者的「財星」與「官殺」五行是什麼
+    const myWealth = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '財星');
+    const myOfficer = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '官殺');
 
-    if (['壬', '癸'].includes(gan) || ['亥', '子'].includes(zhi)) {
-        vibeIcon = "🌊"; // 財星水旺
-        vibeText = "財源滾滾";
-    } else if (['寅', '卯'].includes(zhi)) {
-        vibeIcon = "🌲"; 
-        vibeText = "紀律與成長";
-    } else if (['寅', '申', '巳', '亥'].includes(zhi)) {
-        vibeIcon = "⚡️"; 
-        vibeText = "動能全開";
-    }
-
-    // 3. 財星特別偵測 (天干壬癸 或 地支亥子)
-    let wealthBonus = "";
-    if (['壬', '癸'].includes(gan) || ['亥', '子'].includes(zhi)) {
-        wealthBonus = "<br><span style='color: #ffb300; font-weight: bold;'>💰 今日財氣逼人，適合進行財務規劃！</span>";
-        // 讓噴寶按鈕閃爍
+    // 判斷今日環境
+    if (todayGanElement === myWealth || todayZhiElement === myWealth) {
+        vibeIcon = "🌊"; vibeText = "財源滾滾";
         jackpotBtn.style.animation = "pulse-gold 1.5s infinite";
         jackpotBtn.innerText = "💎 財星入局！";
     } else {
@@ -154,14 +166,20 @@ function updateUI(gzDay, zhi) {
         jackpotBtn.innerText = "💎 噴寶";
     }
 
-    // 4. 更新 UI 顯示
+    if (todayZhiElement === myOfficer) {
+        vibeIcon = "🌲"; vibeText = "紀律與成長";
+    } else if (['寅', '申', '巳', '亥'].includes(zhi) && vibeIcon !== "🌊") {
+        vibeIcon = "⚡️"; vibeText = "動能全開";
+    }
+
+    // 4. 更新 UI
     spectrum.style.background = energy.color;
-    spectrum.innerHTML = `<span style="font-size: 0.9rem; opacity: 0.8;">${energy.name}</span><br>${energy.action}`;
-    desc.innerHTML = `<b style="color: #fff;">${vibeIcon} ${vibeText}</b><br>${energy.text}${wealthBonus}`;
+    spectrum.innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br>${energy.action}`;
+    desc.innerHTML = `<b style="color: #fff;">${vibeIcon} ${vibeText}</b><br>${energy.text}`;
     
-    currentData.color = `${energy.name}(${energy.action})`; 
+    currentData.color = `${relation}(${energy.action})`; 
 }
-    
+
     // --- 數據儲存邏輯 ---
     // --- V1.3 雲端同步儲存邏輯 ---
     // ⚠️ 請把下面這串網址，換成你剛剛在 Apps Script 複製的 URL！
