@@ -88,6 +88,22 @@
 </div>
 
 <script>
+    //
+    function init() {
+    const today = new Date();
+    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunar = Lunar.fromSolar(solar);
+    
+    // 這裡最重要：gzDay 是天干地支（如：辛卯），dayZhi 是地支（如：卯）
+    const gzDay = lunar.getDayInGanZhi(); 
+    const dayZhi = lunar.getDayZhi();
+    
+    // 呼叫 updateUI 時，必須傳入這兩個參數
+    updateUI(gzDay, dayZhi);
+    
+    // 更新介面上的日期文字
+    document.getElementById('date-display').innerText = `${today.toLocaleDateString()} (${lunar.getDayInGanZhi()}日)`;
+}
     // --- 核心資料矩陣 ---
 const ELEMENT_MAP = {
     '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', 
