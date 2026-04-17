@@ -28,67 +28,65 @@
         .spectrum-display {
             width: 100%; height: 120px; border-radius: 15px; display: flex;
             align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px; text-align: center;
+            padding: 10px; box-sizing: border-box;
         }
         .desc { font-size: 0.95rem; color: #cccccc; margin-bottom: 20px; line-height: 1.5; min-height: 60px; text-align: center;}
         
-        /* 讓按鈕閃爍的特效 */
         @keyframes pulse-gold {
-        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); transform: scale(1); }
-        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); transform: scale(1.05); }
-        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); transform: scale(1); }
-}
-        /* 按鈕區 */
+            0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); transform: scale(1); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); transform: scale(1); }
+        }
+
         .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-        button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer;}
+        button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s;}
         button:active { transform: scale(0.95); }
         .btn-accurate { background-color: #4caf50; color: white; }
         .btn-inaccurate { background-color: #757575; color: white; }
         .btn-jackpot { background-color: #ffb300; color: black; }
 
-}
-
-        /* 歷史紀錄區 */
         .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
         h2 { font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #888; }
-        #history-list { list-style: none; padding: 0; margin: 0; max-height: 200px; overflow-y: auto; }
+        #history-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
         .history-item { 
-            font-size: 0.85rem; padding: 8px 0; border-bottom: 1px solid #2a2a2a;
-            display: flex; justify-content: space-between;
+            font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #2a2a2a;
+            background: #222; margin-bottom: 5px; border-radius: 8px;
         }
-        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; margin-left: 5px;}
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 5px; display: inline-block; margin-top: 5px;}
     </style>
 </head>
 <body>
 
 <div class="container">
     <h1>今日系統能量</h1>
+    
     <div id="user-config" style="background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444;">
-    <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生日期</p>
-    <input type="date" id="birth-date" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; margin-bottom: 10px; box-sizing: border-box;">
-    <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
-</div>
+        <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生日期 (以求日主)</p>
+        <input type="date" id="birth-date" style="width: 100%; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; margin-bottom: 10px; box-sizing: border-box;">
+        <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
+    </div>
+
     <div class="date" id="today-date">--</div>
     <div class="bazi" id="today-bazi">--</div>
     <div class="spectrum-display" id="spectrum">偵測中...</div>
     <div class="desc" id="description">--</div>
 
     <div class="btn-group">
-        <button class="btn-accurate" onclick="logJackpot('準！')">📈 準！</button>
-        <button class="btn-inaccurate" onclick="logJackpot('沒感覺')">📉 沒感覺</button>
-        <button class="btn-jackpot" onclick="logJackpot('噴寶')">💎 噴寶</button>
+        <button class="btn-accurate" onclick="logJackpot('準！', event)">📈 準！</button>
+        <button class="btn-inaccurate" onclick="logJackpot('沒感覺', event)">📉 沒感覺</button>
+        <button class="btn-jackpot" id="jackpot-main-btn" onclick="logJackpot('噴寶', event)">💎 噴寶</button>
     </div>
 </div>
 
 <div class="history-section">
     <h2>研究日誌 (最近紀錄)</h2>
-    <ul id="history-list">
-        </ul>
-    <button style="width:100%; background:none; color:#555; font-size:0.7rem; margin-top:10px;" onclick="clearHistory()">清除所有紀錄</button>
+    <ul id="history-list"></ul>
+    <button style="width:100%; background:none; color:#555; font-size:0.7rem; margin-top:10px; border:none; cursor:pointer;" onclick="clearHistory()">清除所有紀錄</button>
 </div>
 
 <script>
-// --- 核心資料矩陣 ---
+// --- 1. 核心資料矩陣 ---
 const ELEMENT_MAP = {
     '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', 
     '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水'
@@ -107,10 +105,13 @@ const RELATION_MAP = {
     '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
 };
 
-let userDayGan = localStorage.getItem('user_day_gan') || '戊';
-let currentData = { bazi: '', color: '' };
+// ⚠️ 請確保這是你正確的 Google Sheet API 網址
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec';
 
-// 1. 初始化函數 (修正錯誤的核心)
+let userDayGan = localStorage.getItem('user_day_gan') || '戊';
+let currentData = { date: '', bazi: '', color: '', energyName: '' };
+
+// --- 2. 系統初始化 ---
 function init() {
     const today = new Date();
     const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
@@ -119,16 +120,17 @@ function init() {
     const gzDay = lunar.getDayInGanZhi(); 
     const dayZhi = lunar.getDayZhi();
     
+    currentData.date = today.toLocaleString();
     currentData.bazi = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`;
     
-    // 更新日期文字顯示
-    document.getElementById('date-display').innerText = `${today.toLocaleDateString()} (${gzDay}日)`;
+    document.getElementById('today-date').innerText = today.toLocaleDateString();
+    document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
     
     updateUI(gzDay, dayZhi);
     loadHistory();
 }
 
-// 2. 更新使用者八字
+// --- 3. 更新日主設定 ---
 function updateUserBazi() {
     const birthDate = document.getElementById('birth-date').value;
     if (!birthDate) return alert("請選擇生日日期");
@@ -141,15 +143,15 @@ function updateUserBazi() {
     userDayGan = lunar.getDayGan();
     localStorage.setItem('user_day_gan', userDayGan); 
     
-    alert(`引擎啟動！偵測到您的日主為：【${userDayGan}】`);
+    alert(`引擎啟動！偵測到您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
     init(); 
 }
 
-// 3. UI 渲染引擎
+// --- 4. UI 渲染引擎 ---
 function updateUI(gzDay, zhi) {
     const spectrum = document.getElementById('spectrum');
     const desc = document.getElementById('description');
-    const jackpotBtn = document.querySelector('.btn-jackpot');
+    const jackpotBtn = document.getElementById('jackpot-main-btn');
     
     const todayGan = gzDay.substring(0, 1);
     const userElement = ELEMENT_MAP[userDayGan];
@@ -167,8 +169,10 @@ function updateUI(gzDay, zhi) {
     };
 
     const energy = themeMap[relation];
+    currentData.color = energy.color;
+    currentData.energyName = `${relation}(${energy.action})`;
 
-    // Vibe 與 財星動態偵測
+    // 動態 Vibe 偵測
     let vibeIcon = "⚓";
     let vibeText = "穩扎穩打";
     const myWealth = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '財星');
@@ -192,40 +196,37 @@ function updateUI(gzDay, zhi) {
     spectrum.style.background = energy.color;
     spectrum.innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br>${energy.action}`;
     desc.innerHTML = `<b style="color: #fff;">${vibeIcon} ${vibeText}</b><br>${energy.text}`;
-    
-    currentData.color = `${relation}(${energy.action})`; 
 }
 
-// 4. 點擊記錄功能
-// 4. 點擊記錄功能 (整合同步與本地紀錄)
-function logJackpot() {
-    // 1. 取得按鈕元件
-    const btn = document.querySelector('.btn-jackpot');
-    const originalBtnText = btn.innerText;
-
-    // 2. 詢問體感內容
-    const feedback = prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發");
+// --- 5. 點擊記錄與雲端同步 ---
+function logJackpot(type, event) {
+    let feedback = "";
+    if (type === '噴寶') {
+        feedback = prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發");
+    } else {
+        feedback = type;
+    }
+    
     if (!feedback) return;
 
-    // 3. 準備紀錄物件
     const newRecord = {
         date: new Date().toLocaleString(),
         bazi: currentData.bazi,
-        color: currentData.color,
+        color: currentData.energyName,
         feedback: feedback
     };
 
-    // --- 本地紀錄 (LocalStorage) ---
-    const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+    // 儲存至本地
+    let history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
     history.unshift(newRecord);
-    localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 10)));
-    loadHistory(); // 立即更新下方列表
+    localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 50)));
+    loadHistory();
 
-    // --- 雲端同步 (Google Sheet) ---
-    // 這裡使用你之前設定過的 Google Apps Script URL (如果有的話)
-    const GOOGLE_SHEET_URL = "你的_GOOGLE_SCRIPT_網址"; // 請確認此變數是否正確
-
-    if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL !== "你的_GOOGLE_SCRIPT_網址") {
+    // 同步至 Google Sheets
+    const btn = event.target;
+    const originalBtnText = btn.innerText;
+    
+    if (GOOGLE_SHEET_URL) {
         btn.innerText = "☁️ 同步中...";
         fetch(GOOGLE_SHEET_URL, {
             method: 'POST',
@@ -234,92 +235,41 @@ function logJackpot() {
         })
         .then(() => {
             console.log("數據已發射");
-            alert(`✅ 特異點已記錄！\n當前狀態：${currentData.color}`);
+            alert(`✅ 紀錄成功！\n體感：${feedback}`);
         })
         .catch(err => console.error("同步失敗:", err))
         .finally(() => {
             btn.innerText = originalBtnText;
         });
-    } else {
-        alert(`✅ 本地紀錄成功！\n當前狀態：${currentData.color}`);
     }
 }
+
+// --- 6. 歷史紀錄管理 ---
 function loadHistory() {
     const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
     const list = document.getElementById('history-list');
-    if(list) {
-        list.innerHTML = history.map(item => `
-            <li class="history-item" style="list-style:none; font-size: 0.8rem; margin-bottom: 5px; padding: 5px; background: #222; border-radius: 5px;">
-                <span>${item.date} - ${item.color}</span><br>
-                <span style="color: #ffb300">${item.feedback}</span>
-            </li>
-        `).join('');
+    if(!list) return;
+
+    list.innerHTML = history.map(item => `
+        <li class="history-item">
+            <div style="color: #888; font-size: 0.7rem;">${item.date}</div>
+            <div style="margin-top: 3px;">
+                <span class="tag" style="border: 1px solid #555">${item.color}</span>
+                <span class="tag" style="background: #333; color: #ffb300">${item.feedback}</span>
+            </div>
+        </li>
+    `).join('');
+}
+
+function clearHistory() {
+    if(confirm("確定要刪除所有研究數據嗎？這無法復原喔！")) {
+        localStorage.removeItem('singularity_history');
+        loadHistory();
     }
 }
 
+// 啟動
 window.onload = init;
-
-    // --- 數據儲存邏輯 ---
-    // --- V1.3 雲端同步儲存邏輯 ---
-    // ⚠️ 請把下面這串網址，換成你剛剛在 Apps Script 複製的 URL！
-    const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec';
-
-    function saveRecord(feedback) {
-        // 1. 本地儲存 (保持原本的 UI 更新功能)
-        let history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
-        if(history.length > 0 && history[0].date === currentData.date) {
-            if(!confirm("今天已經記錄過了，要覆蓋並重新傳送雲端嗎？")) return;
-            history.shift(); 
-        }
-        const newRecord = { date: currentData.date, bazi: currentData.bazi, color: currentData.color, feedback: feedback };
-        history.unshift(newRecord);
-        localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 50)));
-        loadHistory();
-
-        // 2. 發射數據到 Google Sheets 雲端
-        const originalBtnText = event.target.innerText;
-        event.target.innerText = "☁️ 同步中...";
-        
-        fetch(GOOGLE_SHEET_URL, {
-            method: 'POST',
-            mode: 'no-cors', 
-            body: JSON.stringify(newRecord)
-        })
-        .then(() => {
-            // 由於 mode: 'no-cors'，瀏覽器會直接進入這裡，不論 Google 回傳什麼
-            // 我們直接給予成功體感
-            console.log("數據已發射，預設同步成功");
-            alert(`✅ 特異點日誌已記錄！\n今日體感：${feedback}`);
-            event.target.innerText = originalBtnText;
-        })
-        .finally(() => {
-            // 萬一真的卡住，至少按鈕文字會換回來
-            event.target.innerText = originalBtnText;
-        });
-    }
-
-    function loadHistory() {
-        const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
-        const list = document.getElementById('history-list');
-        list.innerHTML = history.map(item => `
-            <li class="history-item">
-                <span>${item.date} (${item.bazi.split(' ')[2]})</span>
-                <span>
-                    <span class="tag" style="border: 1px solid #555">${item.color}</span>
-                    <span class="tag" style="background: #333; color: #ffb300">${item.feedback}</span>
-                </span>
-            </li>
-        `).join('');
-    }
-
-    function clearHistory() {
-        if(confirm("確定要刪除所有研究數據嗎？這無法復原喔！")) {
-            localStorage.removeItem('singularity_history');
-            loadHistory();
-        }
-    }
-
-    window.onload = init;
 </script>
 
 </body>
