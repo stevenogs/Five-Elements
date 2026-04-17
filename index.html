@@ -32,6 +32,12 @@
         }
         .desc { font-size: 0.95rem; color: #cccccc; margin-bottom: 20px; line-height: 1.5; min-height: 60px; text-align: center;}
         
+        /* 讓按鈕閃爍的特效 */
+        @keyframes pulse-gold {
+        0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); transform: scale(1); }
+        70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); transform: scale(1.05); }
+        100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); transform: scale(1); }
+}
         /* 按鈕區 */
         .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
         button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer;}
@@ -39,6 +45,8 @@
         .btn-accurate { background-color: #4caf50; color: white; }
         .btn-inaccurate { background-color: #757575; color: white; }
         .btn-jackpot { background-color: #ffb300; color: black; }
+
+}
 
         /* 歷史紀錄區 */
         .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
@@ -96,42 +104,58 @@
         loadHistory();
     }
 
-    function updateUI(gzDay, zhi) {
+function updateUI(gzDay, zhi) {
     const spectrum = document.getElementById('spectrum');
     const desc = document.getElementById('description');
+    const jackpotBtn = document.querySelector('.btn-jackpot'); // 抓取噴寶按鈕
     
-    // 取得今日天干 (日干)
     const gan = gzDay.substring(0, 1);
     
-    // 定義戊土人的十神與能量色彩
+    // 1. 硬核十神邏輯定義 (戊土人專屬)
     const baziLogic = {
-        '甲': { name: '七殺', type: '壓力/突破', color: 'linear-gradient(135deg, #455a64, #263238)', text: '今日壓力較大，適合處理硬骨頭任務，注意自律。' },
-        '乙': { name: '正官', type: '自律/名望', color: 'linear-gradient(135deg, #5c6bc0, #303f9f)', text: '官星入命，做事條理分明，適合與主管或官方打交道。' },
-        '丙': { name: '偏印', type: '領悟/奇想', color: 'linear-gradient(135deg, #ff7043, #d84315)', text: '偏印暖局，靈感爆棚！適合鑽研 AI 或玄學專案。' },
-        '丁': { name: '正印', type: '守護/穩定', color: 'linear-gradient(135deg, #fb8c00, #e65100)', text: '正印生身，貴人運佳，心境平和，適合學習與輸入。' },
-        '戊': { name: '比肩', type: '同輩/自我', color: 'linear-gradient(135deg, #8d6e63, #4e342e)', text: '能量持平，適合與朋友交流，但要注意不必要的支出。' },
-        '己': { name: '劫財', type: '競爭/消耗', color: 'linear-gradient(135deg, #795548, #3e2723)', text: '劫財出現，容易有社交開銷，建議保持低調避免衝動。' },
-        '庚': { name: '食神', type: '才華/享樂', color: 'linear-gradient(135deg, #26a69a, #00695c)', text: '食神洩秀，才華洋溢！非常適合寫 Code 或構思新 App。' },
-        '辛': { name: '傷官', type: '開拓/變革', color: 'linear-gradient(135deg, #00acc1, #006064)', text: '傷官主事，點子極多但容易鋒芒太露，說話留三分。' },
-        '壬': { name: '偏財', type: '驚喜/噴寶', color: 'linear-gradient(135deg, #fdd835, #f57f17)', text: '偏財透出！今日對金錢嗅覺靈敏，大膽執行財務規劃。' },
-        '癸': { name: '正財', type: '穩健/收成', color: 'linear-gradient(135deg, #fbc02d, #f9a825)', text: '正財敲門，努力必有回報，適合處理帳務或簽約。' }
+        '甲': { name: '七殺', action: '突破', color: 'linear-gradient(135deg, #2c3e50, #000000)', text: '【硬仗日】強力克制。這是壓力最大的一天，但也最容易有大突破。' },
+        '乙': { name: '正官', action: '定標', color: 'linear-gradient(135deg, #1e3c72, #2a5298)', text: '【自律日】文明約束。適合建立制度、制定計劃或進行正式談判。' },
+        '丙': { name: '偏印', action: '奇思', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '【靈感日】直覺極強。適合研發、寫 Code、探索 AI 新領域。' },
+        '丁': { name: '正印', action: '吸收', color: 'linear-gradient(135deg, #f39c12, #d35400)', text: '【貴人日】能量補給。適合讀書、聽課，主動尋求前輩指點。' },
+        '戊': { name: '比肩', action: '聚力', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '【社交日】平級合作。適合團隊討論，注意預防不必要的支出。' },
+        '己': { name: '劫財', action: '防守', color: 'linear-gradient(135deg, #3e2723, #1b110a)', text: '【穩健日】競爭激烈。守住口袋，避免無謂的爭論與比較。' },
+        '庚': { name: '食神', action: '輸出', color: 'linear-gradient(135deg, #16a085, #1abc9c)', text: '【才華日】創意變現。適合寫 APP 邏輯、享受美食與生活。' },
+        '辛': { name: '傷官', action: '變革', color: 'linear-gradient(135deg, #2980b9, #3498db)', text: '【突破日】不破不立。點子噴發，但溝通時語氣要記得溫和。' },
+        '壬': { name: '偏財', action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '【財富日】偏財入庫。投資敏感度最高，適合執行財務操作。' },
+        '癸': { name: '正財', action: '收成', color: 'linear-gradient(135deg, #fbc02d, #f9a825)', text: '【穩定日】勞有所得。適合結算帳務、處理瑣碎但重要的公事。' }
     };
 
-    const energy = baziLogic[gan] || { name: '未知', color: '#333', text: '偵測中...' };
+    const energy = baziLogic[gan] || { name: '偵測', action: '待機', color: '#333', text: '系統同步中...' };
 
-    // 更新 UI
+    // 2. 判定環境 Vibe (加入官殺偵測)
+    let vibeIcon = "⚓";
+    let vibeText = "穩扎穩打";
+    if (['寅', '卯'].includes(zhi)) {
+        vibeIcon = "🌲"; vibeText = "紀律與成長";
+    } else if (['寅', '申', '巳', '亥'].includes(zhi)) {
+        vibeIcon = "⚡️"; vibeText = "動能全開";
+    }
+
+    // 3. 財星特別偵測 (天干壬癸 或 地支亥子)
+    let wealthBonus = "";
+    if (['壬', '癸'].includes(gan) || ['亥', '子'].includes(zhi)) {
+        wealthBonus = "<br><span style='color: #ffb300; font-weight: bold;'>💰 今日財氣逼人，適合進行財務規劃！</span>";
+        // 讓噴寶按鈕閃爍
+        jackpotBtn.style.animation = "pulse-gold 1.5s infinite";
+        jackpotBtn.innerText = "💎 財星入局！";
+    } else {
+        jackpotBtn.style.animation = "none";
+        jackpotBtn.innerText = "💎 噴寶";
+    }
+
+    // 4. 更新 UI 顯示
     spectrum.style.background = energy.color;
-    spectrum.innerText = `${energy.name}：${energy.type}`;
+    spectrum.innerHTML = `<span style="font-size: 0.9rem; opacity: 0.8;">${energy.name}</span><br>${energy.action}`;
+    desc.innerHTML = `<b style="color: #fff;">${vibeIcon} ${vibeText}</b><br>${energy.text}${wealthBonus}`;
     
-    // 結合地支增加環境描述
-    let extraDesc = "";
-    if(['寅','申','巳','亥'].includes(zhi)) extraDesc = " (動能較強，宜主動出擊)";
-    if(['辰','戌','丑','未'].includes(zhi)) extraDesc = " (能量穩定，宜固本培元)";
-    
-    desc.innerText = `${energy.text}${extraDesc}`;
-    currentData.color = energy.name; // 儲存到歷史紀錄中
+    currentData.color = `${energy.name}(${energy.action})`; 
 }
-
+    
     // --- 數據儲存邏輯 ---
     // --- V1.3 雲端同步儲存邏輯 ---
     // ⚠️ 請把下面這串網址，換成你剛剛在 Apps Script 複製的 URL！
