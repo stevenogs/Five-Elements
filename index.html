@@ -74,9 +74,9 @@
     <div class="desc" id="description">--</div>
 
     <div class="btn-group">
-        <button class="btn-accurate" onclick="saveRecord('準！')">📈 準！</button>
-        <button class="btn-inaccurate" onclick="saveRecord('沒感覺')">📉 沒感覺</button>
-        <button class="btn-jackpot" onclick="saveRecord('噴寶')">💎 噴寶</button>
+        <button class="btn-accurate" onclick="logJackpot('準！')">📈 準！</button>
+        <button class="btn-inaccurate" onclick="logJackpot('沒感覺')">📉 沒感覺</button>
+        <button class="btn-jackpot" onclick="logJackpot('噴寶')">💎 噴寶</button>
     </div>
 </div>
 
@@ -197,10 +197,17 @@ function updateUI(gzDay, zhi) {
 }
 
 // 4. 點擊記錄功能
+// 4. 點擊記錄功能 (整合同步與本地紀錄)
 function logJackpot() {
+    // 1. 取得按鈕元件
+    const btn = document.querySelector('.btn-jackpot');
+    const originalBtnText = btn.innerText;
+
+    // 2. 詢問體感內容
     const feedback = prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發");
     if (!feedback) return;
 
+    // 3. 準備紀錄物件
     const newRecord = {
         date: new Date().toLocaleString(),
         bazi: currentData.bazi,
@@ -208,14 +215,35 @@ function logJackpot() {
         feedback: feedback
     };
 
+    // --- 本地紀錄 (LocalStorage) ---
     const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
     history.unshift(newRecord);
     localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 10)));
-    
-    alert(`✅ 已記錄特異點日誌！`);
-    loadHistory();
-}
+    loadHistory(); // 立即更新下方列表
 
+    // --- 雲端同步 (Google Sheet) ---
+    // 這裡使用你之前設定過的 Google Apps Script URL (如果有的話)
+    const GOOGLE_SHEET_URL = "你的_GOOGLE_SCRIPT_網址"; // 請確認此變數是否正確
+
+    if (GOOGLE_SHEET_URL && GOOGLE_SHEET_URL !== "你的_GOOGLE_SCRIPT_網址") {
+        btn.innerText = "☁️ 同步中...";
+        fetch(GOOGLE_SHEET_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(newRecord)
+        })
+        .then(() => {
+            console.log("數據已發射");
+            alert(`✅ 特異點已記錄！\n當前狀態：${currentData.color}`);
+        })
+        .catch(err => console.error("同步失敗:", err))
+        .finally(() => {
+            btn.innerText = originalBtnText;
+        });
+    } else {
+        alert(`✅ 本地紀錄成功！\n當前狀態：${currentData.color}`);
+    }
+}
 function loadHistory() {
     const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
     const list = document.getElementById('history-list');
