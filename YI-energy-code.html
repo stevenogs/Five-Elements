@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>易能量</title> 
+    <meta name="apple-mobile-web-app-title" content="易能量"> 
+    <meta name="application-name" content="易能量"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212; color: #ffffff;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
+        }
+        .container {
+            background: #1e1e1e; padding: 30px; border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 1.5rem; margin-bottom: 5px; color: #aaaaaa; text-align: center;}
+        .date { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-align: center;}
+        .bazi { font-size: 1rem; color: #ffb300; margin-bottom: 20px; text-align: center;}
+        
+        .spectrum-display {
+            width: 100%; height: 120px; border-radius: 15px; display: flex;
+            align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px; text-align: center;
+            padding: 10px; box-sizing: border-box; flex-direction: column;
+        }
+        .desc { font-size: 0.95rem; color: #cccccc; margin-bottom: 20px; line-height: 1.5; min-height: 60px; text-align: center;}
+        
+        @keyframes pulse-gold {
+            0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); transform: scale(1); }
+            70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); transform: scale(1.05); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); transform: scale(1); }
+        }
+
+        .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+        button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s;}
+        button:active { transform: scale(0.95); }
+        .btn-accurate { background-color: #4caf50; color: white; }
+        .btn-inaccurate { background-color: #757575; color: white; }
+        .btn-jackpot { background-color: #ffb300; color: black; }
+
+        /* 新增：五行能量條 UI */
+        .energy-board {
+            background: #222; border-radius: 10px; padding: 15px; margin-bottom: 20px;
+            font-size: 0.8rem; border: 1px solid #333;
+        }
+        .energy-bar-container {
+            display: flex; align-items: center; margin-bottom: 5px;
+        }
+        .energy-label { width: 30px; font-weight: bold; color: #aaa; }
+        .energy-track { flex: 1; background: #333; height: 10px; border-radius: 5px; margin: 0 10px; overflow: hidden;}
+        .energy-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease-in-out;}
+        .energy-value { width: 30px; text-align: right; color: #fff;}
+
+        .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
+        h2 { font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #888; }
+        #history-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
+        .history-item { 
+            font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #2a2a2a;
+            background: #222; margin-bottom: 5px; border-radius: 8px;
+        }
+        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 5px; display: inline-block; margin-top: 5px;}
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>今日系統能量</h1>
+    
+    <div id="user-config" style="background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444;">
+        <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生時間 (生成本命盤)</p>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+            <input type="date" id="birth-date" style="flex: 2; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box;">
+            <input type="time" id="birth-time" value="12:00" style="flex: 1; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box;">
+        </div>
+        <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
+    </div>
+
+    <div class="energy-board" id="personal-energy-board" style="display: none;">
+        <div style="text-align: center; color: #ffb300; margin-bottom: 10px; font-weight: bold;" id="my-bazi-text">我的八字</div>
+        <div id="energy-bars"></div>
+        <div id="combination-logs" style="margin-top: 10px; font-size: 0.75rem; color: #888; border-top: 1px dashed #444; padding-top: 5px;"></div>
+    </div>
+
+    <div class="date" id="today-date">--</div>
+    <div class="bazi" id="today-bazi">--</div>
+    <div class="spectrum-display" id="spectrum">偵測中...</div>
+    <div class="desc" id="description">--</div>
+
+    <div class="btn-group">
+        <button class="btn-accurate" onclick="logJackpot('準！', event)">📈 準！</button>
+        <button class="btn-inaccurate" onclick="logJackpot('沒感覺', event)">📉 沒感覺</button>
+        <button class="btn-jackpot" id="jackpot-main-btn" onclick="logJackpot('噴寶', event)">💎 噴寶</button>
+    </div>
+</div>
+
+<div class="history-section">
+    <h2>研究日誌 (最近紀錄)</h2>
+    <ul id="history-list"></ul>
+    <button style="width:100%; background:none; color:#555; font-size:0.7rem; margin-top:10px; border:none; cursor:pointer;" onclick="clearHistory()">清除所有紀錄</button>
+</div>
+
+<script>
+// ==========================================
+// 1. 八字演算核心引擎 (Ported from Python)
+// ==========================================
+class BaZiEngine {
+    constructor(stemsNames, branchesNames) {
+        this.stemInfo = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+        this.branchInfo = { '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水' };
+        
+        this.stems = stemsNames.map((n, i) => ({ name: n, element: this.stemInfo[n], position: i, isLocked: false, transElement: null }));
+        this.branches = branchesNames.map((n, i) => ({ name: n, element: this.branchInfo[n], position: i, isLocked: false, lockedBy: null, transElement: null, isTransformed: false }));
+        
+        this.results = [];
+        this.energyPool = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+    }
+
+    _checkTouGan(targetElement) {
+        return this.stems.some(s => s.element === targetElement);
+    }
+
+    _calcStrength(baseWeight, positions) {
+        if (positions.length < 2) return baseWeight;
+        const dist = Math.max(...positions) - Math.min(...positions);
+        return parseFloat((baseWeight * (1 / dist)).toFixed(2));
+    }
+
+    runAnalysis() {
+        this._checkStemHe();
+        this._checkStemChong();
+        this._checkSanHui();
+        this._checkSanHe();
+        this._checkLiuHe();
+        this._checkBanHe();
+        this._checkLiuChong();
+        this._recalculateEnergy();
+        return { results: this.results, energy: this.energyPool };
+    }
+
+    _checkStemHe() {
+        const pairs = { '甲': ['己', '土'], '乙': ['庚', '金'], '丙': ['辛', '水'], '丁': ['壬', '木'], '戊': ['癸', '火'] };
+        for (let i = 0; i < this.stems.length; i++) {
+            for (let j = i + 1; j < this.stems.length; j++) {
+                let s1 = this.stems[i], s2 = this.stems[j];
+                if (s1.isLocked || s2.isLocked) continue;
+                
+                let matchInfo = (pairs[s1.name] && pairs[s1.name][0] === s2.name) ? pairs[s1.name] :
+                                (pairs[s2.name] && pairs[s2.name][0] === s1.name) ? pairs[s2.name] : null;
+                
+                if (matchInfo) {
+                    s1.isLocked = true; s2.isLocked = true;
+                    let target = matchInfo[1];
+                    // 日主豁免權：Index 2 是日干
+                    if (s1.position === 2 || s2.position === 2) {
+                        this.results.push({ type: "日主合絆", members: [s1.name, s2.name], target: "無(不化)", strength: this._calcStrength(0.8, [s1.position, s2.position]) });
+                    } else {
+                        s1.transElement = target; s2.transElement = target;
+                        this.results.push({ type: "天干五合", members: [s1.name, s2.name], target: target, strength: this._calcStrength(0.8, [s1.position, s2.position]) });
+                    }
+                }
+            }
+        }
+    }
+
+    _checkStemChong() {
+        const pairs = { '甲': '庚', '乙': '辛', '壬': '丙', '癸': '丁' };
+        for (let i = 0; i < this.stems.length; i++) {
+            for (let j = i + 1; j < this.stems.length; j++) {
+                let s1 = this.stems[i], s2 = this.stems[j];
+                if (s1.isLocked || s2.isLocked) continue;
+                if (pairs[s1.name] === s2.name || pairs[s2.name] === s1.name) {
+                    s1.isLocked = true; s2.isLocked = true;
+                    this.results.push({ type: "天干相衝", members: [s1.name, s2.name], target: "無", strength: this._calcStrength(0.7, [s1.position, s2.position]) });
+                }
+            }
+        }
+    }
+
+    _processGroupMatch(groups, label, weight) {
+        for (let [members, target] of groups) {
+            let unlocked = this.branches.filter(b => !b.isLocked);
+            let temp = unlocked.filter(b => members.includes(b.name));
+            let uniqueNames = [...new Set(temp.map(b => b.name))];
+            
+            if (uniqueNames.length === 3) {
+                let selected = [];
+                for(let name of members) {
+                    selected.push(temp.find(b => b.name === name));
+                }
+                let isTrans = this._checkTouGan(target);
+                selected.forEach(b => {
+                    b.isLocked = true; b.lockedBy = label;
+                    if(isTrans){ b.transElement = target; b.isTransformed = true; }
+                });
+                this.results.push({
+                    type: isTrans ? label : `${label}(合而不化)`,
+                    members: selected.map(b=>b.name), target: isTrans ? target : "無",
+                    strength: this._calcStrength(weight, selected.map(b=>b.position))
+                });
+            }
+        }
+    }
+
+    _checkSanHui() {
+        this._processGroupMatch([ [['寅','卯','辰'], '木'], [['巳','午','未'], '火'], [['申','酉','戌'], '金'], [['亥','子','丑'], '水'] ], "三會", 1.0);
+    }
+    _checkSanHe() {
+        this._processGroupMatch([ [['申','子','辰'], '水'], [['寅','午','戌'], '火'], [['亥','卯','未'], '木'], [['巳','酉','丑'], '金'] ], "三合", 0.8);
+    }
+
+    _processPairMatch(pairs, label, weight, hasTarget=true) {
+        for (let i = 0; i < this.branches.length; i++) {
+            for (let j = i + 1; j < this.branches.length; j++) {
+                let b1 = this.branches[i], b2 = this.branches[j];
+                if (b1.isLocked || b2.isLocked) continue;
+                
+                let matchInfo = (pairs[b1.name] && pairs[b1.name][0] === b2.name) ? pairs[b1.name] :
+                                (pairs[b2.name] && pairs[b2.name][0] === b1.name) ? pairs[b2.name] : null;
+                
+                if (matchInfo) {
+                    b1.isLocked = true; b2.isLocked = true;
+                    b1.lockedBy = label; b2.lockedBy = label;
+                    let target = hasTarget ? matchInfo[1] : null;
+                    let isTrans = hasTarget ? this._checkTouGan(target) : false;
+                    
+                    if (isTrans) { b1.transElement = target; b1.isTransformed = true; b2.transElement = target; b2.isTransformed = true;}
+                    
+                    let resType = hasTarget ? (isTrans ? label : `${label}(合而不化)`) : label;
+                    this.results.push({
+                        type: resType, members: [b1.name, b2.name], target: isTrans ? target : "無",
+                        strength: this._calcStrength(weight, [b1.position, b2.position])
+                    });
+                }
+            }
+        }
+    }
+
+    _checkLiuHe() {
+        const pairs = {'子':['丑','土'], '寅':['亥','木'], '卯':['戌','火'], '辰':['酉','金'], '巳':['申','水'], '午':['未','火']};
+        this._processPairMatch(pairs, "六合", 0.6);
+    }
+    _checkBanHe() {
+        const pairs = {'申':['子','水'], '子':['辰','水'], '寅':['午','火'], '午':['戌','火'], '亥':['卯','木'], '卯':['未','木'], '巳':['酉','金'], '酉':['丑','金']};
+        this._processPairMatch(pairs, "半合", 0.4);
+    }
+    _checkLiuChong() {
+        const pairs = {'子':['午',null], '丑':['未',null], '寅':['申',null], '卯':['酉',null], '辰':['戌',null], '巳':['亥',null]};
+        this._processPairMatch(pairs, "六衝", 0.7, false);
+    }
+
+    _recalculateEnergy() {
+        this.stems.forEach(s => { this.energyPool[s.transElement || s.element] += 1.0; });
+        this.branches.forEach(b => { this.energyPool[b.isTransformed ? b.transElement : b.element] += 1.0; });
+    }
+}
+
+// ==========================================
+// 2. 系統基礎設定與 UI 綁定
+// ==========================================
+const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
+const RELATION_MAP = {
+    '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
+    '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
+    '土': { '木': '官殺', '火': '印星', '土': '比劫', '金': '食傷', '水': '財星' },
+    '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
+    '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
+};
+const COLOR_MAP = { '木': '#4caf50', '火': '#f44336', '土': '#ff9800', '金': '#ffeb3b', '水': '#2196f3' };
+
+const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec';
+let userDayGan = localStorage.getItem('user_day_gan') || '戊';
+let currentData = { date: '', bazi: '', color: '', energyName: '' };
+
+function init() {
+    const today = new Date();
+    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunar = Lunar.fromSolar(solar);
+    
+    const gzDay = lunar.getDayInGanZhi(); 
+    const dayZhi = lunar.getDayZhi();
+    
+    currentData.date = today.toLocaleString();
+    currentData.bazi = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`;
+    
+    document.getElementById('today-date').innerText = today.toLocaleDateString();
+    document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
+    
+    // 如果有儲存過的生日，初始化引擎圖表
+    const savedDate = localStorage.getItem('user_birth_date');
+    const savedTime = localStorage.getItem('user_birth_time');
+    if(savedDate && savedTime) {
+        document.getElementById('birth-date').value = savedDate;
+        document.getElementById('birth-time').value = savedTime;
+        calculatePersonalEnergy(savedDate, savedTime);
+    }
+    
+    updateUI(gzDay, dayZhi);
+    loadHistory();
+}
+
+function updateUserBazi() {
+    const bDate = document.getElementById('birth-date').value;
+    const bTime = document.getElementById('birth-time').value;
+    if (!bDate || !bTime) return alert("請完整選擇生日與時間！");
+
+    localStorage.setItem('user_birth_date', bDate);
+    localStorage.setItem('user_birth_time', bTime);
+
+    calculatePersonalEnergy(bDate, bTime);
+    alert(`引擎分析完成！偵測到您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
+    init(); 
+}
+
+function calculatePersonalEnergy(dateStr, timeStr) {
+    const [y, m, d] = dateStr.split('-');
+    const [hr, min] = timeStr.split(':');
+    
+    const solar = Solar.fromYmdHms(parseInt(y), parseInt(m), parseInt(d), parseInt(hr), parseInt(min), 0);
+    const lunar = Lunar.fromSolar(solar);
+    const bazi = lunar.getEightChar();
+    
+    const stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan(), bazi.getTimeGan()];
+    const branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi(), bazi.getTimeZhi()];
+    
+    // 更新日主
+    userDayGan = stems[2];
+    localStorage.setItem('user_day_gan', userDayGan);
+    
+    // 執行 Pro 引擎演算
+    const engine = new BaZiEngine(stems, branches);
+    const result = engine.runAnalysis();
+    
+    renderEnergyBoard(stems, branches, result);
+}
+
+function renderEnergyBoard(stems, branches, result) {
+    document.getElementById('personal-energy-board').style.display = 'block';
+    document.getElementById('my-bazi-text').innerText = `我的八字：${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${stems[3]}${branches[3]}`;
+    
+    const barsContainer = document.getElementById('energy-bars');
+    let totalEnergy = 8; // 4天干 + 4地支
+    let html = '';
+    
+    for (let el of ['木', '火', '土', '金', '水']) {
+        let val = result.energy[el];
+        let pct = (val / totalEnergy) * 100;
+        html += `
+            <div class="energy-bar-container">
+                <div class="energy-label" style="color: ${COLOR_MAP[el]}">${el}</div>
+                <div class="energy-track">
+                    <div class="energy-fill" style="width: ${pct}%; background-color: ${COLOR_MAP[el]}"></div>
+                </div>
+                <div class="energy-value">${val}</div>
+            </div>
+        `;
+    }
+    barsContainer.innerHTML = html;
+
+    const logsContainer = document.getElementById('combination-logs');
+    if (result.results.length > 0) {
+        let logHtml = result.results.map(r => `🔹 ${r.type}: ${r.members.join('')} ➔ ${r.target}`).join('<br>');
+        logsContainer.innerHTML = `<b>【格局觸發紀錄】</b><br>${logHtml}`;
+    } else {
+        logsContainer.innerHTML = `無特殊衝合局，氣息平穩。`;
+    }
+}
+
+// ------------------------------------------
+// 3. 畫面顯示與 Webhook 紀錄
+// ------------------------------------------
+function updateUI(gzDay, zhi) {
+    const spectrum = document.getElementById('spectrum');
+    const desc = document.getElementById('description');
+    const jackpotBtn = document.getElementById('jackpot-main-btn');
+    
+    const todayGan = gzDay.substring(0, 1);
+    const userElement = ELEMENT_MAP[userDayGan];
+    const todayGanElement = ELEMENT_MAP[todayGan];
+    const todayZhiElement = ZHI_ELEMENT_MAP[zhi];
+    
+    const relation = RELATION_MAP[userElement][todayGanElement];
+
+    const themeMap = {
+        '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏，適合執行財務規劃。' },
+        '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '官殺入命。壓力與名望並存，適合建立紀律或處理硬骨頭任務。' },
+        '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '印星護航。貴人運佳，適合學習與補充內在能量。' },
+        '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text: '食傷洩秀。才華橫溢，點子極多，適合創作。' },
+        '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '比劫共振。能量充沛，適合交流合作，需注意預算。' }
+    };
+
+    const energy = themeMap[relation];
+    currentData.color = energy.color;
+    currentData.energyName = `${relation}(${energy.action})`;
+
+    let vibeIcon = "⚓"; let vibeText = "穩扎穩打";
+    const myWealth = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '財星');
+    const myOfficer = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '官殺');
+
+    if (todayGanElement === myWealth || todayZhiElement === myWealth) {
+        vibeIcon = "🌊"; vibeText = "財源滾滾";
+        jackpotBtn.style.animation = "pulse-gold 1.5s infinite";
+        jackpotBtn.innerText = "💎 財星入局！";
+    } else {
+        jackpotBtn.style.animation = "none";
+        jackpotBtn.innerText = "💎 噴寶";
+    }
+
+    if (todayZhiElement === myOfficer) { vibeIcon = "🌲"; vibeText = "紀律與成長"; } 
+    else if (['寅', '申', '巳', '亥'].includes(zhi) && vibeIcon !== "🌊") { vibeIcon = "⚡️"; vibeText = "動能全開"; }
+
+    spectrum.style.background = energy.color;
+    spectrum.innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br><span style="font-size: 2.2rem;">${energy.action}</span>`;
+    desc.innerHTML = `<b style="color: #fff; font-size: 1.1rem;">${vibeIcon} ${vibeText}</b><br><br>${energy.text}`;
+}
+
+function logJackpot(type, event) {
+    let feedback = type === '噴寶' ? prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發") : type;
+    if (!feedback) return;
+
+    const newRecord = { date: new Date().toLocaleString(), bazi: currentData.bazi, color: currentData.energyName, feedback: feedback };
+
+    let history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+    history.unshift(newRecord);
+    localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 50)));
+    loadHistory();
+
+    const btn = event.target;
+    const originalBtnText = btn.innerText;
+    
+    if (GOOGLE_SHEET_URL) {
+        btn.innerText = "☁️ 同步中...";
+        fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newRecord) })
+        .then(() => { console.log("數據已發射"); alert(`✅ 紀錄成功！\n體感：${feedback}`); })
+        .catch(err => console.error("同步失敗:", err))
+        .finally(() => { btn.innerText = originalBtnText; });
+    }
+}
+
+function loadHistory() {
+    const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
+    const list = document.getElementById('history-list');
+    if(!list) return;
+
+    list.innerHTML = history.map(item => `
+        <li class="history-item">
+            <div style="color: #888; font-size: 0.7rem;">${item.date}</div>
+            <div style="margin-top: 3px;">
+                <span class="tag" style="border: 1px solid #555">${item.color}</span>
+                <span class="tag" style="background: #333; color: #ffb300">${item.feedback}</span>
+            </div>
+        </li>
+    `).join('');
+}
+
+function clearHistory() {
+    if(confirm("確定要刪除所有研究數據嗎？這無法復原喔！")) {
+        localStorage.removeItem('singularity_history');
+        loadHistory();
+    }
+}
+
+window.onload = init;
+</script>
+
+</body>
+</html>
