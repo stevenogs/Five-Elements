@@ -166,18 +166,28 @@ function getBaziArray(dateStr, timeStr, isUnknown) {
     
     let stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan()];
     let branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi()];
-    if (!isUnknown) { stems.push(bazi.getTimeGan()); branches.push(bazi.getTimeZhi()); }
-    return { stems, branches, formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` };
+    if (!isUnknown) { 
+        stems.push(bazi.getTimeGan()); 
+        branches.push(bazi.getTimeZhi()); 
+    }
+    return { 
+        stems, 
+        branches, 
+        formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` 
+    };
 }
 
 function saveMyBazi() {
     const bDate = document.getElementById('my-date').value;
     const bTime = document.getElementById('my-time').value;
     const isUnknown = document.getElementById('my-unknown').checked;
+    
     if (!bDate) return alert("請選擇生日日期！");
+    
     localStorage.setItem('my_date', bDate);
     localStorage.setItem('my_time', bTime);
     localStorage.setItem('my_unknown', isUnknown);
+    
     initHome();
     alert("本命已儲存！");
 }
@@ -187,13 +197,16 @@ function initHome() {
     const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
     const lunar = Lunar.fromSolar(solar);
     const gzDay = lunar.getDayInGanZhi(); 
+    
     document.getElementById('today-date').innerText = today.toLocaleDateString();
     document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
 
     const mDate = localStorage.getItem('my_date');
     if (!mDate) return;
+    
     const mTime = localStorage.getItem('my_time') || '12:00';
     const mUnknown = localStorage.getItem('my_unknown') === 'true';
+    
     document.getElementById('my-date').value = mDate;
     document.getElementById('my-time').value = mTime;
     document.getElementById('my-unknown').checked = mUnknown;
@@ -201,6 +214,7 @@ function initHome() {
 
     const myBazi = getBaziArray(mDate, mTime, mUnknown);
     const userDayGan = myBazi.stems[2]; 
+    
     document.getElementById('my-bazi-display').style.display = 'block';
     document.getElementById('my-bazi-display').innerText = `我的命盤：${myBazi.formatStr} (日主${userDayGan})`;
 
@@ -211,6 +225,7 @@ function renderTodayVibe(userDayGan, gzDay, zhi) {
     const userElement = ELEMENT_MAP[userDayGan];
     const todayGanElement = ELEMENT_MAP[gzDay.substring(0, 1)];
     const relation = RELATION_MAP[userElement][todayGanElement];
+    
     const themeMap = {
         '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏。' },
         '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '壓力與名望並存，適合處理硬骨頭任務。' },
@@ -218,6 +233,7 @@ function renderTodayVibe(userDayGan, gzDay, zhi) {
         '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text: '才華橫溢，點子極多，適合創作。' },
         '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '能量充沛，適合交流合作。' }
     };
+    
     const energy = themeMap[relation];
     document.getElementById('spectrum').style.background = energy.color;
     document.getElementById('spectrum').innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br><span style="font-size: 2.2rem;">${energy.action}</span>`;
@@ -243,35 +259,56 @@ function calculateMatch() {
     document.getElementById('compare-target-bazi').innerText = targetBazi.formatStr;
 
     let score = 50; 
-    let dayGanLog = ""; let groupLog = ""; let branchLog = "";
+    let dayGanLog = ""; 
+    let groupLog = ""; 
+    let branchLog = "";
 
-// A. 日主(日干)互動分析
-    const myDayGan = myBazi.stems[2], tDayGan = targetBazi.stems[2];
-    const myElement = ELEMENT_MAP[myDayGan], tElement = ELEMENT_MAP[tDayGan];
+    // A. 日主(日干)互動分析
+    const myDayGan = myBazi.stems[2];
+    const tDayGan = targetBazi.stems[2];
+    const myElement = ELEMENT_MAP[myDayGan];
+    const tElement = ELEMENT_MAP[tDayGan];
     const hePairs = { '甲':'己', '己':'甲', '乙':'庚', '庚':'乙', '丙':'辛', '辛':'丙', '丁':'壬', '壬':'丁', '戊':'癸', '癸':'戊' };
     
     if (myDayGan === tDayGan) {
-        score += 15; dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。你們就像照鏡子，容易有靈魂共鳴，但也容易因為太像而固執己見。`;
+        score += 15; 
+        dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。你們就像照鏡子，容易有靈魂共鳴，但也容易因為太像而固執己見。`;
     } else if (hePairs[myDayGan] === tDayGan) {
-        score += 30; dayGanLog = `🔥 <b>強烈吸引！</b>您們的日主「${myDayGan}」與「${tDayGan}」形成【天干五合】。這代表先天具有極強的化學反應與羈絆，是一眼萬年的絕佳組合！`;
+        score += 30; 
+        dayGanLog = `🔥 <b>強烈吸引！</b>您們的日主「${myDayGan}」與「${tDayGan}」形成【天干五合】。這代表先天具有極強的化學反應與羈絆，是一眼萬年的絕佳組合！`;
     } else {
         const relationMeToTarget = RELATION_MAP[myElement][tElement];
         if (relationMeToTarget === '財星') { 
-            score += 10; dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有一種「值得付出」的魅力。`; 
+            score += 10; 
+            dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有一種「值得付出」的魅力。`; 
         } else if (relationMeToTarget === '官殺') { 
-            score -= 5; dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力，是一段讓您成長的關係。`; 
+            score -= 5; 
+            dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力，是一段讓您成長的關係。`; 
         } else if (relationMeToTarget === '印星') { 
-            score += 15; dayGanLog = `對方是您的【印星】。對方像避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`; 
+            score += 15; 
+            dayGanLog = `對方是您的【印星】。對方像避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`; 
         } else if (relationMeToTarget === '食傷') { 
-            score += 10; dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`; 
+            score += 10; 
+            dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`; 
         } else if (relationMeToTarget === '比劫') { 
-            // 🐛 這裡就是剛才漏掉的修復點！(例如甲木遇上乙木)
-            score += 10; dayGanLog = `對方是您的【劫財/比肩】。您們五行同屬「${myElement}」，像兄弟姊妹般親切，有著相似的頻率，適合一起打拼與分享生活。`; 
+            score += 10; 
+            dayGanLog = `對方是您的【劫財/比肩】。您們五行同屬「${myElement}」，像兄弟姊妹般親切，有著相似的頻率，適合一起打拼與分享生活。`; 
         }
     }
+
     // B. 地支群體緣分 (三合 / 三會 拼圖演算法)
-    const sanHeGroups = [['申','子','辰', '三合局', '深層的靈魂共鳴與共同目標'], ['寅','午','戌', '三合局', '深層的靈魂共鳴與共同目標'], ['亥','卯','未', '三合局', '深層的靈魂共鳴與共同目標'], ['巳','酉','丑', '三合局', '深層的靈魂共鳴與共同目標']];
-    const sanHuiGroups = [['寅','卯','辰', '三會方', '強大的家族緣與絕對凝聚力'], ['巳','午','未', '三會方', '強大的家族緣與絕對凝聚力'], ['申','酉','戌', '三會方', '強大的家族緣與絕對凝聚力'], ['亥','子','丑', '三會方', '強大的家族緣與絕對凝聚力']];
+    const sanHeGroups = [
+        ['申','子','辰', '三合局', '深層的靈魂共鳴與共同目標'], 
+        ['寅','午','戌', '三合局', '深層的靈魂共鳴與共同目標'], 
+        ['亥','卯','未', '三合局', '深層的靈魂共鳴與共同目標'], 
+        ['巳','酉','丑', '三合局', '深層的靈魂共鳴與共同目標']
+    ];
+    const sanHuiGroups = [
+        ['寅','卯','辰', '三會方', '強大的家族緣與絕對凝聚力'], 
+        ['巳','午','未', '三會方', '強大的家族緣與絕對凝聚力'], 
+        ['申','酉','戌', '三會方', '強大的家族緣與絕對凝聚力'], 
+        ['亥','子','丑', '三會方', '強大的家族緣與絕對凝聚力']
+    ];
 
     let myUniqueBranches = [...new Set(myBazi.branches)];
     let tUniqueBranches = [...new Set(targetBazi.branches)];
@@ -284,41 +321,64 @@ function calculateMatch() {
         const tHasAll = tUniqueBranches.includes(b1) && tUniqueBranches.includes(b2) && tUniqueBranches.includes(b3);
 
         if (hasAll && !myHasAll && !tHasAll) {
-            score += 20; // 群體緣分給予極高加權
+            score += 20; 
             groupLog += `✨ <b>【${groupName}：${b1}${b2}${b3}】</b> 命定般的互補！你們的命盤湊在一起，剛好拼湊出完整的強大能量陣。這代表你們不僅有著${meaning}，更具備「1+1 > 2」的罕見緣分。<br><br>`;
         }
     });
-    if(!groupLog) groupLog = `<span style="color: #888;">無特殊的群體大陣合化，屬於依賴一對一相處來建立感情的緣分。</span>`;
-    document.getElementById('match-group-desc').innerHTML = groupLog;
+    
+    if(!groupLog) {
+        groupLog = `<span style="color: #888;">無特殊的群體大陣合化，屬於依賴一對一相處來建立感情的緣分。</span>`;
+    }
 
     // C. 地支一對一衝合判定 (白話文升級版)
-    let heCount = 0; let chongCount = 0;
+    let heCount = 0; 
+    let chongCount = 0;
     const liuHe = {'子':'丑', '寅':'亥', '卯':'戌', '辰':'酉', '巳':'申', '午':'未'};
     const liuChong = {'子':'午', '丑':'未', '寅':'申', '卯':'酉', '辰':'戌', '巳':'亥'};
-    const pillarMeaning = [ { realm: "大價值觀與第一印象" }, { realm: "性格節奏與處事態度" }, { realm: "內心安全感與感情觀" }, { realm: "生活習慣與未來藍圖" } ];
+    const pillarMeaning = [ 
+        { realm: "大價值觀與第一印象" }, 
+        { realm: "性格節奏與處事態度" }, 
+        { realm: "內心安全感與感情觀" }, 
+        { realm: "生活習慣與未來藍圖" } 
+    ];
 
     myBazi.branches.forEach((mb, mIdx) => {
         targetBazi.branches.forEach((tb, tIdx) => {
-            let myRealm = pillarMeaning[mIdx].realm; let tRealm = pillarMeaning[tIdx].realm;
+            let myRealm = pillarMeaning[mIdx].realm; 
+            let tRealm = pillarMeaning[tIdx].realm;
 
             if (liuHe[mb] === tb || liuHe[tb] === mb) {
-                heCount++; score += 5;
-                if (mIdx === tIdx) branchLog += `✅ <b>【同頻共振】</b> 在「${myRealm}」上，你們有著不用說出口的絕佳默契，像磁鐵般互相吸引！<br><br>`;
-                else branchLog += `✅ <b>【互補吸引】</b> 您的「${myRealm}」遇上對方的「${tRealm}」，會產生奇妙的化學反應，能互相欣賞。<br><br>`;
+                heCount++; 
+                score += 5;
+                if (mIdx === tIdx) {
+                    branchLog += `✅ <b>【同頻共振】</b> 在「${myRealm}」上，你們有著不用說出口的絕佳默契，像磁鐵般互相吸引！<br><br>`;
+                } else {
+                    branchLog += `✅ <b>【互補吸引】</b> 您的「${myRealm}」遇上對方的「${tRealm}」，會產生奇妙的化學反應，能互相欣賞。<br><br>`;
+                }
             }
             if (liuChong[mb] === tb || liuChong[tb] === mb) {
-                chongCount++; score -= 5;
-                if (mIdx === tIdx) branchLog += `⚠️ <b>【直接碰撞】</b> 在「${myRealm}」上，你們容易各有堅持。這會激盪出火花，但也需要互相退讓。<br><br>`;
-                else branchLog += `⚡ <b>【微妙摩擦】</b> 您的「${myRealm}」與對方的「${tRealm}」步調不同，相處時需要多一點包容。<br><br>`;
+                chongCount++; 
+                score -= 5;
+                if (mIdx === tIdx) {
+                    branchLog += `⚠️ <b>【直接碰撞】</b> 在「${myRealm}」上，你們容易各有堅持。這會激盪出火花，但也需要互相退讓。<br><br>`;
+                } else {
+                    branchLog += `⚡ <b>【微妙摩擦】</b> 您的「${myRealm}」與對方的「${tRealm}」步調不同，相處時需要多一點包容。<br><br>`;
+                }
             }
         });
     });
 
-    if (heCount === 0 && chongCount === 0) branchLog = "🌱 <b>【平穩發展】</b> 一對一磁場平穩，沒有強烈的衝合糾葛。關係不走轟轟烈烈路線，屬於細水長流、平淡是福的類型。";
-    document.getElementById('match-branch-desc').innerHTML = branchLog;
+    if (heCount === 0 && chongCount === 0) {
+        branchLog = "🌱 <b>【平穩發展】</b> 一對一磁場平穩，沒有強烈的衝合糾葛。關係不走轟轟烈烈路線，屬於細水長流、平淡是福的類型。";
+    }
 
     score = Math.max(10, Math.min(99, score)); 
+    
+    // 【修復點：把資料輸出到畫面】
     document.getElementById('match-score-value').innerText = `${score}%`;
+    document.getElementById('match-day-gan-desc').innerHTML = dayGanLog;
+    document.getElementById('match-group-desc').innerHTML = groupLog;
+    document.getElementById('match-branch-desc').innerHTML = branchLog;
     
     let summaryText = score >= 80 ? "✨ 靈魂伴侶級別！請務必好好把握！" :
                       score >= 60 ? "😊 相處融洽，具備良好的發展基礎。" :
