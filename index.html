@@ -245,7 +245,7 @@ function calculateMatch() {
     let score = 50; 
     let dayGanLog = ""; let groupLog = ""; let branchLog = "";
 
-    // A. 日主(日干)互動分析
+// A. 日主(日干)互動分析
     const myDayGan = myBazi.stems[2], tDayGan = targetBazi.stems[2];
     const myElement = ELEMENT_MAP[myDayGan], tElement = ELEMENT_MAP[tDayGan];
     const hePairs = { '甲':'己', '己':'甲', '乙':'庚', '庚':'乙', '丙':'辛', '辛':'丙', '丁':'壬', '壬':'丁', '戊':'癸', '癸':'戊' };
@@ -256,12 +256,19 @@ function calculateMatch() {
         score += 30; dayGanLog = `🔥 <b>強烈吸引！</b>您們的日主「${myDayGan}」與「${tDayGan}」形成【天干五合】。這代表先天具有極強的化學反應與羈絆，是一眼萬年的絕佳組合！`;
     } else {
         const relationMeToTarget = RELATION_MAP[myElement][tElement];
-        if (relationMeToTarget === '財星') { score += 10; dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有一種「值得付出」的魅力。`; } 
-        else if (relationMeToTarget === '官殺') { score -= 5; dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力，是一段讓您成長的關係。`; } 
-        else if (relationMeToTarget === '印星') { score += 15; dayGanLog = `對方是您的【印星】。對方像避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`; } 
-        else if (relationMeToTarget === '食傷') { score += 10; dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`; }
+        if (relationMeToTarget === '財星') { 
+            score += 10; dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有一種「值得付出」的魅力。`; 
+        } else if (relationMeToTarget === '官殺') { 
+            score -= 5; dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力，是一段讓您成長的關係。`; 
+        } else if (relationMeToTarget === '印星') { 
+            score += 15; dayGanLog = `對方是您的【印星】。對方像避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`; 
+        } else if (relationMeToTarget === '食傷') { 
+            score += 10; dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`; 
+        } else if (relationMeToTarget === '比劫') { 
+            // 🐛 這裡就是剛才漏掉的修復點！(例如甲木遇上乙木)
+            score += 10; dayGanLog = `對方是您的【劫財/比肩】。您們五行同屬「${myElement}」，像兄弟姊妹般親切，有著相似的頻率，適合一起打拼與分享生活。`; 
+        }
     }
-
     // B. 地支群體緣分 (三合 / 三會 拼圖演算法)
     const sanHeGroups = [['申','子','辰', '三合局', '深層的靈魂共鳴與共同目標'], ['寅','午','戌', '三合局', '深層的靈魂共鳴與共同目標'], ['亥','卯','未', '三合局', '深層的靈魂共鳴與共同目標'], ['巳','酉','丑', '三合局', '深層的靈魂共鳴與共同目標']];
     const sanHuiGroups = [['寅','卯','辰', '三會方', '強大的家族緣與絕對凝聚力'], ['巳','午','未', '三會方', '強大的家族緣與絕對凝聚力'], ['申','酉','戌', '三會方', '強大的家族緣與絕對凝聚力'], ['亥','子','丑', '三會方', '強大的家族緣與絕對凝聚力']];
