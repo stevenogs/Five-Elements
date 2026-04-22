@@ -17,227 +17,140 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #121212; color: #ffffff;
-            display: flex; flex-direction: column; align-items: center; padding: 20px;
+            display: flex; flex-direction: column; align-items: center; padding: 15px; margin: 0;
+            padding-bottom: 80px; /* 留給底部導覽列的空間 */
         }
         .container {
-            background: #1e1e1e; padding: 30px; border-radius: 20px;
+            background: #1e1e1e; padding: 25px; border-radius: 20px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px;
-            margin-bottom: 20px;
+            margin-bottom: 20px; box-sizing: border-box;
         }
-        h1 { font-size: 1.5rem; margin-bottom: 5px; color: #aaaaaa; text-align: center;}
-        .date { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; text-align: center;}
-        .bazi { font-size: 1rem; color: #ffb300; margin-bottom: 20px; text-align: center;}
+        h1 { font-size: 1.5rem; margin-top: 0; margin-bottom: 15px; color: #aaaaaa; text-align: center;}
         
-        .spectrum-display {
-            width: 100%; height: 120px; border-radius: 15px; display: flex;
-            align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px; text-align: center;
-            padding: 10px; box-sizing: border-box; flex-direction: column;
-        }
+        /* 頁面切換控制 */
+        .page { display: none; width: 100%; max-width: 400px; animation: fadeIn 0.3s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 輸入框共用樣式 */
+        .input-group { background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444; }
+        .input-group p { font-size: 0.85rem; margin: 0 0 10px 0; color: #aaa; }
+        .flex-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        input[type="date"], input[type="time"] { padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box; }
+        .btn-primary { width: 100%; background: #4caf50; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+        .btn-primary:active { transform: scale(0.98); }
+        .checkbox-container { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; font-size: 0.8rem; color: #aaa; cursor: pointer; }
+        
+        /* 能量條與圖表 */
+        .spectrum-display { width: 100%; height: 120px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px; flex-direction: column; }
         .desc { font-size: 0.95rem; color: #cccccc; margin-bottom: 20px; line-height: 1.5; min-height: 60px; text-align: center;}
         
-        @keyframes pulse-gold {
-            0% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0.7); transform: scale(1); }
-            70% { box-shadow: 0 0 0 15px rgba(255, 179, 0, 0); transform: scale(1.05); }
-            100% { box-shadow: 0 0 0 0 rgba(255, 179, 0, 0); transform: scale(1); }
+        /* 底部導覽列 */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a;
+            display: flex; justify-content: space-around; padding: 10px 0;
+            border-top: 1px solid #333; z-index: 100;
         }
-
-        .btn-group { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
-        button { flex: 1; padding: 12px 5px; border: none; border-radius: 10px; font-size: 0.9rem; font-weight: bold; cursor: pointer; transition: 0.2s;}
-        button:active { transform: scale(0.95); }
-        .btn-accurate { background-color: #4caf50; color: white; }
-        .btn-inaccurate { background-color: #757575; color: white; }
-        .btn-jackpot { background-color: #ffb300; color: black; }
-
-        .energy-board {
-            background: #222; border-radius: 10px; padding: 15px; margin-bottom: 20px;
-            font-size: 0.8rem; border: 1px solid #333;
+        .nav-item {
+            color: #888; text-align: center; font-size: 0.8rem; cursor: pointer;
+            padding: 5px 15px; border-radius: 10px; transition: 0.3s;
         }
-        .energy-bar-container { display: flex; align-items: center; margin-bottom: 5px; }
-        .energy-label { width: 30px; font-weight: bold; color: #aaa; }
-        .energy-track { flex: 1; background: #333; height: 10px; border-radius: 5px; margin: 0 10px; overflow: hidden;}
-        .energy-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease-in-out;}
-        .energy-value { width: 30px; text-align: right; color: #fff;}
+        .nav-item.active { color: #ffb300; font-weight: bold; background: rgba(255, 179, 0, 0.1); }
+        .nav-icon { font-size: 1.2rem; display: block; margin-bottom: 3px; }
 
-        .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
-        h2 { font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #888; }
-        #history-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
-        .history-item { font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #2a2a2a; background: #222; margin-bottom: 5px; border-radius: 8px; }
-        .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 5px; display: inline-block; margin-top: 5px;}
-        
-        /* 自定義 Checkbox 樣式 */
-        .checkbox-container { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; font-size: 0.8rem; color: #aaa; cursor: pointer; }
-        .checkbox-container input { margin-right: 5px; cursor: pointer;}
+        /* 合盤結果樣式 */
+        .match-score { font-size: 3rem; color: #ffb300; text-align: center; font-weight: bold; margin: 10px 0; text-shadow: 0 0 10px rgba(255, 179, 0, 0.5);}
+        .match-card { background: #222; border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
+        .match-title { font-size: 0.9rem; color: #aaa; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px;}
+        .bazi-compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; font-size: 0.9rem; margin-bottom: 10px;}
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>今日系統能量</h1>
-    
-    <div id="user-config" style="background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444;">
-        <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生時間 (生成本命盤)</p>
-        <div style="display: flex; gap: 10px; margin-bottom: 5px;">
-            <input type="date" id="birth-date" style="flex: 2; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box;">
-            <input type="time" id="birth-time" value="12:00" style="flex: 1; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box; transition: 0.3s;">
-        </div>
+<div id="page-home" class="page active">
+    <div class="container">
+        <h1>個人能量引擎</h1>
         
-        <label class="checkbox-container">
-            <input type="checkbox" id="unknown-time" onchange="toggleTimeInput()"> 不知道時辰 (僅排前三柱)
-        </label>
+        <div class="input-group">
+            <p>🌌 我的出生資訊</p>
+            <div class="flex-row">
+                <input type="date" id="my-date" style="flex: 2;">
+                <input type="time" id="my-time" value="12:00" style="flex: 1;">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="my-unknown" onchange="toggleTime('my')"> 不知道時辰
+            </label>
+            <button class="btn-primary" onclick="saveMyBazi()">設定我的命盤</button>
+        </div>
 
-        <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
-    </div>
+        <div id="my-bazi-display" style="text-align: center; color: #ffb300; font-weight: bold; margin-bottom: 20px; display: none;"></div>
 
-    <div class="energy-board" id="personal-energy-board" style="display: none;">
-        <div style="text-align: center; color: #ffb300; margin-bottom: 10px; font-weight: bold;" id="my-bazi-text">我的八字</div>
-        <div id="energy-bars"></div>
-        <div id="combination-logs" style="margin-top: 10px; font-size: 0.75rem; color: #888; border-top: 1px dashed #444; padding-top: 5px;"></div>
-    </div>
-
-    <div class="date" id="today-date">--</div>
-    <div class="bazi" id="today-bazi">--</div>
-    <div class="spectrum-display" id="spectrum">偵測中...</div>
-    <div class="desc" id="description">--</div>
-
-    <div class="btn-group">
-        <button class="btn-accurate" onclick="logJackpot('準！', event)">📈 準！</button>
-        <button class="btn-inaccurate" onclick="logJackpot('沒感覺', event)">📉 沒感覺</button>
-        <button class="btn-jackpot" id="jackpot-main-btn" onclick="logJackpot('噴寶', event)">💎 噴寶</button>
+        <div style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 5px;" id="today-date">--</div>
+        <div style="font-size: 1rem; color: #ffb300; text-align: center; margin-bottom: 15px;" id="today-bazi">--</div>
+        
+        <div class="spectrum-display" id="spectrum">未設定命盤</div>
+        <div class="desc" id="description">請先輸入您的出生時間以啟動流日共振引擎。</div>
     </div>
 </div>
 
-<div class="history-section">
-    <h2>研究日誌 (最近紀錄)</h2>
-    <ul id="history-list"></ul>
-    <button style="width:100%; background:none; color:#555; font-size:0.7rem; margin-top:10px; border:none; cursor:pointer;" onclick="clearHistory()">清除所有紀錄</button>
+<div id="page-match" class="page">
+    <div class="container">
+        <h1>人際合盤分析</h1>
+        
+        <div class="input-group">
+            <p>🎯 對方的出生資訊</p>
+            <div class="flex-row">
+                <input type="date" id="target-date" style="flex: 2;">
+                <input type="time" id="target-time" value="12:00" style="flex: 1;">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="target-unknown" onchange="toggleTime('target')"> 對方不知道時辰
+            </label>
+            <button class="btn-primary" onclick="calculateMatch()">執行合盤推演</button>
+        </div>
+
+        <div id="match-result" style="display: none;">
+            <div class="match-card">
+                <div class="match-title">能量引力指數</div>
+                <div class="match-score" id="match-score-value">0%</div>
+                <div style="text-align: center; font-size: 0.85rem; color: #888;" id="match-summary">計算中...</div>
+            </div>
+
+            <div class="match-card">
+                <div class="match-title">本命結構對比</div>
+                <div class="bazi-compare-grid">
+                    <div style="color: #4caf50;"><b>我</b><br><span id="compare-my-bazi"></span></div>
+                    <div style="color: #2196f3;"><b>對方</b><br><span id="compare-target-bazi"></span></div>
+                </div>
+            </div>
+
+            <div class="match-card">
+                <div class="match-title">日主化學反應 (核心定位)</div>
+                <div id="match-day-gan-desc" style="font-size: 0.9rem; line-height: 1.5;"></div>
+            </div>
+
+            <div class="match-card">
+                <div class="match-title">地支潛在引力 (衝合判定)</div>
+                <div id="match-branch-desc" style="font-size: 0.85rem; color: #ccc; line-height: 1.5;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchPage('home', this)">
+        <span class="nav-icon">🌌</span>
+        <span>我的能量</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('match', this)">
+        <span class="nav-icon">💞</span>
+        <span>合盤分析</span>
+    </div>
 </div>
 
 <script>
 // ==========================================
-// 1. 八字演算核心引擎 
-// ==========================================
-class BaZiEngine {
-    constructor(stemsNames, branchesNames) {
-        this.stemInfo = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
-        this.branchInfo = { '子': '水', '丑': '土', '寅': '木', '卯': '木', '辰': '土', '巳': '火', '午': '火', '未': '土', '申': '金', '酉': '金', '戌': '土', '亥': '水' };
-        
-        this.stems = stemsNames.map((n, i) => ({ name: n, element: this.stemInfo[n], position: i, isLocked: false, transElement: null }));
-        this.branches = branchesNames.map((n, i) => ({ name: n, element: this.branchInfo[n], position: i, isLocked: false, lockedBy: null, transElement: null, isTransformed: false }));
-        
-        this.results = [];
-        this.energyPool = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
-    }
-
-    _checkTouGan(targetElement) { return this.stems.some(s => s.element === targetElement); }
-
-    _calcStrength(baseWeight, positions) {
-        if (positions.length < 2) return baseWeight;
-        const dist = Math.max(...positions) - Math.min(...positions);
-        return parseFloat((baseWeight * (1 / dist)).toFixed(2));
-    }
-
-    runAnalysis() {
-        this._checkStemHe(); this._checkStemChong();
-        this._checkSanHui(); this._checkSanHe();
-        this._checkLiuHe(); this._checkBanHe(); this._checkLiuChong();
-        this._recalculateEnergy();
-        return { results: this.results, energy: this.energyPool };
-    }
-
-    _checkStemHe() {
-        const pairs = { '甲': ['己', '土'], '乙': ['庚', '金'], '丙': ['辛', '水'], '丁': ['壬', '木'], '戊': ['癸', '火'] };
-        for (let i = 0; i < this.stems.length; i++) {
-            for (let j = i + 1; j < this.stems.length; j++) {
-                let s1 = this.stems[i], s2 = this.stems[j];
-                if (s1.isLocked || s2.isLocked) continue;
-                
-                let matchInfo = (pairs[s1.name] && pairs[s1.name][0] === s2.name) ? pairs[s1.name] :
-                                (pairs[s2.name] && pairs[s2.name][0] === s1.name) ? pairs[s2.name] : null;
-                
-                if (matchInfo) {
-                    s1.isLocked = true; s2.isLocked = true;
-                    let target = matchInfo[1];
-                    // 日主(Index 2) 豁免權
-                    if (s1.position === 2 || s2.position === 2) {
-                        this.results.push({ type: "日主合絆", members: [s1.name, s2.name], target: "無(不化)", strength: this._calcStrength(0.8, [s1.position, s2.position]) });
-                    } else {
-                        s1.transElement = target; s2.transElement = target;
-                        this.results.push({ type: "天干五合", members: [s1.name, s2.name], target: target, strength: this._calcStrength(0.8, [s1.position, s2.position]) });
-                    }
-                }
-            }
-        }
-    }
-
-    _checkStemChong() {
-        const pairs = { '甲': '庚', '乙': '辛', '壬': '丙', '癸': '丁' };
-        for (let i = 0; i < this.stems.length; i++) {
-            for (let j = i + 1; j < this.stems.length; j++) {
-                let s1 = this.stems[i], s2 = this.stems[j];
-                if (s1.isLocked || s2.isLocked) continue;
-                if (pairs[s1.name] === s2.name || pairs[s2.name] === s1.name) {
-                    s1.isLocked = true; s2.isLocked = true;
-                    this.results.push({ type: "天干相衝", members: [s1.name, s2.name], target: "無", strength: this._calcStrength(0.7, [s1.position, s2.position]) });
-                }
-            }
-        }
-    }
-
-    _processGroupMatch(groups, label, weight) {
-        for (let [members, target] of groups) {
-            let unlocked = this.branches.filter(b => !b.isLocked);
-            let temp = unlocked.filter(b => members.includes(b.name));
-            let uniqueNames = [...new Set(temp.map(b => b.name))];
-            
-            if (uniqueNames.length === 3) {
-                let selected = members.map(name => temp.find(b => b.name === name));
-                let isTrans = this._checkTouGan(target);
-                selected.forEach(b => {
-                    b.isLocked = true; b.lockedBy = label;
-                    if(isTrans){ b.transElement = target; b.isTransformed = true; }
-                });
-                this.results.push({ type: isTrans ? label : `${label}(合而不化)`, members: selected.map(b=>b.name), target: isTrans ? target : "無", strength: this._calcStrength(weight, selected.map(b=>b.position)) });
-            }
-        }
-    }
-
-    _checkSanHui() { this._processGroupMatch([ [['寅','卯','辰'], '木'], [['巳','午','未'], '火'], [['申','酉','戌'], '金'], [['亥','子','丑'], '水'] ], "三會", 1.0); }
-    _checkSanHe() { this._processGroupMatch([ [['申','子','辰'], '水'], [['寅','午','戌'], '火'], [['亥','卯','未'], '木'], [['巳','酉','丑'], '金'] ], "三合", 0.8); }
-
-    _processPairMatch(pairs, label, weight, hasTarget=true) {
-        for (let i = 0; i < this.branches.length; i++) {
-            for (let j = i + 1; j < this.branches.length; j++) {
-                let b1 = this.branches[i], b2 = this.branches[j];
-                if (b1.isLocked || b2.isLocked) continue;
-                
-                let matchInfo = (pairs[b1.name] && pairs[b1.name][0] === b2.name) ? pairs[b1.name] : (pairs[b2.name] && pairs[b2.name][0] === b1.name) ? pairs[b2.name] : null;
-                
-                if (matchInfo) {
-                    b1.isLocked = true; b2.isLocked = true; b1.lockedBy = label; b2.lockedBy = label;
-                    let target = hasTarget ? matchInfo[1] : null;
-                    let isTrans = hasTarget ? this._checkTouGan(target) : false;
-                    
-                    if (isTrans) { b1.transElement = target; b1.isTransformed = true; b2.transElement = target; b2.isTransformed = true;}
-                    
-                    this.results.push({ type: hasTarget ? (isTrans ? label : `${label}(合而不化)`) : label, members: [b1.name, b2.name], target: isTrans ? target : "無", strength: this._calcStrength(weight, [b1.position, b2.position]) });
-                }
-            }
-        }
-    }
-
-    _checkLiuHe() { this._processPairMatch({'子':['丑','土'], '寅':['亥','木'], '卯':['戌','火'], '辰':['酉','金'], '巳':['申','水'], '午':['未','火']}, "六合", 0.6); }
-    _checkBanHe() { this._processPairMatch({'申':['子','水'], '子':['辰','水'], '寅':['午','火'], '午':['戌','火'], '亥':['卯','木'], '卯':['未','木'], '巳':['酉','金'], '酉':['丑','金']}, "半合", 0.4); }
-    _checkLiuChong() { this._processPairMatch({'子':['午',null], '丑':['未',null], '寅':['申',null], '卯':['酉',null], '辰':['戌',null], '巳':['亥',null]}, "六衝", 0.7, false); }
-
-    _recalculateEnergy() {
-        this.stems.forEach(s => { this.energyPool[s.transElement || s.element] += 1.0; });
-        this.branches.forEach(b => { this.energyPool[b.isTransformed ? b.transElement : b.element] += 1.0; });
-    }
-}
-
-// ==========================================
-// 2. 系統基礎設定與 UI 綁定
+// 核心設定與資料庫
 // ==========================================
 const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
 const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
@@ -248,73 +161,29 @@ const RELATION_MAP = {
     '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
     '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
 };
-const COLOR_MAP = { '木': '#4caf50', '火': '#f44336', '土': '#ff9800', '金': '#ffeb3b', '水': '#2196f3' };
 
-const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec';
-let userDayGan = localStorage.getItem('user_day_gan') || '戊';
-let currentData = { date: '', bazi: '', color: '', energyName: '' };
+// ==========================================
+// 頁面切換與 UI 邏輯
+// ==========================================
+function switchPage(pageId, navElement) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    navElement.classList.add('active');
+}
 
-// 新增：切換時辰輸入框的狀態
-function toggleTimeInput() {
-    const timeInput = document.getElementById('birth-time');
-    const isUnknown = document.getElementById('unknown-time').checked;
+function toggleTime(prefix) {
+    const timeInput = document.getElementById(`${prefix}-time`);
+    const isUnknown = document.getElementById(`${prefix}-unknown`).checked;
     timeInput.disabled = isUnknown;
     timeInput.style.opacity = isUnknown ? '0.4' : '1';
 }
 
-function init() {
-    const today = new Date();
-    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunar = Lunar.fromSolar(solar);
-    
-    const gzDay = lunar.getDayInGanZhi(); 
-    const dayZhi = lunar.getDayZhi();
-    
-    currentData.date = today.toLocaleString();
-    currentData.bazi = `${lunar.getYearInGanZhi()}年 ${lunar.getMonthInGanZhi()}月 ${gzDay}日`;
-    
-    document.getElementById('today-date').innerText = today.toLocaleDateString();
-    document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
-    
-    const savedDate = localStorage.getItem('user_birth_date');
-    const savedTime = localStorage.getItem('user_birth_time');
-    const savedUnknown = localStorage.getItem('user_unknown_time') === 'true';
-    
-    if(savedDate) {
-        document.getElementById('birth-date').value = savedDate;
-        if(savedTime) document.getElementById('birth-time').value = savedTime;
-        
-        document.getElementById('unknown-time').checked = savedUnknown;
-        toggleTimeInput();
-        
-        calculatePersonalEnergy(savedDate, savedTime || "12:00", savedUnknown);
-    }
-    
-    updateUI(gzDay, dayZhi);
-    loadHistory();
-}
-
-function updateUserBazi() {
-    const bDate = document.getElementById('birth-date').value;
-    const bTime = document.getElementById('birth-time').value;
-    const isUnknown = document.getElementById('unknown-time').checked;
-
-    if (!bDate) return alert("請選擇生日日期！");
-    if (!isUnknown && !bTime) return alert("請輸入出生時間，或勾選「不知道時辰」！");
-
-    localStorage.setItem('user_birth_date', bDate);
-    localStorage.setItem('user_birth_time', bTime);
-    localStorage.setItem('user_unknown_time', isUnknown);
-
-    calculatePersonalEnergy(bDate, bTime, isUnknown);
-    alert(`引擎分析完成！偵測到您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
-    init(); 
-}
-
-function calculatePersonalEnergy(dateStr, timeStr, isUnknown) {
+// 輔助函式：根據輸入生成八字陣列 [stems, branches]
+function getBaziArray(dateStr, timeStr, isUnknown) {
+    if (!dateStr) return null;
     const [y, m, d] = dateStr.split('-');
-    
-    // 如果不知道時辰，我們先用中午12點來產生正確的年月日時干支物件（確保日柱是準確的）
     const hr = isUnknown ? 12 : parseInt(timeStr.split(':')[0]);
     const min = isUnknown ? 0 : parseInt(timeStr.split(':')[1]);
     
@@ -322,154 +191,172 @@ function calculatePersonalEnergy(dateStr, timeStr, isUnknown) {
     const lunar = Lunar.fromSolar(solar);
     const bazi = lunar.getEightChar();
     
-    // 根據是否知道時辰，決定要把幾個字丟進去算
     let stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan()];
     let branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi()];
     
-    if (!isUnknown) {
-        stems.push(bazi.getTimeGan());
-        branches.push(bazi.getTimeZhi());
-    }
-    
-    userDayGan = stems[2]; // Index 2 永遠是日干
-    localStorage.setItem('user_day_gan', userDayGan);
-    
-    const engine = new BaZiEngine(stems, branches);
-    const result = engine.runAnalysis();
-    
-    renderEnergyBoard(stems, branches, result, isUnknown);
+    if (!isUnknown) { stems.push(bazi.getTimeGan()); branches.push(bazi.getTimeZhi()); }
+    return { stems, branches, formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` };
 }
 
-function renderEnergyBoard(stems, branches, result, isUnknown) {
-    document.getElementById('personal-energy-board').style.display = 'block';
-    
-    // 組合要顯示的八字字串
-    const timePillar = isUnknown ? "？？" : `${stems[3]}${branches[3]}`;
-    document.getElementById('my-bazi-text').innerText = `我的命盤：${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${timePillar}`;
-    
-    const barsContainer = document.getElementById('energy-bars');
-    const totalEnergy = stems.length + branches.length; // 6 或 8
-    let html = '';
-    
-    for (let el of ['木', '火', '土', '金', '水']) {
-        let val = result.energy[el];
-        let pct = (val / totalEnergy) * 100;
-        html += `
-            <div class="energy-bar-container">
-                <div class="energy-label" style="color: ${COLOR_MAP[el]}">${el}</div>
-                <div class="energy-track">
-                    <div class="energy-fill" style="width: ${pct}%; background-color: ${COLOR_MAP[el]}"></div>
-                </div>
-                <div class="energy-value">${val}</div>
-            </div>
-        `;
-    }
-    barsContainer.innerHTML = html;
+// ==========================================
+// 首頁：個人流日功能
+// ==========================================
+function saveMyBazi() {
+    const bDate = document.getElementById('my-date').value;
+    const bTime = document.getElementById('my-time').value;
+    const isUnknown = document.getElementById('my-unknown').checked;
 
-    const logsContainer = document.getElementById('combination-logs');
-    if (result.results.length > 0) {
-        let logHtml = result.results.map(r => `🔹 ${r.type}: ${r.members.join('')} ➔ ${r.target}`).join('<br>');
-        logsContainer.innerHTML = `<b>【格局觸發紀錄】</b><br>${logHtml}`;
-    } else {
-        logsContainer.innerHTML = `無特殊衝合局，氣息平穩。`;
-    }
+    if (!bDate) return alert("請選擇生日日期！");
+    
+    localStorage.setItem('my_date', bDate);
+    localStorage.setItem('my_time', bTime);
+    localStorage.setItem('my_unknown', isUnknown);
+
+    initHome();
+    alert("本命已儲存！");
 }
 
-// ------------------------------------------
-// 3. 畫面顯示與 Webhook 紀錄
-// ------------------------------------------
-function updateUI(gzDay, zhi) {
-    const spectrum = document.getElementById('spectrum');
-    const desc = document.getElementById('description');
-    const jackpotBtn = document.getElementById('jackpot-main-btn');
+function initHome() {
+    // 渲染今日日期
+    const today = new Date();
+    const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunar = Lunar.fromSolar(solar);
+    const gzDay = lunar.getDayInGanZhi(); 
     
-    const todayGan = gzDay.substring(0, 1);
+    document.getElementById('today-date').innerText = today.toLocaleDateString();
+    document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
+
+    // 載入我的八字
+    const mDate = localStorage.getItem('my_date');
+    if (!mDate) return; // 未設定不執行
+
+    const mTime = localStorage.getItem('my_time') || '12:00';
+    const mUnknown = localStorage.getItem('my_unknown') === 'true';
+    
+    document.getElementById('my-date').value = mDate;
+    document.getElementById('my-time').value = mTime;
+    document.getElementById('my-unknown').checked = mUnknown;
+    toggleTime('my');
+
+    const myBazi = getBaziArray(mDate, mTime, mUnknown);
+    const userDayGan = myBazi.stems[2]; // 日主
+    
+    document.getElementById('my-bazi-display').style.display = 'block';
+    document.getElementById('my-bazi-display').innerText = `我的命盤：${myBazi.formatStr} (日主${userDayGan})`;
+
+    // 流日運算 (同前一版本的簡易 UI 渲染)
+    renderTodayVibe(userDayGan, gzDay, lunar.getDayZhi());
+}
+
+function renderTodayVibe(userDayGan, gzDay, zhi) {
     const userElement = ELEMENT_MAP[userDayGan];
-    const todayGanElement = ELEMENT_MAP[todayGan];
-    const todayZhiElement = ZHI_ELEMENT_MAP[zhi];
-    
+    const todayGanElement = ELEMENT_MAP[gzDay.substring(0, 1)];
     const relation = RELATION_MAP[userElement][todayGanElement];
 
     const themeMap = {
-        '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏，適合執行財務規劃。' },
-        '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '官殺入命。壓力與名望並存，適合建立紀律或處理硬骨頭任務。' },
-        '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '印星護航。貴人運佳，適合學習與補充內在能量。' },
-        '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text: '食傷洩秀。才華橫溢，點子極多，適合創作。' },
-        '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '比劫共振。能量充沛，適合交流合作，需注意預算。' }
+        '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text: '財氣透出！對金錢嗅覺靈敏。' },
+        '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text: '壓力與名望並存，適合處理硬骨頭任務。' },
+        '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text: '貴人運佳，適合學習與補充內在能量。' },
+        '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text: '才華橫溢，點子極多，適合創作。' },
+        '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text: '能量充沛，適合交流合作。' }
     };
 
     const energy = themeMap[relation];
-    currentData.color = energy.color;
-    currentData.energyName = `${relation}(${energy.action})`;
-
-    let vibeIcon = "⚓"; let vibeText = "穩扎穩打";
-    const myWealth = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '財星');
-    const myOfficer = Object.keys(RELATION_MAP[userElement]).find(key => RELATION_MAP[userElement][key] === '官殺');
-
-    if (todayGanElement === myWealth || todayZhiElement === myWealth) {
-        vibeIcon = "🌊"; vibeText = "財源滾滾";
-        jackpotBtn.style.animation = "pulse-gold 1.5s infinite";
-        jackpotBtn.innerText = "💎 財星入局！";
-    } else {
-        jackpotBtn.style.animation = "none";
-        jackpotBtn.innerText = "💎 噴寶";
-    }
-
-    if (todayZhiElement === myOfficer) { vibeIcon = "🌲"; vibeText = "紀律與成長"; } 
-    else if (['寅', '申', '巳', '亥'].includes(zhi) && vibeIcon !== "🌊") { vibeIcon = "⚡️"; vibeText = "動能全開"; }
-
-    spectrum.style.background = energy.color;
-    spectrum.innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br><span style="font-size: 2.2rem;">${energy.action}</span>`;
-    desc.innerHTML = `<b style="color: #fff; font-size: 1.1rem;">${vibeIcon} ${vibeText}</b><br><br>${energy.text}`;
+    document.getElementById('spectrum').style.background = energy.color;
+    document.getElementById('spectrum').innerHTML = `<span style="font-size: 0.8rem; opacity: 0.7;">日主 ${userDayGan} | ${relation}</span><br><span style="font-size: 2.2rem;">${energy.action}</span>`;
+    document.getElementById('description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${energy.text}`;
 }
 
-function logJackpot(type, event) {
-    let feedback = type === '噴寶' ? prompt("✨ 紀錄此時的能量感應：", "財富直覺點滿 / 靈感爆發") : type;
-    if (!feedback) return;
+// ==========================================
+// 合盤頁：雙人關聯演算法
+// ==========================================
+function calculateMatch() {
+    // 1. 取得我的資料
+    const mDate = localStorage.getItem('my_date');
+    if (!mDate) return alert("請先回到「我的能量」設定您的出生資訊！");
+    const myBazi = getBaziArray(mDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
 
-    const newRecord = { date: new Date().toLocaleString(), bazi: currentData.bazi, color: currentData.energyName, feedback: feedback };
+    // 2. 取得對方資料
+    const tDate = document.getElementById('target-date').value;
+    const tTime = document.getElementById('target-time').value;
+    const tUnknown = document.getElementById('target-unknown').checked;
+    if (!tDate) return alert("請輸入對方的出生日期！");
+    const targetBazi = getBaziArray(tDate, tTime, tUnknown);
 
-    let history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
-    history.unshift(newRecord);
-    localStorage.setItem('singularity_history', JSON.stringify(history.slice(0, 50)));
-    loadHistory();
+    // 3. 顯示基本盤比對
+    document.getElementById('match-result').style.display = 'block';
+    document.getElementById('compare-my-bazi').innerText = myBazi.formatStr;
+    document.getElementById('compare-target-bazi').innerText = targetBazi.formatStr;
 
-    const btn = event.target;
-    const originalBtnText = btn.innerText;
+    // --- 演算法開始 ---
+    let score = 50; // 基礎分
+    let dayGanLog = "";
+    let branchLog = "";
+
+    // A. 日主(日干)互動分析 (我在對方眼裡是什麼，對方在我眼裡是什麼)
+    const myDayGan = myBazi.stems[2], tDayGan = targetBazi.stems[2];
+    const myElement = ELEMENT_MAP[myDayGan], tElement = ELEMENT_MAP[tDayGan];
     
-    if (GOOGLE_SHEET_URL) {
-        btn.innerText = "☁️ 同步中...";
-        fetch(GOOGLE_SHEET_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(newRecord) })
-        .then(() => { console.log("數據已發射"); alert(`✅ 紀錄成功！\n體感：${feedback}`); })
-        .catch(err => console.error("同步失敗:", err))
-        .finally(() => { btn.innerText = originalBtnText; });
+    // 天干五合檢查
+    const hePairs = { '甲':'己', '己':'甲', '乙':'庚', '庚':'乙', '丙':'辛', '辛':'丙', '丁':'壬', '壬':'丁', '戊':'癸', '癸':'戊' };
+    
+    if (myDayGan === tDayGan) {
+        score += 15; dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。你們就像照鏡子，容易有靈魂共鳴，但有時也會因為太像而固執己見。`;
+    } else if (hePairs[myDayGan] === tDayGan) {
+        score += 30; dayGanLog = `🔥 強烈吸引！您們的日主「${myDayGan}」與「${tDayGan}」形成【天干五合】。這在命理上代表先天具有極強的化學反應與羈絆，是一眼萬年的絕佳組合！`;
+    } else {
+        const relationMeToTarget = RELATION_MAP[myElement][tElement];
+        const relationTargetToMe = RELATION_MAP[tElement][myElement];
+        
+        if (relationMeToTarget === '財星') {
+            score += 10; dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有某種「可掌控」或值得付出的魅力。`;
+        } else if (relationMeToTarget === '官殺') {
+            score -= 5; dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力，是一段讓您成長的關係。`;
+        } else if (relationMeToTarget === '印星') {
+            score += 15; dayGanLog = `對方是您的【印星】。對方像長輩或避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`;
+        } else if (relationMeToTarget === '食傷') {
+            score += 10; dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`;
+        }
     }
+
+    // B. 地支衝合引力矩陣
+    let heCount = 0; let chongCount = 0;
+    const liuHe = {'子':'丑', '寅':'亥', '卯':'戌', '辰':'酉', '巳':'申', '午':'未'};
+    const liuChong = {'子':'午', '丑':'未', '寅':'申', '卯':'酉', '辰':'戌', '巳':'亥'};
+
+    myBazi.branches.forEach((mb, mIdx) => {
+        targetBazi.branches.forEach((tb, tIdx) => {
+            // 六合判定
+            if (liuHe[mb] === tb || liuHe[tb] === mb) {
+                heCount++; score += 5;
+                let positionName = mIdx === 0 ? "年柱(觀念)" : mIdx === 1 ? "月柱(性格)" : mIdx === 2 ? "日柱(內心)" : "時柱(未來)";
+                branchLog += `✅ 您的${positionName}「${mb}」與對方的「${tb}」相合，增加默契。<br>`;
+            }
+            // 六衝判定
+            if (liuChong[mb] === tb || liuChong[tb] === mb) {
+                chongCount++; score -= 5;
+                let positionName = mIdx === 0 ? "年柱" : mIdx === 1 ? "月柱" : mIdx === 2 ? "日柱" : "時柱";
+                branchLog += `⚠️ 您的${positionName}「${mb}」與對方的「${tb}」相衝，此領域易有摩擦。<br>`;
+            }
+        });
+    });
+
+    if (heCount === 0 && chongCount === 0) branchLog = "地支磁場平穩，無強烈的衝合糾葛，屬於細水長流型。";
+
+    // 總結防呆與輸出
+    score = Math.max(10, Math.min(99, score)); // 分數限縮在 10 ~ 99 之間
+    document.getElementById('match-score-value').innerText = `${score}%`;
+    document.getElementById('match-day-gan-desc').innerHTML = dayGanLog;
+    document.getElementById('match-branch-desc').innerHTML = branchLog;
+
+    let summaryText = score >= 80 ? "✨ 靈魂伴侶級別！強烈建議把握！" :
+                      score >= 60 ? "😊 相處融洽，具備良好的發展基礎。" :
+                      "🌱 挑戰與成長並存，需要更多溝通與包容。";
+    document.getElementById('match-summary').innerText = summaryText;
 }
 
-function loadHistory() {
-    const history = JSON.parse(localStorage.getItem('singularity_history') || '[]');
-    const list = document.getElementById('history-list');
-    if(!list) return;
-
-    list.innerHTML = history.map(item => `
-        <li class="history-item">
-            <div style="color: #888; font-size: 0.7rem;">${item.date}</div>
-            <div style="margin-top: 3px;">
-                <span class="tag" style="border: 1px solid #555">${item.color}</span>
-                <span class="tag" style="background: #333; color: #ffb300">${item.feedback}</span>
-            </div>
-        </li>
-    `).join('');
-}
-
-function clearHistory() {
-    if(confirm("確定要刪除所有研究數據嗎？這無法復原喔！")) {
-        localStorage.removeItem('singularity_history');
-        loadHistory();
-    }
-}
-
-window.onload = init;
+// 初始化啟動
+window.onload = initHome;
 </script>
 
 </body>
