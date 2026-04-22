@@ -229,7 +229,7 @@ function initHome() {
     const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
     const lunarToday = Lunar.fromSolar(solarToday);
     const gzDay = lunarToday.getDayInGanZhi(); 
-    const liuNianGan = lunarToday.getYearGan(); // 取得今年流年天干 (如丙午年的丙)
+    const liuNianGan = lunarToday.getYearGan(); // 取得今年流年天干
     
     document.getElementById('today-date').innerText = today.toLocaleDateString();
     document.getElementById('today-bazi').innerText = `(流年：${lunarToday.getYearInGanZhi()} / 流日：${gzDay})`;
@@ -252,17 +252,18 @@ function initHome() {
     const myBaziArray = getBaziArray(myLunar, mUnknown);
     const userDayGan = myBaziArray.stems[2]; 
     const genderStr = mGender === '1' ? '男' : '女';
+    const genderTerm = mGender === '1' ? '乾造' : '坤造';
     
     document.getElementById('my-bazi-display').style.display = 'block';
-    document.getElementById('my-bazi-display').innerText = `我的命盤：[${genderStr}] ${myBaziArray.formatStr} (日主${userDayGan})`;
+    document.getElementById('my-bazi-display').innerText = `我的命盤：[${genderTerm}] ${myBaziArray.formatStr} (日主${userDayGan})`;
 
     // 1. 渲染今日流日能量
     renderTodayVibe(userDayGan, gzDay);
 
-    // 2. 計算與渲染大運
+    // 2. 計算與渲染大運 (修復了 getFortune -> getYun)
     const myEightChar = myLunar.getEightChar();
-    const yun = myEightChar.getFortune(parseInt(mGender)); // 傳入性別 1男 0女，決定順逆
-    const yunList = yun.getDaYun(10); // 取得 10 柱大運
+    const yun = myEightChar.getYun(parseInt(mGender)); // ⭐ 修正為 getYun()
+    const yunList = yun.getDaYun(); // 取得大運陣列
     const currentAge = lunarToday.getYear() - myLunar.getYear() + 1; // 計算目前虛歲
     
     document.getElementById('dayun-board').style.display = 'block';
@@ -272,10 +273,10 @@ function initHome() {
     let activeDaYunGan = null; // 紀錄當下大運天干
 
     yunList.forEach((y, i) => {
-        if (i === 0) return; // 第一柱通常為起運前(月柱)，跳過
+        if (i === 0) return; // 略過起運前的第一柱
         const age = y.getStartAge();
         const gz = y.getGanZhi();
-        // 判定是否為當前大運 (所在歲數區間)
+        // 判定是否為當前大運
         const isCurrent = currentAge >= age && currentAge < age + 10;
         
         if (isCurrent) activeDaYunGan = gz.substring(0, 1);
@@ -299,9 +300,9 @@ function initHome() {
         let resHtml = `目前您走在 <b>${activeDaYunGan}</b> 運 (<b>${dyRelation}</b>)，而今年是 <b>${liuNianGan}</b> 年 (<b>${lnRelation}</b>)。<br>`;
         
         if (dyRelation === lnRelation) {
-            resHtml += `<div class="resonance-highlight">⚡ 歲運並臨，能量疊加！雙重【${dyRelation}】氣場大爆發！</div>`;
+            resHtml += `<div class="resonance-highlight">⚡ 歲運交疊！雙重【${dyRelation}】能量引爆！<br><span style="font-size: 0.8rem; color: #fff; font-weight: normal;">今年的磁場與你十年大運完全同頻，請勇敢執行這方面的計畫！</span></div>`;
         } else {
-            resHtml += `<span style="color: #aaa; font-size: 0.85rem;">(歲運能量交織，請把握不同領域的成長機會)</span>`;
+            resHtml += `<span style="color: #aaa; font-size: 0.85rem;">(大運主導方向，流年帶來機遇，兩股能量交織出豐富的體驗)</span>`;
         }
         document.getElementById('resonance-desc').innerHTML = resHtml;
     }
