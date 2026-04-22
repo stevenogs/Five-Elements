@@ -49,14 +49,11 @@
         .btn-inaccurate { background-color: #757575; color: white; }
         .btn-jackpot { background-color: #ffb300; color: black; }
 
-        /* 新增：五行能量條 UI */
         .energy-board {
             background: #222; border-radius: 10px; padding: 15px; margin-bottom: 20px;
             font-size: 0.8rem; border: 1px solid #333;
         }
-        .energy-bar-container {
-            display: flex; align-items: center; margin-bottom: 5px;
-        }
+        .energy-bar-container { display: flex; align-items: center; margin-bottom: 5px; }
         .energy-label { width: 30px; font-weight: bold; color: #aaa; }
         .energy-track { flex: 1; background: #333; height: 10px; border-radius: 5px; margin: 0 10px; overflow: hidden;}
         .energy-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease-in-out;}
@@ -65,11 +62,12 @@
         .history-section { width: 100%; max-width: 400px; background: #1e1e1e; border-radius: 15px; padding: 15px; box-sizing: border-box;}
         h2 { font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #888; }
         #history-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
-        .history-item { 
-            font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #2a2a2a;
-            background: #222; margin-bottom: 5px; border-radius: 8px;
-        }
+        .history-item { font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #2a2a2a; background: #222; margin-bottom: 5px; border-radius: 8px; }
         .tag { padding: 2px 6px; border-radius: 4px; font-size: 0.7rem; margin-right: 5px; display: inline-block; margin-top: 5px;}
+        
+        /* 自定義 Checkbox 樣式 */
+        .checkbox-container { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; font-size: 0.8rem; color: #aaa; cursor: pointer; }
+        .checkbox-container input { margin-right: 5px; cursor: pointer;}
     </style>
 </head>
 <body>
@@ -79,10 +77,15 @@
     
     <div id="user-config" style="background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444;">
         <p style="font-size: 0.8rem; margin: 0 0 10px 0; color: #aaa;">🌌 設定您的出生時間 (生成本命盤)</p>
-        <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+        <div style="display: flex; gap: 10px; margin-bottom: 5px;">
             <input type="date" id="birth-date" style="flex: 2; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box;">
-            <input type="time" id="birth-time" value="12:00" style="flex: 1; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box;">
+            <input type="time" id="birth-time" value="12:00" style="flex: 1; padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box; transition: 0.3s;">
         </div>
+        
+        <label class="checkbox-container">
+            <input type="checkbox" id="unknown-time" onchange="toggleTimeInput()"> 不知道時辰 (僅排前三柱)
+        </label>
+
         <button onclick="updateUserBazi()" style="width: 100%; background: #4caf50; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: bold;">啟動個人能量引擎</button>
     </div>
 
@@ -112,7 +115,7 @@
 
 <script>
 // ==========================================
-// 1. 八字演算核心引擎 (Ported from Python)
+// 1. 八字演算核心引擎 
 // ==========================================
 class BaZiEngine {
     constructor(stemsNames, branchesNames) {
@@ -126,9 +129,7 @@ class BaZiEngine {
         this.energyPool = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
     }
 
-    _checkTouGan(targetElement) {
-        return this.stems.some(s => s.element === targetElement);
-    }
+    _checkTouGan(targetElement) { return this.stems.some(s => s.element === targetElement); }
 
     _calcStrength(baseWeight, positions) {
         if (positions.length < 2) return baseWeight;
@@ -137,13 +138,9 @@ class BaZiEngine {
     }
 
     runAnalysis() {
-        this._checkStemHe();
-        this._checkStemChong();
-        this._checkSanHui();
-        this._checkSanHe();
-        this._checkLiuHe();
-        this._checkBanHe();
-        this._checkLiuChong();
+        this._checkStemHe(); this._checkStemChong();
+        this._checkSanHui(); this._checkSanHe();
+        this._checkLiuHe(); this._checkBanHe(); this._checkLiuChong();
         this._recalculateEnergy();
         return { results: this.results, energy: this.energyPool };
     }
@@ -161,7 +158,7 @@ class BaZiEngine {
                 if (matchInfo) {
                     s1.isLocked = true; s2.isLocked = true;
                     let target = matchInfo[1];
-                    // 日主豁免權：Index 2 是日干
+                    // 日主(Index 2) 豁免權
                     if (s1.position === 2 || s2.position === 2) {
                         this.results.push({ type: "日主合絆", members: [s1.name, s2.name], target: "無(不化)", strength: this._calcStrength(0.8, [s1.position, s2.position]) });
                     } else {
@@ -194,30 +191,19 @@ class BaZiEngine {
             let uniqueNames = [...new Set(temp.map(b => b.name))];
             
             if (uniqueNames.length === 3) {
-                let selected = [];
-                for(let name of members) {
-                    selected.push(temp.find(b => b.name === name));
-                }
+                let selected = members.map(name => temp.find(b => b.name === name));
                 let isTrans = this._checkTouGan(target);
                 selected.forEach(b => {
                     b.isLocked = true; b.lockedBy = label;
                     if(isTrans){ b.transElement = target; b.isTransformed = true; }
                 });
-                this.results.push({
-                    type: isTrans ? label : `${label}(合而不化)`,
-                    members: selected.map(b=>b.name), target: isTrans ? target : "無",
-                    strength: this._calcStrength(weight, selected.map(b=>b.position))
-                });
+                this.results.push({ type: isTrans ? label : `${label}(合而不化)`, members: selected.map(b=>b.name), target: isTrans ? target : "無", strength: this._calcStrength(weight, selected.map(b=>b.position)) });
             }
         }
     }
 
-    _checkSanHui() {
-        this._processGroupMatch([ [['寅','卯','辰'], '木'], [['巳','午','未'], '火'], [['申','酉','戌'], '金'], [['亥','子','丑'], '水'] ], "三會", 1.0);
-    }
-    _checkSanHe() {
-        this._processGroupMatch([ [['申','子','辰'], '水'], [['寅','午','戌'], '火'], [['亥','卯','未'], '木'], [['巳','酉','丑'], '金'] ], "三合", 0.8);
-    }
+    _checkSanHui() { this._processGroupMatch([ [['寅','卯','辰'], '木'], [['巳','午','未'], '火'], [['申','酉','戌'], '金'], [['亥','子','丑'], '水'] ], "三會", 1.0); }
+    _checkSanHe() { this._processGroupMatch([ [['申','子','辰'], '水'], [['寅','午','戌'], '火'], [['亥','卯','未'], '木'], [['巳','酉','丑'], '金'] ], "三合", 0.8); }
 
     _processPairMatch(pairs, label, weight, hasTarget=true) {
         for (let i = 0; i < this.branches.length; i++) {
@@ -225,39 +211,24 @@ class BaZiEngine {
                 let b1 = this.branches[i], b2 = this.branches[j];
                 if (b1.isLocked || b2.isLocked) continue;
                 
-                let matchInfo = (pairs[b1.name] && pairs[b1.name][0] === b2.name) ? pairs[b1.name] :
-                                (pairs[b2.name] && pairs[b2.name][0] === b1.name) ? pairs[b2.name] : null;
+                let matchInfo = (pairs[b1.name] && pairs[b1.name][0] === b2.name) ? pairs[b1.name] : (pairs[b2.name] && pairs[b2.name][0] === b1.name) ? pairs[b2.name] : null;
                 
                 if (matchInfo) {
-                    b1.isLocked = true; b2.isLocked = true;
-                    b1.lockedBy = label; b2.lockedBy = label;
+                    b1.isLocked = true; b2.isLocked = true; b1.lockedBy = label; b2.lockedBy = label;
                     let target = hasTarget ? matchInfo[1] : null;
                     let isTrans = hasTarget ? this._checkTouGan(target) : false;
                     
                     if (isTrans) { b1.transElement = target; b1.isTransformed = true; b2.transElement = target; b2.isTransformed = true;}
                     
-                    let resType = hasTarget ? (isTrans ? label : `${label}(合而不化)`) : label;
-                    this.results.push({
-                        type: resType, members: [b1.name, b2.name], target: isTrans ? target : "無",
-                        strength: this._calcStrength(weight, [b1.position, b2.position])
-                    });
+                    this.results.push({ type: hasTarget ? (isTrans ? label : `${label}(合而不化)`) : label, members: [b1.name, b2.name], target: isTrans ? target : "無", strength: this._calcStrength(weight, [b1.position, b2.position]) });
                 }
             }
         }
     }
 
-    _checkLiuHe() {
-        const pairs = {'子':['丑','土'], '寅':['亥','木'], '卯':['戌','火'], '辰':['酉','金'], '巳':['申','水'], '午':['未','火']};
-        this._processPairMatch(pairs, "六合", 0.6);
-    }
-    _checkBanHe() {
-        const pairs = {'申':['子','水'], '子':['辰','水'], '寅':['午','火'], '午':['戌','火'], '亥':['卯','木'], '卯':['未','木'], '巳':['酉','金'], '酉':['丑','金']};
-        this._processPairMatch(pairs, "半合", 0.4);
-    }
-    _checkLiuChong() {
-        const pairs = {'子':['午',null], '丑':['未',null], '寅':['申',null], '卯':['酉',null], '辰':['戌',null], '巳':['亥',null]};
-        this._processPairMatch(pairs, "六衝", 0.7, false);
-    }
+    _checkLiuHe() { this._processPairMatch({'子':['丑','土'], '寅':['亥','木'], '卯':['戌','火'], '辰':['酉','金'], '巳':['申','水'], '午':['未','火']}, "六合", 0.6); }
+    _checkBanHe() { this._processPairMatch({'申':['子','水'], '子':['辰','水'], '寅':['午','火'], '午':['戌','火'], '亥':['卯','木'], '卯':['未','木'], '巳':['酉','金'], '酉':['丑','金']}, "半合", 0.4); }
+    _checkLiuChong() { this._processPairMatch({'子':['午',null], '丑':['未',null], '寅':['申',null], '卯':['酉',null], '辰':['戌',null], '巳':['亥',null]}, "六衝", 0.7, false); }
 
     _recalculateEnergy() {
         this.stems.forEach(s => { this.energyPool[s.transElement || s.element] += 1.0; });
@@ -283,6 +254,14 @@ const GOOGLE_SHEET_URL = 'https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZ
 let userDayGan = localStorage.getItem('user_day_gan') || '戊';
 let currentData = { date: '', bazi: '', color: '', energyName: '' };
 
+// 新增：切換時辰輸入框的狀態
+function toggleTimeInput() {
+    const timeInput = document.getElementById('birth-time');
+    const isUnknown = document.getElementById('unknown-time').checked;
+    timeInput.disabled = isUnknown;
+    timeInput.style.opacity = isUnknown ? '0.4' : '1';
+}
+
 function init() {
     const today = new Date();
     const solar = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
@@ -297,13 +276,18 @@ function init() {
     document.getElementById('today-date').innerText = today.toLocaleDateString();
     document.getElementById('today-bazi').innerText = `(流日：${gzDay})`;
     
-    // 如果有儲存過的生日，初始化引擎圖表
     const savedDate = localStorage.getItem('user_birth_date');
     const savedTime = localStorage.getItem('user_birth_time');
-    if(savedDate && savedTime) {
+    const savedUnknown = localStorage.getItem('user_unknown_time') === 'true';
+    
+    if(savedDate) {
         document.getElementById('birth-date').value = savedDate;
-        document.getElementById('birth-time').value = savedTime;
-        calculatePersonalEnergy(savedDate, savedTime);
+        if(savedTime) document.getElementById('birth-time').value = savedTime;
+        
+        document.getElementById('unknown-time').checked = savedUnknown;
+        toggleTimeInput();
+        
+        calculatePersonalEnergy(savedDate, savedTime || "12:00", savedUnknown);
     }
     
     updateUI(gzDay, dayZhi);
@@ -313,44 +297,58 @@ function init() {
 function updateUserBazi() {
     const bDate = document.getElementById('birth-date').value;
     const bTime = document.getElementById('birth-time').value;
-    if (!bDate || !bTime) return alert("請完整選擇生日與時間！");
+    const isUnknown = document.getElementById('unknown-time').checked;
+
+    if (!bDate) return alert("請選擇生日日期！");
+    if (!isUnknown && !bTime) return alert("請輸入出生時間，或勾選「不知道時辰」！");
 
     localStorage.setItem('user_birth_date', bDate);
     localStorage.setItem('user_birth_time', bTime);
+    localStorage.setItem('user_unknown_time', isUnknown);
 
-    calculatePersonalEnergy(bDate, bTime);
+    calculatePersonalEnergy(bDate, bTime, isUnknown);
     alert(`引擎分析完成！偵測到您的日主為：【${userDayGan} ${ELEMENT_MAP[userDayGan]}】`);
     init(); 
 }
 
-function calculatePersonalEnergy(dateStr, timeStr) {
+function calculatePersonalEnergy(dateStr, timeStr, isUnknown) {
     const [y, m, d] = dateStr.split('-');
-    const [hr, min] = timeStr.split(':');
     
-    const solar = Solar.fromYmdHms(parseInt(y), parseInt(m), parseInt(d), parseInt(hr), parseInt(min), 0);
+    // 如果不知道時辰，我們先用中午12點來產生正確的年月日時干支物件（確保日柱是準確的）
+    const hr = isUnknown ? 12 : parseInt(timeStr.split(':')[0]);
+    const min = isUnknown ? 0 : parseInt(timeStr.split(':')[1]);
+    
+    const solar = Solar.fromYmdHms(parseInt(y), parseInt(m), parseInt(d), hr, min, 0);
     const lunar = Lunar.fromSolar(solar);
     const bazi = lunar.getEightChar();
     
-    const stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan(), bazi.getTimeGan()];
-    const branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi(), bazi.getTimeZhi()];
+    // 根據是否知道時辰，決定要把幾個字丟進去算
+    let stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan()];
+    let branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi()];
     
-    // 更新日主
-    userDayGan = stems[2];
+    if (!isUnknown) {
+        stems.push(bazi.getTimeGan());
+        branches.push(bazi.getTimeZhi());
+    }
+    
+    userDayGan = stems[2]; // Index 2 永遠是日干
     localStorage.setItem('user_day_gan', userDayGan);
     
-    // 執行 Pro 引擎演算
     const engine = new BaZiEngine(stems, branches);
     const result = engine.runAnalysis();
     
-    renderEnergyBoard(stems, branches, result);
+    renderEnergyBoard(stems, branches, result, isUnknown);
 }
 
-function renderEnergyBoard(stems, branches, result) {
+function renderEnergyBoard(stems, branches, result, isUnknown) {
     document.getElementById('personal-energy-board').style.display = 'block';
-    document.getElementById('my-bazi-text').innerText = `我的八字：${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${stems[3]}${branches[3]}`;
+    
+    // 組合要顯示的八字字串
+    const timePillar = isUnknown ? "？？" : `${stems[3]}${branches[3]}`;
+    document.getElementById('my-bazi-text').innerText = `我的命盤：${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${timePillar}`;
     
     const barsContainer = document.getElementById('energy-bars');
-    let totalEnergy = 8; // 4天干 + 4地支
+    const totalEnergy = stems.length + branches.length; // 6 或 8
     let html = '';
     
     for (let el of ['木', '火', '土', '金', '水']) {
