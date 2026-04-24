@@ -25,9 +25,11 @@
         .input-group { background: #2a2a2a; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #444; }
         .input-group p { font-size: 0.85rem; margin: 0 0 10px 0; color: #aaa; }
         .flex-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        input[type="date"], input[type="time"], select { padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box; font-size: 0.9rem; }
+        input[type="date"], input[type="time"], input[type="text"], select, textarea { padding: 10px; border-radius: 8px; border: none; background: #333; color: #fff; box-sizing: border-box; font-size: 0.9rem; width: 100%; }
+        
         .btn-primary { width: 100%; background: #4caf50; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s;}
         .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #666; cursor: not-allowed; }
         .checkbox-container { display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px; font-size: 0.8rem; color: #aaa; cursor: pointer; }
         
         .spectrum-display { width: 100%; height: 120px; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin-bottom: 20px; flex-direction: column; }
@@ -44,7 +46,7 @@
         .resonance-highlight { color: #ffb300; font-size: 1.1rem; font-weight: bold; margin-top: 8px; text-shadow: 0 0 5px rgba(255,179,0,0.5); }
 
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; z-index: 100; }
-        .nav-item { color: #888; text-align: center; font-size: 0.8rem; cursor: pointer; padding: 5px 15px; border-radius: 10px; transition: 0.3s; }
+        .nav-item { color: #888; text-align: center; font-size: 0.8rem; cursor: pointer; padding: 5px 15px; border-radius: 10px; transition: 0.3s; flex: 1; }
         .nav-item.active { color: #ffb300; font-weight: bold; background: rgba(255, 179, 0, 0.1); }
         .nav-icon { font-size: 1.2rem; display: block; margin-bottom: 3px; }
 
@@ -52,6 +54,11 @@
         .match-card { background: #222; border: 1px solid #444; border-radius: 10px; padding: 15px; margin-bottom: 15px; }
         .match-title { font-size: 0.9rem; color: #aaa; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px;}
         .bazi-compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: center; font-size: 0.9rem; margin-bottom: 10px;}
+        
+        /* 滑桿樣式 */
+        input[type=range] { -webkit-appearance: none; background: #444; height: 6px; border-radius: 5px; outline: none; margin-top: 5px; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%; background: #4caf50; cursor: pointer; }
+        #rec-impact::-webkit-slider-thumb { background: #f44336; }
     </style>
 </head>
 <body>
@@ -146,6 +153,46 @@
     </div>
 </div>
 
+<div id="page-record" class="page">
+    <div class="container">
+        <h1>📝 能量監測紀錄</h1>
+        <div class="input-group">
+            <p>📊 當下狀態觀測</p>
+            <div class="flex-row">
+                <input type="text" id="rec-target" placeholder="觀測對象 (如: 我)" style="flex: 1;">
+                <input type="text" id="rec-master" placeholder="對象日主 (如: 甲)" style="flex: 1;" maxlength="1">
+            </div>
+            
+            <p>🎭 心情類別</p>
+            <select id="rec-mood" style="margin-bottom: 15px;">
+                <option value="平靜">平靜</option>
+                <option value="快樂">快樂</option>
+                <option value="壓力">壓力</option>
+                <option value="悲傷">悲傷</option>
+                <option value="憤怒">憤怒</option>
+                <option value="驚訝">驚訝</option>
+            </select>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
+                <span>能量穩定 (1-10)</span>
+                <span id="val-stability" style="font-weight:bold; color:#4caf50;">5</span>
+            </div>
+            <input type="range" id="rec-stability" min="1" max="10" value="5" style="margin-bottom: 15px;" oninput="document.getElementById('val-stability').innerText=this.value">
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
+                <span>碰撞強度 (1-5)</span>
+                <span id="val-impact" style="font-weight:bold; color:#f44336;">1</span>
+            </div>
+            <input type="range" id="rec-impact" min="1" max="5" value="1" oninput="document.getElementById('val-impact').innerText=this.value">
+
+            <p style="margin-top: 20px;">📄 事件簡述</p>
+            <textarea id="rec-note" placeholder="紀錄發生了什麼事..." style="height: 70px; resize: none;"></textarea>
+            
+            <button id="btn-submit-record" class="btn-primary" style="margin-top: 15px; background: #2196f3;" onclick="submitRecord()">送出打卡數據</button>
+        </div>
+    </div>
+</div>
+
 <div class="bottom-nav">
     <div class="nav-item active" onclick="switchPage('home', this)">
         <span class="nav-icon">🌌</span><span>我的能量</span>
@@ -153,9 +200,15 @@
     <div class="nav-item" onclick="switchPage('match', this)">
         <span class="nav-icon">💞</span><span>合盤分析</span>
     </div>
+    <div class="nav-item" onclick="switchPage('record', this)">
+        <span class="nav-icon">📝</span><span>打卡紀錄</span>
+    </div>
 </div>
 
 <script>
+// 【重要設定】請確保這裡填入的是「部署為網頁應用程式」後取得的 URL (包含 /exec 結尾)
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec";
+
 // --- 核心資料矩陣 ---
 const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
 const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
@@ -173,6 +226,9 @@ function switchPage(pageId, navElement) {
     document.getElementById(`page-${pageId}`).classList.add('active');
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     navElement.classList.add('active');
+    
+    // 若切換到打卡紀錄，嘗試自動帶入日主
+    if(pageId === 'record') updateRecordFields();
 }
 
 function toggleTime(prefix) {
@@ -229,7 +285,7 @@ function initHome() {
     const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
     const lunarToday = Lunar.fromSolar(solarToday);
     const gzDay = lunarToday.getDayInGanZhi(); 
-    const liuNianGan = lunarToday.getYearGan(); // 取得今年流年天干
+    const liuNianGan = lunarToday.getYearGan();
     
     document.getElementById('today-date').innerText = today.toLocaleDateString();
     document.getElementById('today-bazi').innerText = `(流年：${lunarToday.getYearInGanZhi()} / 流日：${gzDay})`;
@@ -247,36 +303,31 @@ function initHome() {
     document.getElementById('my-unknown').checked = mUnknown;
     toggleTime('my');
 
-    // 生成命盤
     const myLunar = getLunarObj(mDate, mTime, mUnknown);
     const myBaziArray = getBaziArray(myLunar, mUnknown);
     const userDayGan = myBaziArray.stems[2]; 
-    const genderStr = mGender === '1' ? '男' : '女';
     const genderTerm = mGender === '1' ? '乾造' : '坤造';
     
     document.getElementById('my-bazi-display').style.display = 'block';
     document.getElementById('my-bazi-display').innerText = `我的命盤：[${genderTerm}] ${myBaziArray.formatStr} (日主${userDayGan})`;
 
-    // 1. 渲染今日流日能量
     renderTodayVibe(userDayGan, gzDay);
 
-    // 2. 計算與渲染大運 (修復了 getFortune -> getYun)
     const myEightChar = myLunar.getEightChar();
-    const yun = myEightChar.getYun(parseInt(mGender)); // ⭐ 修正為 getYun()
-    const yunList = yun.getDaYun(); // 取得大運陣列
-    const currentAge = lunarToday.getYear() - myLunar.getYear() + 1; // 計算目前虛歲
+    const yun = myEightChar.getYun(parseInt(mGender)); 
+    const yunList = yun.getDaYun(); 
+    const currentAge = lunarToday.getYear() - myLunar.getYear() + 1; 
     
     document.getElementById('dayun-board').style.display = 'block';
     const dayunListContainer = document.getElementById('dayun-list');
     dayunListContainer.innerHTML = '';
     
-    let activeDaYunGan = null; // 紀錄當下大運天干
+    let activeDaYunGan = null; 
 
     yunList.forEach((y, i) => {
-        if (i === 0) return; // 略過起運前的第一柱
+        if (i === 0) return; 
         const age = y.getStartAge();
         const gz = y.getGanZhi();
-        // 判定是否為當前大運
         const isCurrent = currentAge >= age && currentAge < age + 10;
         
         if (isCurrent) activeDaYunGan = gz.substring(0, 1);
@@ -289,7 +340,6 @@ function initHome() {
         `;
     });
 
-    // 3. 歲運交互共振引擎 (大運天干 vs 流年天干)
     if (activeDaYunGan) {
         document.getElementById('resonance-board').style.display = 'block';
         
@@ -354,11 +404,8 @@ function calculateMatch() {
     document.getElementById('compare-target-bazi').innerText = targetBazi.formatStr;
 
     let score = 50; 
-    let dayGanLog = ""; 
-    let groupLog = ""; 
-    let branchLog = "";
+    let dayGanLog = ""; let groupLog = ""; let branchLog = "";
 
-    // A. 日主(日干)互動分析
     const myDayGan = myBazi.stems[2];
     const tDayGan = targetBazi.stems[2];
     const myElement = ELEMENT_MAP[myDayGan];
@@ -366,92 +413,122 @@ function calculateMatch() {
     const hePairs = { '甲':'己', '己':'甲', '乙':'庚', '庚':'乙', '丙':'辛', '辛':'丙', '丁':'壬', '壬':'丁', '戊':'癸', '癸':'戊' };
     
     if (myDayGan === tDayGan) {
-        score += 15; 
-        dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。你們就像照鏡子，容易有靈魂共鳴，但也容易因為太像而固執己見。`;
+        score += 15; dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。`;
     } else if (hePairs[myDayGan] === tDayGan) {
-        score += 30; 
-        dayGanLog = `🔥 <b>強烈吸引！</b>您們的日主「${myDayGan}」與「${tDayGan}」形成【天干五合】。這代表先天具有極強的化學反應與羈絆，是一眼萬年的絕佳組合！`;
+        score += 30; dayGanLog = `🔥 <b>強烈吸引！</b>形成【天干五合】，具極強化學反應！`;
     } else {
         const relationMeToTarget = RELATION_MAP[myElement][tElement];
-        if (relationMeToTarget === '財星') { 
-            score += 10; dayGanLog = `對方是您的【財星】。對方能帶來務實的啟發或資源，在您眼裡對方具有一種「值得付出」的魅力。`; 
-        } else if (relationMeToTarget === '官殺') { 
-            score -= 5; dayGanLog = `對方是您的【官殺】。對方對您有一種無形的威嚴或吸引力，容易讓您產生敬畏感或壓力。`; 
-        } else if (relationMeToTarget === '印星') { 
-            score += 15; dayGanLog = `對方是您的【印星】。對方像避風港一樣能包容、支持您，跟對方在一起您會感到特別安心。`; 
-        } else if (relationMeToTarget === '食傷') { 
-            score += 10; dayGanLog = `對方是您的【食傷】。您會很願意照顧、寵愛對方，對方也能激發您的靈感與保護慾。`; 
-        } else if (relationMeToTarget === '比劫') { 
-            score += 10; dayGanLog = `對方是您的【劫財/比肩】。您們五行同屬「${myElement}」，像兄弟姊妹般親切，有著相似的頻率，適合一起打拼。`; 
-        }
+        if (relationMeToTarget === '財星') { score += 10; dayGanLog = `對方是您的【財星】，具務實吸引力。`; } 
+        else if (relationMeToTarget === '官殺') { score -= 5; dayGanLog = `對方是您的【官殺】，會產生敬畏或壓力。`; } 
+        else if (relationMeToTarget === '印星') { score += 15; dayGanLog = `對方是您的【印星】，跟對方在一起特別安心。`; } 
+        else if (relationMeToTarget === '食傷') { score += 10; dayGanLog = `對方是您的【食傷】，激發您的保護慾。`; } 
+        else if (relationMeToTarget === '比劫') { score += 10; dayGanLog = `對方是您的【比劫】，頻率相近。`; }
     }
 
-    // B. 地支群體緣分 (三合 / 三會)
-    const sanHeGroups = [
-        ['申','子','辰', '三合局', '深層的靈魂共鳴與共同目標'], 
-        ['寅','午','戌', '三合局', '深層的靈魂共鳴與共同目標'], 
-        ['亥','卯','未', '三合局', '深層的靈魂共鳴與共同目標'], 
-        ['巳','酉','丑', '三合局', '深層的靈魂共鳴與共同目標']
-    ];
-    const sanHuiGroups = [
-        ['寅','卯','辰', '三會方', '強大的家族緣與絕對凝聚力'], 
-        ['巳','午','未', '三會方', '強大的家族緣與絕對凝聚力'], 
-        ['申','酉','戌', '三會方', '強大的家族緣與絕對凝聚力'], 
-        ['亥','子','丑', '三會方', '強大的家族緣與絕對凝聚力']
-    ];
-
-    let myUniqueBranches = [...new Set(myBazi.branches)];
-    let tUniqueBranches = [...new Set(targetBazi.branches)];
-    let combinedBranches = [...new Set([...myUniqueBranches, ...tUniqueBranches])];
+    const sanHeGroups = [['申','子','辰', '三合局'], ['寅','午','戌', '三合局'], ['亥','卯','未', '三合局'], ['巳','酉','丑', '三合局']];
+    const sanHuiGroups = [['寅','卯','辰', '三會方'], ['巳','午','未', '三會方'], ['申','酉','戌', '三會方'], ['亥','子','丑', '三會方']];
+    let myUB = [...new Set(myBazi.branches)]; let tUB = [...new Set(targetBazi.branches)];
+    let cB = [...new Set([...myUB, ...tUB])];
 
     [...sanHeGroups, ...sanHuiGroups].forEach(group => {
-        const [b1, b2, b3, groupName, meaning] = group;
-        const hasAll = combinedBranches.includes(b1) && combinedBranches.includes(b2) && combinedBranches.includes(b3);
-        const myHasAll = myUniqueBranches.includes(b1) && myUniqueBranches.includes(b2) && myUniqueBranches.includes(b3);
-        const tHasAll = tUniqueBranches.includes(b1) && tUniqueBranches.includes(b2) && tUniqueBranches.includes(b3);
-
-        if (hasAll && !myHasAll && !tHasAll) {
-            score += 20; 
-            groupLog += `✨ <b>【${groupName}：${b1}${b2}${b3}】</b> 命定般的互補！你們的命盤湊在一起，剛好拼湊出完整的強大能量陣。這代表你們不僅有著${meaning}，更具備「1+1 > 2」的罕見緣分。<br><br>`;
+        const [b1, b2, b3, name] = group;
+        if (cB.includes(b1) && cB.includes(b2) && cB.includes(b3) && !(myUB.includes(b1)&&myUB.includes(b2)&&myUB.includes(b3)) && !(tUB.includes(b1)&&tUB.includes(b2)&&tUB.includes(b3))) {
+            score += 20; groupLog += `✨ <b>【${name}：${b1}${b2}${b3}】</b> 命定互補，拼湊出完整能量陣！<br>`;
         }
     });
-    
-    if(!groupLog) groupLog = `<span style="color: #888;">無特殊的群體大陣合化，屬於依賴一對一相處來建立感情的緣分。</span>`;
+    if(!groupLog) groupLog = `<span style="color: #888;">無特殊的群體合化。</span>`;
 
-    // C. 地支一對一衝合判定
     let heCount = 0; let chongCount = 0;
     const liuHe = {'子':'丑', '寅':'亥', '卯':'戌', '辰':'酉', '巳':'申', '午':'未'};
     const liuChong = {'子':'午', '丑':'未', '寅':'申', '卯':'酉', '辰':'戌', '巳':'亥'};
-    const pillarMeaning = [ { realm: "大價值觀與第一印象" }, { realm: "性格節奏與處事態度" }, { realm: "內心安全感與感情觀" }, { realm: "生活習慣與未來藍圖" } ];
 
     myBazi.branches.forEach((mb, mIdx) => {
         targetBazi.branches.forEach((tb, tIdx) => {
-            let myRealm = pillarMeaning[mIdx].realm; let tRealm = pillarMeaning[tIdx].realm;
-            if (liuHe[mb] === tb || liuHe[tb] === mb) {
-                heCount++; score += 5;
-                if (mIdx === tIdx) branchLog += `✅ <b>【同頻共振】</b> 在「${myRealm}」上，你們有著不用說出口的絕佳默契！<br><br>`;
-                else branchLog += `✅ <b>【互補吸引】</b> 您的「${myRealm}」遇上對方的「${tRealm}」，會產生奇妙的化學反應。<br><br>`;
-            }
-            if (liuChong[mb] === tb || liuChong[tb] === mb) {
-                chongCount++; score -= 5;
-                if (mIdx === tIdx) branchLog += `⚠️ <b>【直接碰撞】</b> 在「${myRealm}」上，你們容易各有堅持，需要互相退讓。<br><br>`;
-                else branchLog += `⚡ <b>【微妙摩擦】</b> 您的「${myRealm}」與對方的「${tRealm}」步調不同，需要多一點包容。<br><br>`;
-            }
+            if (liuHe[mb] === tb || liuHe[tb] === mb) { heCount++; score += 5; branchLog += `✅ <b>【吸引】</b> 第${mIdx+1}柱與對方第${tIdx+1}柱相合。<br>`; }
+            if (liuChong[mb] === tb || liuChong[tb] === mb) { chongCount++; score -= 5; branchLog += `⚠️ <b>【摩擦】</b> 第${mIdx+1}柱與對方第${tIdx+1}柱相衝。<br>`; }
         });
     });
 
-    if (heCount === 0 && chongCount === 0) branchLog = "🌱 <b>【平穩發展】</b> 一對一磁場平穩，沒有強烈的衝合糾葛。屬於細水長流、平淡是福的類型。";
+    if (heCount === 0 && chongCount === 0) branchLog = "🌱 磁場平穩，無強烈衝合。";
 
     score = Math.max(10, Math.min(99, score)); 
     document.getElementById('match-score-value').innerText = `${score}%`;
     document.getElementById('match-day-gan-desc').innerHTML = dayGanLog;
     document.getElementById('match-group-desc').innerHTML = groupLog;
     document.getElementById('match-branch-desc').innerHTML = branchLog;
+    document.getElementById('match-summary').innerText = score >= 80 ? "✨ 靈魂伴侶級別！" : score >= 60 ? "😊 相處融洽。" : "🌱 挑戰與成長並存。";
+}
+
+// --- 【新增】自動帶入打卡使用者的日主 ---
+function updateRecordFields() {
+    const mDate = localStorage.getItem('my_date');
+    if (mDate && !document.getElementById('rec-master').value) {
+        const myLunar = getLunarObj(mDate, localStorage.getItem('my_time') || '12:00', localStorage.getItem('my_unknown') === 'true');
+        const dayMaster = myLunar.getEightChar().getDayGan();
+        document.getElementById('rec-target').value = '我';
+        document.getElementById('rec-master').value = dayMaster;
+    }
+}
+
+// --- 【新增】送出能量打卡邏輯 ---
+async function submitRecord() {
+    if(GOOGLE_API_URL.includes("請替換")) return alert("⚠️ 請先在程式碼中填寫 Google API 網址！");
+
+    const targetName = document.getElementById('rec-target').value || "未填寫";
+    const dayMaster = document.getElementById('rec-master').value;
+    const note = document.getElementById('rec-note').value;
     
-    let summaryText = score >= 80 ? "✨ 靈魂伴侶級別！請務必好好把握！" :
-                      score >= 60 ? "😊 相處融洽，具備良好的發展基礎。" :
-                      "🌱 挑戰與成長並存，需要更多溝通與包容。";
-    document.getElementById('match-summary').innerText = summaryText;
+    const today = new Date();
+    const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunarToday = Lunar.fromSolar(solarToday);
+    const gzDay = lunarToday.getDayInGanZhi(); 
+    
+    const nowSolar = Solar.fromYmdHms(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes(), 0);
+    const nowLunar = Lunar.fromSolar(nowSolar);
+    const timeZhi = nowLunar.getTimeZhi(); 
+
+    let tenGod = "未知";
+    if (dayMaster && ELEMENT_MAP[dayMaster]) {
+        const todayGan = gzDay.substring(0, 1);
+        tenGod = RELATION_MAP[ELEMENT_MAP[dayMaster]][ELEMENT_MAP[todayGan]];
+    } else if (dayMaster && !ELEMENT_MAP[dayMaster]) {
+        return alert("日主請輸入正確的單字 (甲乙丙丁戊己庚辛壬癸)。");
+    }
+
+    const payload = {
+        date: today.toLocaleDateString(),
+        timeZhi: timeZhi,
+        targetName: targetName,
+        dayMaster: dayMaster || "未填寫",
+        gzDay: gzDay,
+        tenGod: tenGod,
+        mood: document.getElementById('rec-mood').value,
+        stability: document.getElementById('rec-stability').value,
+        impact: document.getElementById('rec-impact').value,
+        note: note
+    };
+
+    const btn = document.getElementById('btn-submit-record');
+    btn.innerText = "🚀 數據傳送中...";
+    btn.disabled = true;
+
+    try {
+        await fetch(GOOGLE_API_URL, {
+            method: 'POST',
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        
+        alert("✅ 打卡成功！能量數據已寫入雲端。");
+        document.getElementById('rec-note').value = ""; 
+        
+    } catch (error) {
+        console.error(error);
+        alert("❌ 傳送失敗，請檢查網路狀態或 API 網址設定。");
+    } finally {
+        btn.innerText = "送出打卡數據";
+        btn.disabled = false;
+    }
 }
 
 window.onload = initHome;
