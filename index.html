@@ -160,7 +160,7 @@
             <p>📊 當下狀態觀測</p>
             <div class="flex-row">
                 <input type="text" id="rec-target" placeholder="觀測對象 (如: 我)" style="flex: 1;">
-                <input type="text" id="rec-master" placeholder="對象日主 (如: 甲)" style="flex: 1;" maxlength="1">
+                <input type="text" id="rec-master" placeholder="對象日主 (如: 甲)" style="flex: 1;">
             </div>
             
             <p>🎭 心情類別</p>
@@ -470,12 +470,15 @@ function updateRecordFields() {
     }
 }
 
-// --- 【新增】送出能量打卡邏輯 ---
+// --- 送出能量打卡邏輯 ---
 async function submitRecord() {
     if(GOOGLE_API_URL.includes("請替換")) return alert("⚠️ 請先在程式碼中填寫 Google API 網址！");
 
     const targetName = document.getElementById('rec-target').value || "未填寫";
-    const dayMaster = document.getElementById('rec-master').value;
+    
+    // 抓取使用者輸入的字串，並只取第一個字 (例如輸入「戊」或「戊土」，都只取「戊」來運算)
+    let rawMaster = document.getElementById('rec-master').value.trim();
+    let coreStem = rawMaster.substring(0, 1); 
     const note = document.getElementById('rec-note').value;
     
     const today = new Date();
@@ -488,18 +491,23 @@ async function submitRecord() {
     const timeZhi = nowLunar.getTimeZhi(); 
 
     let tenGod = "未知";
-    if (dayMaster && ELEMENT_MAP[dayMaster]) {
+    let finalDayMaster = "未填寫"; // 準備用來存「戊土」的變數
+
+    if (coreStem && ELEMENT_MAP[coreStem]) {
+        // ✨ 自動組合成「干+屬性」，例如「戊」+「土」=「戊土」
+        finalDayMaster = coreStem + ELEMENT_MAP[coreStem]; 
+        
         const todayGan = gzDay.substring(0, 1);
-        tenGod = RELATION_MAP[ELEMENT_MAP[dayMaster]][ELEMENT_MAP[todayGan]];
-    } else if (dayMaster && !ELEMENT_MAP[dayMaster]) {
-        return alert("日主請輸入正確的單字 (甲乙丙丁戊己庚辛壬癸)。");
+        tenGod = RELATION_MAP[ELEMENT_MAP[coreStem]][ELEMENT_MAP[todayGan]];
+    } else if (rawMaster) {
+        return alert("日主請輸入正確的天干開頭 (甲乙丙丁戊己庚辛壬癸)。");
     }
 
     const payload = {
         date: today.toLocaleDateString(),
         timeZhi: timeZhi,
         targetName: targetName,
-        dayMaster: dayMaster || "未填寫",
+        dayMaster: finalDayMaster, // 這裡將會傳送組合好的「戊土」
         gzDay: gzDay,
         tenGod: tenGod,
         mood: document.getElementById('rec-mood').value,
