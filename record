@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>易能量 - 觀測日誌</title> 
+    <meta name="apple-mobile-web-app-title" content="易能量"> 
+    <meta name="application-name" content="易能量"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <script src="https://cdn.jsdelivr.net/npm/lunar-javascript/lunar.js"></script>
+    
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #121212; color: #ffffff; display: flex; flex-direction: column; align-items: center; padding: 20px; margin: 0; }
+        .container { background: #1e1e1e; padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); width: 100%; max-width: 400px; box-sizing: border-box; animation: fadeIn 0.4s; }
+        h1 { font-size: 1.5rem; margin-top: 0; margin-bottom: 20px; color: #aaaaaa; text-align: center;}
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .input-group { background: #2a2a2a; padding: 20px; border-radius: 15px; border: 1px solid #444; }
+        .input-group p { font-size: 0.9rem; margin: 0 0 10px 0; color: #aaa; font-weight: bold; }
+        .flex-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        
+        input[type="text"], select, textarea { width: 100%; padding: 12px; border-radius: 10px; border: none; background: #333; color: #fff; box-sizing: border-box; font-size: 1rem; margin-bottom: 15px; }
+        input[type="text"]:focus, select:focus, textarea:focus { outline: 2px solid #ffb300; background: #3a3a3a; }
+        
+        .btn-primary { width: 100%; background: #2196f3; color: white; border: none; padding: 15px; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 1.1rem; transition: 0.2s; margin-top: 10px; box-shadow: 0 4px 10px rgba(33, 150, 243, 0.3);}
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary:disabled { background: #666; cursor: not-allowed; box-shadow: none; }
+        
+        /* 滑桿樣式 */
+        input[type=range] { -webkit-appearance: none; background: #444; height: 8px; border-radius: 5px; outline: none; margin-bottom: 20px; width: 100%; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 22px; height: 22px; border-radius: 50%; background: #4caf50; cursor: pointer; border: 2px solid #fff; }
+        #rec-impact::-webkit-slider-thumb { background: #f44336; }
+
+        .slider-header { display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; margin-bottom: 8px; }
+        .val-display { font-weight: bold; font-size: 1.1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>📝 能量監測紀錄</h1>
+    <div class="input-group">
+        <p>👤 觀測對象設定</p>
+        <div class="flex-row" style="margin-bottom: 5px;">
+            <input type="text" id="rec-target" placeholder="觀測對象 (如: 廠長/自己)" style="flex: 1; margin-bottom: 0;">
+            <input type="text" id="rec-master" placeholder="對象日主 (如: 甲)" style="flex: 1; margin-bottom: 0;" maxlength="1">
+        </div>
+        <div style="font-size: 0.75rem; color: #888; margin-bottom: 20px; text-align: right;">* 填寫正確日主(甲乙丙...)以利系統計算十神</div>
+        
+        <p>🎭 當下心境與狀態</p>
+        <select id="rec-mood">
+            <option value="平靜">平靜</option>
+            <option value="快樂">快樂</option>
+            <option value="壓力">壓力</option>
+            <option value="悲傷">悲傷</option>
+            <option value="憤怒">憤怒</option>
+            <option value="驚訝">驚訝</option>
+        </select>
+
+        <div class="slider-header">
+            <span>能量穩定度 (1-10)</span>
+            <span id="val-stability" class="val-display" style="color:#4caf50;">5</span>
+        </div>
+        <input type="range" id="rec-stability" min="1" max="10" value="5" oninput="document.getElementById('val-stability').innerText=this.value">
+
+        <div class="slider-header">
+            <span>外界碰撞強度 (1-5)</span>
+            <span id="val-impact" class="val-display" style="color:#f44336;">1</span>
+        </div>
+        <input type="range" id="rec-impact" min="1" max="5" value="1" oninput="document.getElementById('val-impact').innerText=this.value">
+
+        <p style="margin-top: 5px;">📄 事件簡述</p>
+        <textarea id="rec-note" placeholder="發生了什麼事？ (例如：產線突發狀況、開啟除錯建模...)" style="height: 80px; resize: none;"></textarea>
+        
+        <button id="btn-submit-record" class="btn-primary" onclick="submitRecord()">送出打卡數據</button>
+    </div>
+</div>
+
+<script>
+// 【重要】請確保這裡是你的 Google Apps Script 部署網址
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec";
+
+// --- 五行與十神核心矩陣 ---
+const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+const RELATION_MAP = {
+    '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
+    '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
+    '土': { '木': '官殺', '火': '印星', '土': '比劫', '金': '食傷', '水': '財星' },
+    '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
+    '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
+};
+
+// --- 送出能量打卡邏輯 ---
+async function submitRecord() {
+    const targetName = document.getElementById('rec-target').value || "未填寫";
+    const dayMaster = document.getElementById('rec-master').value;
+    const note = document.getElementById('rec-note').value;
+    
+    // 取得當下時間與農曆/干支資訊
+    const today = new Date();
+    const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunarToday = Lunar.fromSolar(solarToday);
+    const gzDay = lunarToday.getDayInGanZhi(); // 取得流日干支
+    
+    // 取得當下時辰
+    const currentHour = today.getHours();
+    const currentMin = today.getMinutes();
+    const nowSolar = Solar.fromYmdHms(today.getFullYear(), today.getMonth() + 1, today.getDate(), currentHour, currentMin, 0);
+    const nowLunar = Lunar.fromSolar(nowSolar);
+    const timeZhi = nowLunar.getTimeZhi(); // 取得發生時辰
+
+    // 計算十神 (如果有輸入有效的日主)
+    let tenGod = "未知";
+    if (dayMaster && ELEMENT_MAP[dayMaster]) {
+        const todayGan = gzDay.substring(0, 1);
+        tenGod = RELATION_MAP[ELEMENT_MAP[dayMaster]][ELEMENT_MAP[todayGan]];
+    } else if (dayMaster && !ELEMENT_MAP[dayMaster]) {
+        alert("日主請輸入正確的單一中文字 (甲、乙、丙、丁、戊、己、庚、辛、壬、癸)。");
+        return;
+    }
+
+    const payload = {
+        date: today.toLocaleDateString(),
+        timeZhi: timeZhi,
+        targetName: targetName,
+        dayMaster: dayMaster || "未填寫",
+        gzDay: gzDay,
+        tenGod: tenGod,
+        mood: document.getElementById('rec-mood').value,
+        stability: document.getElementById('rec-stability').value,
+        impact: document.getElementById('rec-impact').value,
+        note: note
+    };
+
+    const btn = document.getElementById('btn-submit-record');
+    btn.innerText = "🚀 數據傳送中...";
+    btn.disabled = true;
+
+    try {
+        await fetch(GOOGLE_API_URL, {
+            method: 'POST',
+            // 為了避免跨網域預檢請求 (CORS preflight) 報錯，使用 text/plain 發送 JSON 字串
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify(payload)
+        });
+        
+        alert("✅ 打卡成功！能量數據已寫入雲端。");
+        // 清空輸入框準備下一次紀錄
+        document.getElementById('rec-note').value = ""; 
+        
+        // 可選：如果你希望每次打卡完自動記住對象名稱與日主，可以存入 localStorage
+        localStorage.setItem('last_target', targetName);
+        localStorage.setItem('last_master', dayMaster);
+        
+    } catch (error) {
+        console.error(error);
+        alert("❌ 傳送失敗，請檢查網路狀態或 API 網址設定。");
+    } finally {
+        btn.innerText = "送出打卡數據";
+        btn.disabled = false;
+    }
+}
+
+// 網頁載入時，自動帶入上次輸入的觀測對象，省去重複打字的麻煩
+window.onload = () => {
+    const lastTarget = localStorage.getItem('last_target');
+    const lastMaster = localStorage.getItem('last_master');
+    if(lastTarget && lastTarget !== "未填寫") document.getElementById('rec-target').value = lastTarget;
+    if(lastMaster) document.getElementById('rec-master').value = lastMaster;
+};
+</script>
+
+</body>
+</html>
