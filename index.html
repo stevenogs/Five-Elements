@@ -138,12 +138,15 @@
         }
 
         .desc { 
-            font-size: 0.95rem; 
+        font-size: 0.95rem;
             color: #cccccc; 
             margin-bottom: 20px; 
-            line-height: 1.5; 
+            line-height: 1.6; 
             min-height: 60px; 
             text-align: center;
+            width: 100%; /* 確保寬度佔滿容器 */
+            box-sizing: border-box;
+            padding: 0 10px; /* 增加左右留白，避免字體貼邊 */
         }
         
         .dayun-section, .energy-card-small { 
@@ -652,6 +655,9 @@ function showMyDailyPrediction() {
     const myBazi = getBaziArray(myLunar, mUnknown);
     const prediction = getEnergyPrediction(myBazi.stems, 'daily');
     updatePredictionCard('daily-spectrum', prediction);
+    
+    // 這裡加上了換行，讓整體畫面更平衡
+    document.getElementById('daily-description').innerHTML = `<b style="color: #ffb300;">【今日核心感應】</b><br>${prediction.text}`;
     document.getElementById('daily-description').style.display = 'block';
 }
 
