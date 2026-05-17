@@ -175,17 +175,7 @@
             margin-bottom: 0;
         }
 
-        #my-energy-card {
-            background: linear-gradient(135deg, #1f4037, #99f2c8); /* 綠色系漸層 */
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 20px;
-            color: #222;
-        }
-        #my-energy-card h4, #my-energy-card p {
-            color: #222;
-        }
-                /* 新增：能量卡片基礎樣式 */
+        /* 新增：能量卡片基礎樣式 */
         .energy-card {
             padding: 15px;
             border-radius: 10px;
@@ -226,8 +216,8 @@
 
                 <label for="my_gender">性別:</label>
                 <select id="my_gender">
-                    <option value="1">男</option>
-                    <option value="0">女</option>
+                    <option value="1">1</option> <!-- 男 -->
+                    <option value="0">0</option> <!-- 女 -->
                 </select>
 
                 <button class="btn-primary" onclick="saveMyInfo()">儲存我的資訊</button>
@@ -315,7 +305,7 @@
             <div id="analyze-result" style="margin-top: 20px; display: none;">
                 <h3>📊 對方的命盤：<span id="analyze-bazi">未設定</span></h3>
                 <div class="desc" id="analyze-description">請先輸入出生資訊以啟動「每日能量預測」。</div>
-                <div id="analyze-energy-card" style="background: #222; padding: 15px; border-radius: 10px; margin-top: 20px; display: none;">
+                <div id="analyze-energy-card" class="energy-card" style="margin-top: 20px; display: none;">
                     <h4>🎯 今日能量提示</h4>
                     <p id="analyze-energy-text">尚未預測</p>
                     <p id="analyze-energy-action">尚未預測</p>
@@ -410,7 +400,13 @@
             document.querySelectorAll('.nav-item').forEach(item => {
                 item.classList.remove('active');
             });
-            element.classList.add('active');
+            // 確保目標導航按鈕被激活
+            if (element) {
+                element.classList.add('active');
+            } else { // 如果沒有提供 element (例如從 showHome 呼叫)，則手動找到對應按鈕
+                const targetNav = document.querySelector(`.nav-item[onclick*="\'${pageId}\'"]`);
+                if (targetNav) targetNav.classList.add('active');
+            }
         }
 
         // === 不知道時辰的處理 ===
@@ -519,6 +515,22 @@
             }
         }
 
+        // === 更新卡片內容與樣式 ===
+        function updateEnergyCard(cardId, prediction) {
+            const card = document.getElementById(cardId);
+            if (!card) return;
+
+            card.style.display = 'block';
+            card.querySelector('p:first-of-type').innerText = prediction.text;
+            card.querySelector('p:last-of-type').innerText = prediction.action;
+            card.style.background = prediction.cardColor;
+            
+            // 確保卡片內文字顏色在深色背景上可見
+            card.querySelector('h4').style.color = '#fff';
+            card.querySelector('p:first-of-type').style.color = '#eee';
+            card.querySelector('p:last-of-type').style.color = '#ddd';
+        }
+
 
         // === 個人能量預測函數 (呼叫通用預測) ===
         function showMyDailyPrediction() {
@@ -527,11 +539,7 @@
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'daily');
-
-            document.getElementById('my-daily-energy-card').style.display = 'block';
-            document.getElementById('my-daily-energy-text').innerText = prediction.text;
-            document.getElementById('my-daily-energy-action').innerText = prediction.action;
-            document.getElementById('my-daily-energy-card').style.background = prediction.cardColor;
+            updateEnergyCard('my-daily-energy-card', prediction);
         }
 
         function showMyMonthlyPrediction() {
@@ -540,11 +548,7 @@
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'monthly');
-
-            document.getElementById('my-monthly-energy-card').style.display = 'block';
-            document.getElementById('my-monthly-energy-text').innerText = prediction.text;
-            document.getElementById('my-monthly-energy-action').innerText = prediction.action;
-            document.getElementById('my-monthly-energy-card').style.background = prediction.cardColor;
+            updateEnergyCard('my-monthly-energy-card', prediction);
         }
 
         function showMyHourlyPrediction() {
@@ -553,11 +557,7 @@
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'hourly');
-
-            document.getElementById('my-hourly-energy-card').style.display = 'block';
-            document.getElementById('my-hourly-energy-text').innerText = prediction.text;
-            document.getElementById('my-hourly-energy-action').innerText = prediction.action;
-            document.getElementById('my-hourly-energy-card').style.background = prediction.cardColor;
+            updateEnergyCard('my-hourly-energy-card', prediction);
         }
 
 
@@ -578,11 +578,7 @@
 
             // 他人每日能量提示
             const prediction = getEnergyPrediction(analyzeBazi.stems, 'daily');
-            
-            document.getElementById('analyze-energy-card').style.display = 'block';
-            document.getElementById('analyze-energy-text').innerText = prediction.text;
-            document.getElementById('analyze-energy-action').innerText = prediction.action;
-            document.getElementById('analyze-energy-card').style.background = prediction.cardColor;
+            updateEnergyCard('analyze-energy-card', prediction);
             
 
             // 📌 儲存至 localStorage (用於記憶上次分析的對象)
@@ -611,7 +607,8 @@
 
         // 輔助函數 `showHome` 現在只是切換回 `home` 頁面
         function showHome() {
-            switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]')); // 找到 'home' 頁面的導航按鈕
+            // 使用 switchPage 函數，並明確指定要激活的 'home' 導航按鈕
+            switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]')); 
         }
 
     </script>
