@@ -185,6 +185,24 @@
         #my-energy-card h4, #my-energy-card p {
             color: #222;
         }
+                /* 新增：能量卡片基礎樣式 */
+        .energy-card {
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            color: #fff; /* 預設文字顏色 */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            transition: background 0.5s ease;
+        }
+        .energy-card h4 {
+            color: #fff; /* 確保標題在漸層背景上可見 */
+            margin-bottom: 8px;
+        }
+        .energy-card p {
+            color: #eee; /* 確保內文在漸層背景上可見 */
+            font-size: 0.95em;
+            margin-bottom: 5px;
+        }
     </style>
 </head>
 <body>
@@ -218,16 +236,34 @@
             <div id="my-bazi-result" style="margin-top: 20px; display: none;">
                 <h3>📊 我的命盤：<span id="my_bazi_display">未設定</span></h3>
                 <div class="desc" id="my_description">請先設定您的出生資訊。</div>
-                <div id="my-energy-card" style="margin-top: 20px; display: none;">
+
+                <!-- 今日能量預測卡片 -->
+                <div id="my-daily-energy-card" class="energy-card" style="margin-top: 20px; display: none;">
                     <h4>🎯 今日能量提示</h4>
-                    <p id="my-energy-text">尚未預測</p>
-                    <p id="my-energy-action">尚未預測</p>
+                    <p id="my-daily-energy-text">尚未預測</p>
+                    <p id="my-daily-energy-action">尚未預測</p>
                 </div>
-                <button class="btn-primary" style="margin-top: 20px;" onclick="showMyTodayPrediction()">⚡ 顯示今日能量預測</button>
+                <button class="btn-primary" style="margin-top: 20px;" onclick="showMyDailyPrediction()">⚡ 顯示今日能量預測</button>
+
+                <!-- 新增：本月能量預測卡片 -->
+                <div id="my-monthly-energy-card" class="energy-card" style="margin-top: 20px; display: none;">
+                    <h4>🗓️ 本月能量提示</h4>
+                    <p id="my-monthly-energy-text">尚未預測</p>
+                    <p id="my-monthly-energy-action">尚未預測</p>
+                </div>
+                <button class="btn-primary" style="margin-top: 10px;" onclick="showMyMonthlyPrediction()">🗓️ 顯示本月能量預測</button>
+
+                <!-- 新增：本時辰能量預測卡片 -->
+                <div id="my-hourly-energy-card" class="energy-card" style="margin-top: 20px; display: none;">
+                    <h4>⏳ 本時辰能量提示</h4>
+                    <p id="my-hourly-energy-text">尚未預測</p>
+                    <p id="my-hourly-energy-action">尚未預測</p>
+                </div>
+                <button class="btn-primary" style="margin-top: 10px;" onclick="showMyHourlyPrediction()">⏳ 顯示本時辰能量預測</button>
             </div>
         </div>
     </div>
-
+    
     <!-- 大運走勢頁面 -->
     <div id="page-chart" class="page">
         <div class="container">
@@ -324,15 +360,17 @@
             '火': { '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺', '木': '印星' },
             '土': { '土': '比劫', '金': '食傷', '水': '財星', '木': '官殺', '火': '印星' },
             '金': { '金': '比劫', '水': '食傷', '木': '財星', '火': '官殺', '土': '印星' },
-            '水': { '水': '比劫', '木': '食傷', '火': '官殺', '土': '財星', '金': '印星' } // 修正水剋火為財星，火剋金為財星
+            '水': { '水': '比劫', '木': '食傷', '火': '官殺', '土': '財星', '金': '印星' }
         };
         
-        const ELEMENT_COLORS = {
-            '木': 'linear-gradient(135deg, #1f4037, #99f2c8)', // 綠色系
-            '火': 'linear-gradient(135deg, #cc2b5e, #753a88)', // 紅紫系
-            '土': 'linear-gradient(135deg, #eecda3, #ef629f)', // 黃粉系
-            '金': 'linear-gradient(135deg, #bdc3c7, #2c3e50)', // 灰藍系
-            '水': 'linear-gradient(135deg, #00cdac, #02aab0)'  // 藍綠系
+        // 能量卡片背景色漸層，可根據五行調整
+        const ENERGY_CARD_THEMES = {
+            '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text_prefix: '財星高照' }, // 黃橙
+            '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text_prefix: '壓力與名望' }, // 深藍
+            '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text_prefix: '貴人運佳' }, // 橘紅
+            '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text_prefix: '才華橫溢' }, // 藍綠
+            '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text_prefix: '能量充沛' }, // 棕色
+            'default': { action: '平穩', color: 'linear-gradient(135deg, #4b6cb7, #182848)', text_prefix: '能量穩定' } // 預設深藍
         };
 
 
@@ -432,70 +470,94 @@
             }
         }
 
-        // 今日能量預測邏輯 (我為你提供的能量引擎)
-        function showMyTodayPrediction() {
-            const myDate = localStorage.getItem('my_date');
-            if (!myDate) {
-                alert("請先儲存您的出生資訊！");
-                return;
-            }
-
-            const myTime = localStorage.getItem('my_time');
-            const myUnknown = localStorage.getItem('my_unknown') === 'true';
-
-            const myLunar = getLunarObj(myDate, myTime, myUnknown);
-            const myBazi = getBaziArray(myLunar, myUnknown);
-            const dayMaster = myBazi.stems[2]; // 日主
+        // === 通用能量預測函數 (可供個人與他人使用) ===
+        function getEnergyPrediction(baziStems, predictType) {
+            const dayMaster = baziStems[2]; // 日主
             const dayMasterElement = ELEMENT_MAP[dayMaster]; // 日主五行
 
-            const today = new Date();
-            const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-            const lunarToday = Lunar.fromSolar(solarToday);
-            const todayGanZhi = lunarToday.getDayInGanZhi(); // 流日天干地支
-            const todayGan = todayGanZhi.substring(0, 1); // 流日天干
-            const todayElement = ELEMENT_MAP[todayGan]; // 流日天干五行
+            const now = new Date();
+            let targetGan = ''; // 目標天干 (流日/流月/流時)
+            let timeUnit = ''; // 時間單位說明
 
-            const relation = RELATION_MAP[dayMasterElement][todayElement]; // 日主與流日的關係
-
-            let energyText = "尚未預測";
-            let energyAction = "尚未預測";
-            let cardColor = "#222"; // 預設背景色
-
-            if (relation === "財星") {
-                energyText = "💰 今日財星高照，對金錢嗅覺靈敏，適合處理財務、投資或收入相關任務。";
-                energyAction = "建議：可專注於資金管理、市場分析或尋找投資機會。";
-                cardColor = 'linear-gradient(135deg, #f1c40f, #f39c12)';
-            } else if (relation === "官殺") {
-                energyText = "⚖️ 今日壓力與名望並存，將面臨挑戰或需承擔責任。";
-                energyAction = "建議：適合處理重要公務、解決難題，但需避免衝突與衝動。";
-                cardColor = 'linear-gradient(135deg, #2c3e50, #1e3c72)';
-            } else if (relation === "印星") {
-                energyText = "📚 今日貴人運佳，適合學習與補充內在能量，心態平和。";
-                energyAction = "建議：適合研究、學習新知、冥想，或向長輩、導師請益。";
-                cardColor = 'linear-gradient(135deg, #d35400, #e67e22)';
-            } else if (relation === "食傷") {
-                energyText = "🧠 今日才華橫溢，點子極多，適合展現創意與表達自我。";
-                energyAction = "建議：適合創作、開拓新項目、發表意見，或與人交流分享。";
-                cardColor = 'linear-gradient(135deg, #16a085, #2980b9)';
-            } else if (relation === "比劫") {
-                energyText = "🤝 今日能量充沛，適合交流合作，但也需注意競爭。";
-                energyAction = "建議：適合團隊協作、參與社交活動，但需避免過於自我或與人爭執。";
-                cardColor = 'linear-gradient(135deg, #795548, #4e342e)';
-            } else { // 預防萬一沒有對應關係
-                energyText = "今日能量穩定。";
-                energyAction = "建議：保持平常心，執行日常事務。";
-                cardColor = 'linear-gradient(135deg, #4b6cb7, #182848)';
+            if (predictType === 'daily') {
+                const solarToday = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
+                const lunarToday = Lunar.fromSolar(solarToday);
+                targetGan = lunarToday.getDayInGanZhi().substring(0, 1);
+                timeUnit = '今日';
+            } else if (predictType === 'monthly') {
+                const solarMonth = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, 1); // 取本月第一天
+                const lunarMonth = Lunar.fromSolar(solarMonth);
+                targetGan = lunarMonth.getMonthGan(); // 月天干
+                timeUnit = '本月';
+            } else if (predictType === 'hourly') {
+                const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
+                targetGan = lunarNow.getTimeGan(); // 時天干
+                timeUnit = '本時辰';
+            } else {
+                return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
             }
 
-            document.getElementById('my-energy-card').style.display = 'block';
-            document.getElementById('my-energy-text').innerText = energyText;
-            document.getElementById('my-energy-action').innerText = energyAction;
-            document.getElementById('my-energy-card').style.background = cardColor;
-            
-            // 讓卡片內的文字顏色在深色背景下可見
-            document.querySelector('#my-energy-card h4').style.color = '#fff';
-            document.querySelector('#my-energy-card p:first-of-type').style.color = '#eee';
-            document.querySelector('#my-energy-card p:last-of-type').style.color = '#ddd';
+            const targetElement = ELEMENT_MAP[targetGan];
+            const relation = RELATION_MAP[dayMasterElement][targetElement] || 'default'; // 若無對應則為default
+
+            const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
+            const energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}旺盛！`;
+            const energyAction = `建議：${theme.action}，${getDetailedAction(relation, timeUnit)}。`;
+
+            return { text: energyText, action: energyAction, relation: relation, timeUnit: timeUnit, cardColor: theme.color };
+        }
+
+        // 提供更詳細的行動建議
+        function getDetailedAction(relation, timeUnit) {
+            switch (relation) {
+                case '財星': return `對金錢嗅覺靈敏，適合處理財務、投資或收入相關任務。`;
+                case '官殺': return `可能面臨挑戰或需承擔責任，適合處理重要公務、解決難題，但需避免衝突。`;
+                case '印星': return `貴人運佳，適合學習與補充內在能量，心態平和。適合研究、學習新知。`;
+                case '食傷': return `才華橫溢，點子極多，適合展現創意與表達自我。適合創作、開拓新項目。`;
+                case '比劫': return `能量充沛，適合交流合作，但也需注意競爭。適合團隊協作、參與社交活動。`;
+                default: return `保持平常心，執行日常事務。`;
+            }
+        }
+
+
+        // === 個人能量預測函數 (呼叫通用預測) ===
+        function showMyDailyPrediction() {
+            const myDate = localStorage.getItem('my_date');
+            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
+            const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
+            const prediction = getEnergyPrediction(myBazi.stems, 'daily');
+
+            document.getElementById('my-daily-energy-card').style.display = 'block';
+            document.getElementById('my-daily-energy-text').innerText = prediction.text;
+            document.getElementById('my-daily-energy-action').innerText = prediction.action;
+            document.getElementById('my-daily-energy-card').style.background = prediction.cardColor;
+        }
+
+        function showMyMonthlyPrediction() {
+            const myDate = localStorage.getItem('my_date');
+            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
+            const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
+            const prediction = getEnergyPrediction(myBazi.stems, 'monthly');
+
+            document.getElementById('my-monthly-energy-card').style.display = 'block';
+            document.getElementById('my-monthly-energy-text').innerText = prediction.text;
+            document.getElementById('my-monthly-energy-action').innerText = prediction.action;
+            document.getElementById('my-monthly-energy-card').style.background = prediction.cardColor;
+        }
+
+        function showMyHourlyPrediction() {
+            const myDate = localStorage.getItem('my_date');
+            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
+            const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
+            const prediction = getEnergyPrediction(myBazi.stems, 'hourly');
+
+            document.getElementById('my-hourly-energy-card').style.display = 'block';
+            document.getElementById('my-hourly-energy-text').innerText = prediction.text;
+            document.getElementById('my-hourly-energy-action').innerText = prediction.action;
+            document.getElementById('my-hourly-energy-card').style.background = prediction.cardColor;
         }
 
 
@@ -503,7 +565,6 @@
         function analyzeBazi() {
             const aDate = document.getElementById('analyze-date').value;
             const aTime = document.getElementById('analyze-time').value;
-            const aGender = document.getElementById('analyze-gender').value;
             const aUnknown = document.getElementById('analyze-unknown').checked;
 
             if (!aDate) return alert("請輸入出生日期！");
@@ -511,67 +572,23 @@
             const analyzeLunar = getLunarObj(aDate, aTime, aUnknown);
             const analyzeBazi = getBaziArray(analyzeLunar, aUnknown);
 
-            // 🎯 顯示命盤
             document.getElementById('analyze-bazi').innerText = analyzeBazi.formatStr;
             document.getElementById('analyze-result').style.display = 'block';
             document.getElementById('analyze-description').innerHTML = `您輸入的命盤：${analyzeBazi.formatStr}（日主：<span style="color: #007bff; font-weight: bold;">${analyzeBazi.stems[2]}</span>）`;
 
-            // 🚀 今日能量提示
-            const today = new Date();
-            const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-            const lunarToday = Lunar.fromSolar(solarToday);
-            const gzDay = lunarToday.getDayInGanZhi();
-
-            const userDayGan = analyzeBazi.stems[2];
-            const userElement = ELEMENT_MAP[userDayGan];
-            const todayGan = gzDay.substring(0, 1);
-            const relation = RELATION_MAP[userElement][ELEMENT_MAP[todayGan]];
+            // 他人每日能量提示
+            const prediction = getEnergyPrediction(analyzeBazi.stems, 'daily');
             
-            let energyText = "尚未預測";
-            let energyAction = "尚未預測";
-            let cardColor = "#222"; // 預設背景色
-
-            if (relation === "財星") {
-                energyText = "💰 今日財星高照，對金錢嗅覺靈敏，適合處理財務、投資或收入相關任務。";
-                energyAction = "建議：可專注於資金管理、市場分析或尋找投資機會。";
-                cardColor = 'linear-gradient(135deg, #f1c40f, #f39c12)';
-            } else if (relation === "官殺") {
-                energyText = "⚖️ 今日壓力與名望並存，將面臨挑戰或需承擔責任。";
-                energyAction = "建議：適合處理重要公務、解決難題，但需避免衝突與衝動。";
-                cardColor = 'linear-gradient(135deg, #2c3e50, #1e3c72)';
-            } else if (relation === "印星") {
-                energyText = "📚 今日貴人運佳，適合學習與補充內在能量，心態平和。";
-                energyAction = "建議：適合研究、學習新知、冥想，或向長輩、導師請益。";
-                cardColor = 'linear-gradient(135deg, #d35400, #e67e22)';
-            } else if (relation === "食傷") {
-                energyText = "🧠 今日才華橫溢，點子極多，適合展現創意與表達自我。";
-                energyAction = "建議：適合創作、開拓新項目、發表意見，或與人交流分享。";
-                cardColor = 'linear-gradient(135deg, #16a085, #2980b9)';
-            } else if (relation === "比劫") {
-                energyText = "🤝 今日能量充沛，適合交流合作，但也需注意競爭。";
-                energyAction = "建議：適合團隊協作、參與社交活動，但需避免過於自我或與人爭執。";
-                cardColor = 'linear-gradient(135deg, #795548, #4e342e)';
-            } else { // 預防萬一沒有對應關係
-                energyText = "今日能量穩定。";
-                energyAction = "建議：保持平常心，執行日常事務。";
-                cardColor = 'linear-gradient(135deg, #4b6cb7, #182848)';
-            }
-
             document.getElementById('analyze-energy-card').style.display = 'block';
-            document.getElementById('analyze-energy-text').innerText = energyText;
-            document.getElementById('analyze-energy-action').innerText = energyAction;
-            document.getElementById('analyze-energy-card').style.background = cardColor;
+            document.getElementById('analyze-energy-text').innerText = prediction.text;
+            document.getElementById('analyze-energy-action').innerText = prediction.action;
+            document.getElementById('analyze-energy-card').style.background = prediction.cardColor;
             
-            // 讓卡片內的文字顏色在深色背景下可見
-            document.querySelector('#analyze-energy-card h4').style.color = '#fff';
-            document.querySelector('#analyze-energy-card p:first-of-type').style.color = '#eee';
-            document.querySelector('#analyze-energy-card p:last-of-type').style.color = '#ddd';
-
 
             // 📌 儲存至 localStorage (用於記憶上次分析的對象)
             localStorage.setItem('last_analyze_date', aDate);
             localStorage.setItem('last_analyze_time', aTime);
-            localStorage.setItem('last_analyze_gender', aGender);
+            localStorage.setItem('last_analyze_gender', document.getElementById('analyze-gender').value);
             localStorage.setItem('last_analyze_unknown', aUnknown);
             localStorage.setItem('last_analyze_bazi_display', analyzeBazi.formatStr);
 
@@ -594,9 +611,8 @@
 
         // 輔助函數 `showHome` 現在只是切換回 `home` 頁面
         function showHome() {
-            switchPage('home', document.querySelector('.nav-item.active')); // 假設當前 active 的是 'home' 頁面按鈕
+            switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]')); // 找到 'home' 頁面的導航按鈕
         }
-
 
     </script>
 </body>
