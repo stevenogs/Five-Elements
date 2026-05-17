@@ -438,7 +438,7 @@
             localStorage.setItem('my_gender', myGender);
             localStorage.setItem('my_unknown', myUnknown);
 
-            displayMyBazi();
+            displayMyBazi(); // 更新命盤資訊
             alert("您的資訊已儲存！");
         }
 
@@ -461,8 +461,16 @@
                 document.getElementById('my_gender').value = localStorage.getItem('my_gender');
                 document.getElementById('my_unknown').checked = myUnknown;
                 toggleTime('my'); // 根據是否未知時辰禁用時間輸入框
+
+                // ★★★ 修正點：自動顯示今日能量預測卡片 ★★★
+                showMyDailyPrediction();
+
             } else {
                 document.getElementById('my-bazi-result').style.display = 'none';
+                // 確保所有預測卡片在沒有資訊時都隱藏
+                document.getElementById('my-daily-energy-card').style.display = 'none';
+                document.getElementById('my-monthly-energy-card').style.display = 'none';
+                document.getElementById('my-hourly-energy-card').style.display = 'none';
             }
         }
 
@@ -536,7 +544,10 @@
         // === 個人能量預測函數 (呼叫通用預測) ===
         function showMyDailyPrediction() {
             const myDate = localStorage.getItem('my_date');
-            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            if (!myDate) { // 如果沒有資料，則不執行預測，並隱藏卡片
+                document.getElementById('my-daily-energy-card').style.display = 'none';
+                return;
+            }
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'daily');
@@ -545,7 +556,10 @@
 
         function showMyMonthlyPrediction() {
             const myDate = localStorage.getItem('my_date');
-            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            if (!myDate) { // 如果沒有資料，則不執行預測，並隱藏卡片
+                document.getElementById('my-monthly-energy-card').style.display = 'none';
+                return;
+            }
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'monthly');
@@ -554,7 +568,10 @@
 
         function showMyHourlyPrediction() {
             const myDate = localStorage.getItem('my_date');
-            if (!myDate) { alert("請先儲存您的出生資訊！"); return; }
+            if (!myDate) { // 如果沒有資料，則不執行預測，並隱藏卡片
+                document.getElementById('my-hourly-energy-card').style.display = 'none';
+                return;
+            }
             const myLunar = getLunarObj(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
             const myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
             const prediction = getEnergyPrediction(myBazi.stems, 'hourly');
@@ -594,7 +611,7 @@
 
         // === 初始載入 ===
         document.addEventListener("DOMContentLoaded", () => {
-            displayMyBazi(); // 載入我的資訊
+            displayMyBazi(); // 載入我的資訊，並會自動觸發 showMyDailyPrediction()
 
             // 預填「分析他人」的資訊（如果上次有輸入過）
             if (localStorage.getItem('last_analyze_date')) {
