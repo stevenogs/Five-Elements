@@ -113,7 +113,7 @@
             cursor: pointer; 
         }
         
-        /* 個人能量顯示卡片 (日) */
+/* 個人能量顯示卡片 (日) */
         .spectrum-display { 
             width: 100%; 
             height: 120px; 
@@ -129,12 +129,23 @@
             color: #fff; 
             background: linear-gradient(135deg, #4b6cb7, #182848); 
             transition: background 0.5s ease;
+            text-align: center; /* 🛠️ 強制內部所有行內文字水平居中 */
+            box-sizing: border-box;
+            padding: 10px; /* 🛠️ 內襯墊，防止文字太長時貼邊 */
         }
+        
+        /* 🛠️ 順便確保裡面的子元件也完全置中且不疊在一起 */
         .spectrum-display .vibe-label {
-            font-size: 0.8rem; opacity: 0.7; margin-bottom: 5px;
+            font-size: 0.8rem; 
+            opacity: 0.7; 
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: center;
         }
         .spectrum-display .vibe-action {
             font-size: 2.2rem;
+            width: 100%;
+            text-align: center;
         }
 
         .desc { 
