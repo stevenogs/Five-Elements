@@ -852,26 +852,12 @@ function analyzeEarthlyRelations(bazi, transitZhi) {
     return results;
 }
 
-// 🌌 升級版：融入本命地支「刑沖破害」的個人能量共振引擎
-function getEnergyPrediction(baziStems, predictType) {
-    // 💡 為了比對地支，我們需要從本地快取重新完整排盤取得本命地支
-    const mDate = localStorage.getItem('my_date');
-    const mTime = localStorage.getItem('my_time') || '12:00';
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    let myBranches = [];
-    if (mDate) {
-        const myLunar = getLunarObj(mDate, mTime, mUnknown);
-        const myBazi = getBaziArray(myLunar, mUnknown);
-        myBranches = myBazi.branches; // 拿到本命的 [年支, 月支, 日支, 時支]
-    }
-
+function getEnergyPrediction(baziStems, predictType, baziObj) {
     const dayMaster = baziStems[2]; 
     const dayMasterElement = ELEMENT_MAP[dayMaster]; 
 
     const now = new Date();
-    let targetGan = ''; 
-    let targetZhi = ''; // 新增：用來儲存當前時間的地支
-    let timeUnit = ''; 
+    let targetGan = ''; let targetZhi = ''; let timeUnit = ''; 
 
     if (predictType === 'daily') {
         const solarToday = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
@@ -886,72 +872,93 @@ function getEnergyPrediction(baziStems, predictType) {
         targetZhi = lunarMonth.getMonthZhi();
         timeUnit = '本月';
     } else if (predictType === 'hourly') {
+        // 🛠️ 修正：精準取得當前時間的流時天干與地支
         const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
         targetGan = lunarNow.getTimeGan(); 
-        targetZhi = lunarNow.getTimeZhi(); 
-        timeUnit = `本時辰 (${targetZhi}時)`;      
+        const targetZhi = lunarNow.getTimeZhi(); // 抓取當前地支（例如：未）
+        timeUnit = `本時辰 (${targetZhi}時)`;      // 動態變成 "本時辰 (未時)"
     } else {
         return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
     }
 
+    const weights = calculateElementWeights(baziObj, targetGan, targetZhi);
+    const relations = analyzeEarthlyRelations(baziObj, targetZhi);
+    
     const targetElement = ELEMENT_MAP[targetGan];
     const relation = RELATION_MAP[dayMasterElement][targetElement] || 'default'; 
-
-    const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-    let energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}旺盛！`;
-    let energyAction = `建議：${theme.action}，${getDetailedAction(relation)}。`; 
-
-    // ⚡ 核心演算法：流時/流日/流月地支 與 本命四柱地支的「刑沖破害」大碰撞
-    if (myBranches.length > 0 && targetZhi) {
-        let collisionMessages = [];
-        let hasChong = false;
-
-        // 定義地支關係矩陣
-        const liuChong = {'子':'午', '午':'子', '丑':'未', '未':'丑', '寅':'申', '申':'寅', '卯':'酉', '酉':'卯', '辰':'戌', '戌':'辰', '巳':'亥', '亥':'巳'};
-        const liuHe = {'子':'丑', '丑':'子', '寅':'亥', '亥':'寅', '卯':'戌', '戌':'卯', '辰':'酉', '酉':'辰', '巳':'申', '申':'巳', '午':'未', '未':'午'};
-        const liuHai = {'子':'未', '未':'子', '丑':'午', '午':'丑', '寅':'巳', '巳':'寅', '卯':'辰', '辰':'卯', '申':'亥', '亥':'申', '酉':'戌', '戌':'酉'};
-        const liuPo = {'子':'酉', '酉':'子', '卯':'午', '午':'卯', '辰':'丑', '丑':'辰', '戌':'未', '未':'戌', '寅':'亥', '亥':'寅', '巳':'申', '申':'巳'};
-        const sanXing = {'子':'卯', '卯':'子', '寅':'巳', '巳':'申', '申':'寅', '丑':'戌', '戌':'未', '未':'丑'};
-        const ziXing = ['辰', '午', '酉', '亥']; // 自刑地支
-
-        const positionNames = ['【年支】大環境', '【月支】內心/事業', '【日支】配偶/身體', '【時支】潛意/想法'];
-
-        myBranches.forEach((mb, idx) => {
-            if (!mb) return;
-            const pos = positionNames[idx];
-
-            // 1. 衝 (六衝)
-            if (liuChong[targetZhi] === mb) {
-                hasChong = true;
-                collisionMessages.push(`<br>⚠️ <b>${pos}與流時地支【${targetZhi}${mb}相衝】</b>：能量產生強烈正面碰撞！局勢容易面臨劇烈破局或被迫變革。這是一把雙面刃，伴隨著高風險，但也往往是「大好運」或突破現狀、破繭重出的關鍵契機！請沉著應對，主動求變。`);
-            }
-            // 2. 刑 (相刑)
-            else if (sanXing[targetZhi] === mb || (targetZhi === mb && ziXing.includes(mb))) {
-                collisionMessages.push(`<br>⚡ <b>${pos}與流時地支【${targetZhi}${mb}相刑】</b>：能量產生彆扭與摩擦。今天在該領域容易有堅持己見、溝通卡絆或內耗冷戰的現象，做決定前建議多給自己三秒鐘，避免流於固執。`);
-            }
-            // 3. 害 (六害)
-            else if (liuHai[targetZhi] === mb) {
-                collisionMessages.push(`<br>🧩 <b>${pos}與流時地支【${targetZhi}${mb}相害】</b>：能量產生拉扯與不對頻。容易有觀念不合、前進受阻或無力感，適合放慢腳步，重新校準核心步伐。`);
-            }
-            // 4. 破 (六破)
-            else if (liuPo[targetZhi] === mb) {
-                collisionMessages.push(`<br>🌱 <b>${pos}與流時地支【${targetZhi}${mb}相破】</b>：細節上的微小磨損。大方向沒事，但生活碎事、精密代碼或小細節容易互相挑剔、產生小耗損，多點耐心即可化解。`);
-            }
-            // 5. 合 (六合)
-            else if (liuHe[targetZhi] === mb) {
-                collisionMessages.push(`<br>✅ <b>${pos}與流時地支【${targetZhi}${mb}相合】</b>：磁場產生強烈拉引與凝聚。該領域的能量運行順暢、易得人緣、有助於資源整合與穩定推進。`);
-            }
-        });
-
-        // 如果有觸發任何地支碰撞，就把它們無縫織入到核心感應文字中
-        if (collisionMessages.length > 0) {
-            energyText += `<br><div style="text-align: left; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; line-height: 1.6; border-left: 3px solid #ffb300;">🪐 <b>地支磁場碰撞報告：</b>${collisionMessages.join('')}</div>`;
-        } else {
-            energyText += `<br><span style="color: #aaa; font-size: 0.85rem;">(今日流時地支【${targetZhi}】與本命磁場平穩和諧，無明顯衝合摩擦。)</span>`;
-        }
+    
+    let selfStrength = weights['土'] + weights['火'];
+    let outStrength = weights['金'] + weights['水'] + weights['木'];
+    let isStrong = selfStrength > outStrength;
+    
+    let specLog = "";
+    if (relations.triple.length > 0) {
+        specLog = `觸發${relations.triple[0]}！`;
+    } else if (relations.pairs) {
+        specLog = `時空引動${relations.pairs}。`;
     }
 
-    return { text: energyText, action: energyAction, relation: relation, timeUnit: timeUnit, cardColor: theme.color, vibeAction: theme.action, vibeLabel: `日主 ${dayMaster} | ${relation}` };
+    let fortuneScore = 50;
+    if (isStrong) {
+        fortuneScore = Math.round(50 + (outStrength / (selfStrength + 1)) * 15);
+    } else {
+        fortuneScore = Math.round(50 + (selfStrength / (outStrength + 1)) * 15);
+    }
+
+    let bonus = 0;
+    if (relations.triple.length > 0) {
+        if (predictType === 'daily') bonus = 25;       
+        else if (predictType === 'monthly') bonus = 15; 
+        else if (predictType === 'hourly') bonus = 8;   
+    } else if (relations.pairs) {
+        if (predictType === 'daily') bonus = 10;
+        else if (predictType === 'monthly') bonus = 6;
+        else if (predictType === 'hourly') bonus = 3;
+    }
+    fortuneScore += bonus;
+    
+    if (predictType === 'hourly') {
+        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.4);
+    } else if (predictType === 'monthly') {
+        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.7);
+    }
+    fortuneScore = Math.max(30, Math.min(100, fortuneScore));
+
+    let starCount = 3; 
+    let energyLevelName = "【和諧順遂】";
+
+    if (fortuneScore >= 85) {
+        starCount = 5;
+        energyLevelName = (predictType === 'hourly') ? "【靈感湧現】" : "【凌汛暴發】"; 
+    } else if (fortuneScore >= 68) {
+        starCount = 4;
+        energyLevelName = (predictType === 'hourly') ? "【執行力強】" : "【氣場強勁】";
+    } else if (fortuneScore >= 48) {
+        starCount = 3;
+        energyLevelName = "【和諧順遂】";
+    } else if (fortuneScore >= 38) {
+        starCount = 2;
+        energyLevelName = (predictType === 'hourly') ? " {機動待命} " : "【能量潛藏】";
+    } else {
+        starCount = 1;
+        energyLevelName = "【靜心休整】";
+    }
+
+    let starsString = "🌟".repeat(starCount) + "⭐".repeat(5 - starCount);
+    const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
+
+    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
+    const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
+
+    return { 
+        text: energyText, 
+        action: energyAction, 
+        relation: relation, 
+        timeUnit: timeUnit, 
+        cardColor: theme.color, 
+        vibeAction: theme.action, 
+        vibeLabel: `日主 ${dayMaster} | ${relation}運` 
+    };
 }
 
 function getDetailedAction(relation, isStrong) {
