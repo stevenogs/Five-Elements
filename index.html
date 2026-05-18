@@ -366,7 +366,7 @@
 
 <div id="page-match" class="page">
     <div class="container">
-        <h1>人際合盤 analysis</h1>
+        <h1>人際合盤分析</h1>
         <div class="input-group">
             <p>🎯 對方的出生資訊</p>
             <div class="flex-row">
@@ -705,10 +705,10 @@ function analyzeEarthlyRelations(bazi, transitZhi) {
             let idx2 = DIZHI_INDEX.indexOf(list[j]);
             if (idx1 !== -1 && idx2 !== -1) {
                 let code = RELATION_MATRIX[idx1][idx2];
-                if (code === 1) logs.push(`【${list[i]}${list[j]}六合】磁場凝聚`);
-                if (code === 2) logs.push(`【${list[i]}${list[j]}相衝】能量激盪與變動`);
-                if (code === 5) logs.push(`【${list[i]}${list[j]}相刑】細節摩擦`);
-                if (code === 6) logs.push(`【${list[i]}${list[j]}相害】防範暗流`);
+                if (code === 1) logs.push(`【${list[i]}${list[j]}六合】`);
+                if (code === 2) logs.push(`【${list[i]}${list[j]}相衝】`);
+                if (code === 5) logs.push(`【${list[i]}${list[j]}相刑】`);
+                if (code === 6) logs.push(`【${list[i]}${list[j]}相害】`);
             }
         }
     }
@@ -765,20 +765,15 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         specLog = `時空引動${relations.pairs}。`;
     }
 
-    const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-// 💡 修正後的寫法：改用絕對差距比例與格局加成，轉換為優雅的 5 星等
-    let diff = Math.abs(outStrength - selfStrength);
+    // 💡 修正後的人性化 5 星等共振公式
     let fortuneScore = 50;
-
     if (isStrong) {
-        // 身強：外在克洩（金水木）越旺越好
         fortuneScore = Math.round(50 + (outStrength / (selfStrength + 1)) * 15);
     } else {
-        // 身弱：外在幫扶（火土）越旺越好
         fortuneScore = Math.round(50 + (selfStrength / (outStrength + 1)) * 15);
     }
 
-    // 格局大加分：只要觸發了三合大局，這天的磁場契合度直接衝上黃金波段
+    // 格局大加分
     if (relations.triple.length > 0) {
         fortuneScore = Math.max(88, fortuneScore + 20); 
     } else if (relations.pairs) {
@@ -787,12 +782,12 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
     fortuneScore = Math.max(30, Math.min(100, fortuneScore));
 
     // 🌟 將分數完美轉譯為 5 星級與人性化等階
-    let starCount = 3; // 預設 3 顆星（平穩順暢）
+    let starCount = 3; 
     let energyLevelName = "【能量平穩】";
 
     if (fortuneScore >= 90) {
         starCount = 5;
-        energyLevelName = "【凌汛暴發】"; // 針對你今天滿盤大水的極致包裝
+        energyLevelName = "【凌汛暴發】"; 
     } else if (fortuneScore >= 75) {
         starCount = 4;
         energyLevelName = "【氣場強勁】";
@@ -807,26 +802,11 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         energyLevelName = "【靜心休整】";
     }
 
-    // 建立星星符號字串 (例如：🌟🌟🌟🌟🌟 或 🌟🌟🌟⭐⭐)
     let starsString = "🌟".repeat(starCount) + "⭐".repeat(5 - starCount);
-
     const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-    
-    // 💡 修改回傳的 text，將原本的百分比換成閃耀的星星與等階描述！
-    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.2rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
-    const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
 
-    return { 
-        text: energyText, 
-        action: energyAction, 
-        relation: relation, 
-        timeUnit: timeUnit, 
-        cardColor: theme.color, 
-        vibeAction: theme.action, 
-        vibeLabel: `日主 ${dayMaster} | ${relation}運` 
-    };
-
-    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}氣場共振率達 ${fortuneScore}%。${specLog}`;
+    // 💡 融合星等與提示文字
+    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
     const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
 
     return { 
@@ -862,7 +842,7 @@ function updatePredictionCard(cardId, prediction) {
         document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${prediction.text}`;
     } else { 
         card.querySelector('h4').innerText = `${prediction.timeUnit}能量提示`;
-        card.querySelector('p:first-of-type').innerText = prediction.text;
+        card.querySelector('p:first-of-type').innerHTML = prediction.text;
         card.querySelector('p:last-of-type').innerText = prediction.action;
     }
     card.style.background = prediction.cardColor;
@@ -881,9 +861,6 @@ function showMyDailyPrediction() {
     const myBazi = getBaziArray(myLunar, mUnknown);
     const prediction = getEnergyPrediction(myBazi.stems, 'daily', myBazi);
     updatePredictionCard('daily-spectrum', prediction);
-    
-    document.getElementById('daily-description').innerHTML = `<b style="color: #ffb300;">【今日四柱全息共振】</b><br>${prediction.text}`;
-    document.getElementById('daily-description').style.display = 'block';
 }
 
 function showMyMonthlyPrediction() {
@@ -917,8 +894,7 @@ function showMyHourlyPrediction() {
 function initHome() {
     const today = new Date();
     const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunarInstance = Lunar.fromSolar(lunarToday);
+    const lunarInstance = Lunar.fromSolar(solarToday);
     const gzDay = lunarInstance.getDayInGanZhi(); 
     const liuNianGan = lunarInstance.getYearGan();
     
@@ -1192,7 +1168,7 @@ function analyzeBazi() {
     energyCard.style.background = prediction.cardColor;
     
     document.getElementById('analyze-description').innerHTML = `<b style="color: #fff;">今日核心感應 (${prediction.vibeLabel})</b>`;
-    document.getElementById('analyze-energy-text').innerText = prediction.text;
+    document.getElementById('analyze-energy-text').innerHTML = prediction.text;
     document.getElementById('analyze-energy-action').innerText = prediction.action;
 }
 
