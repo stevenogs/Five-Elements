@@ -853,10 +853,13 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         targetZhi = lunarMonth.getMonthZhi();
         timeUnit = '本月';
     } else if (predictType === 'hourly') {
+        // 🛠️ 修正：精準取得當前時間的流時天干與地支
         const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
         targetGan = lunarNow.getTimeGan(); 
-        targetZhi = lunarNow.getTimeZhi();
-        timeUnit = '本時辰';
+        const targetZhi = lunarNow.getTimeZhi(); // 抓取當前地支（例如：未）
+        timeUnit = `本時辰 (${targetZhi}時)`;      // 動態變成 "本時辰 (未時)"
+    } else {
+        return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
     }
 
     const weights = calculateElementWeights(baziObj, targetGan, targetZhi);
@@ -963,9 +966,10 @@ function updatePredictionCard(cardId, prediction) {
         // 今日核心說明文字自動關鍵字化
         document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${formatTextKeywords(prediction.text)}`;
     } else { 
+        // 🛠️ 修正：確保標題能完美動態反映「本月」或「本時辰 (未時)」
         card.querySelector('h4').innerText = `${prediction.timeUnit}能量提示`;
-        card.querySelector('p:first-of-type').innerHTML = formatTextKeywords(prediction.text);
-        card.querySelector('p:last-of-type').innerHTML = formatTextKeywords(prediction.action);
+        card.querySelector('p:first-of-type').innerText = prediction.text;
+        card.querySelector('p:last-of-type').innerText = prediction.action;
     }
     card.style.background = prediction.cardColor;
 }
