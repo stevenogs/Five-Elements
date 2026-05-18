@@ -1366,7 +1366,7 @@ async function submitRecord() {
     }
 }
 
-// 🌟 全新升級：「分析他人」避雷與合作星級推演核心引擎
+// 🌟 優化升級版：「分析他人」避雷與合作星級推演核心引擎 (避免過度敏感)
 function analyzeBazi() {
     const aDate = document.getElementById('analyze-date').value;
     const aTime = document.getElementById('analyze-time').value;
@@ -1396,7 +1396,7 @@ function analyzeBazi() {
     document.getElementById('analyze-result').style.display = 'block';
     document.getElementById('analyze-bazi').innerHTML = formatTextKeywords(`[${genderTerm}] ${targetBazi.formatStr} (日主 ${targetDayGan})`);
     
-    // 取得對方今日的能量預測數據 (包含原始分數、地支碰撞關係等)
+    // 取得對方今日的能量預測數據
     const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
     
     const energyCard = document.getElementById('analyze-energy-card');
@@ -1407,72 +1407,69 @@ function analyzeBazi() {
     document.getElementById('analyze-energy-text').innerHTML = formatTextKeywords(prediction.text);
     document.getElementById('analyze-energy-action').innerHTML = formatTextKeywords(prediction.action);
 
-    // 🌟 --- 避雷與合作星級演算板塊 ---
+    // 🌟 --- 避雷與合作星級演算板塊 (精密降噪版) ---
     const guideCard = document.getElementById('analyze-guide-card');
     const starsDisplay = document.getElementById('analyze-stars-display');
     const guideText = document.getElementById('analyze-guide-text');
     
     guideCard.style.display = 'block';
     
-    let rawScore = prediction.fortuneScore; // 取得 30 ~ 100 的流日共振分數
+    let rawScore = prediction.fortuneScore; // 30 ~ 100
     let isPositive = true;
-    let computedStars = 3;
     
-    // 依據命理邏輯判定是否屬於「能量非常負面/雷區」或「正面高頻狀態」
-    // 分數低於 48 或流日觸發了重度相衝、相刑、相害等摩擦報告，則列入雷區
-    const hasSevereClash = prediction.text.includes('相衝') || prediction.text.includes('相刑');
+    // 🎯 精密判定：只有當「月支(內心)」或「日支(配偶/主體)」遭遇衝或刑，或者總分太低，才算真正雷區
+    const hasCoreClash = prediction.text.includes('【月支】') && (prediction.text.includes('相衝') || prediction.text.includes('相刑')) ||
+                         prediction.text.includes('【日支】') && (prediction.text.includes('相衝') || prediction.text.includes('相刑'));
     
-    if (rawScore < 48 || hasSevereClash) {
+    if (rawScore < 46 || hasCoreClash) {
         isPositive = false;
     }
 
-    // 將分數線性映射到 1 ~ 5 星級
-    if (rawScore >= 85) computedStars = 5;
-    else if (rawScore >= 68) computedStars = 4;
-    else if (rawScore >= 48) computedStars = 3;
-    else if (rawScore >= 38) computedStars = 2;
-    else computedStars = 1;
-
-    // 如果地支碰撞極度慘烈，強行校正星等權重，使其符合「避雷」視覺化
-    if (hasSevereClash && isPositive) {
-        computedStars = Math.max(1, computedStars - 1); // 酌情扣星
+    // 計算星等 (進行對稱平滑處理)
+    let computedStars = 3;
+    if (isPositive) {
+        if (rawScore >= 82) computedStars = 5;
+        else if (rawScore >= 65) computedStars = 4;
+        else if (rawScore >= 48) computedStars = 3;
+        else computedStars = 2;
+    } else {
+        // 負面雷區：分數越低或核心衝刑越重，灰星越多
+        if (rawScore <= 40 || (hasCoreClash && rawScore < 50)) computedStars = 5; // 5顆灰星 = 大雷
+        else if (rawScore < 46) computedStars = 4;
+        else computedStars = 3; // 輕微雷區
     }
 
     let starsHtml = "";
     let guideMessage = "";
 
     if (isPositive) {
-        // ✨ 正面：顯示好的黃星 🌟
+        // ✨ 正面：好的黃星 🌟
         starsHtml = `<span style="color: #ffca28;">` + "🌟".repeat(computedStars) + "⭐".repeat(5 - computedStars) + `</span>`;
         
-        // 根據不同星等與十神特質給予動態合作建議
         if (computedStars >= 4) {
-            guideMessage = `🔥 <b>高頻合作期（極力推薦）</b>：對方今日磁場順暢、喜氣臨門或才華湧現！極度適合在今天與其進行<b>重要會議、商業談判、合夥簽約或重大提案</b>。此時商談，對方心態開放，推進事務的阻力最小，成功率翻倍！`;
+            guideMessage = `🔥 <b>高頻合作期（極力推薦）</b>：對方今日整體磁場順暢，心態開放！非常適合與其進行<b>重要會議、商業談判、合夥簽約或重大提案</b>。此時相處阻力最小，共識極易達成。`;
         } else {
-            guideMessage = `😊 <b>和諧相處期（穩步推進）</b>：對方今日狀態穩定。適合進行正常的業務溝通、工作交接或日常聚餐。氛圍和睦，可以按照既定計畫放心地與其推進各項事務。`;
+            guideMessage = `😊 <b>和諧相處期（穩步推進）</b>：對方今日狀態平穩。適合正常的業務溝通、工作交接或日常聚餐。雖然可能有些外圍環境的小雜事干擾（如年支/時支輕微波動），但大局無礙，可以放心推進既定事務。`;
         }
         
-        // 如果對方今日是使用者的財星/官星，加碼提示
         if (myBazi) {
             const myDayGan = myBazi.stems[2];
             const relationMeToTarget = RELATION_MAP[ELEMENT_MAP[myDayGan]][ELEMENT_MAP[targetDayGan]];
             if (relationMeToTarget === '財星') {
-                guideMessage += `<br>💡 <b>加碼提示：</b>此人為您的【財星】，在今日高頻狀態下，與其探討商業方向，更容易激發出具體能變現的妙計！`;
+                guideMessage += `<br>💡 <b>加碼提示：</b>此人今日磁場與您相生且為您的【財星】，探討商務方向容易碰撞出具體變現的靈感！`;
             }
         }
         
-        guideCard.style.background = "rgba(46, 125, 50, 0.15)"; // 綠色底蘊（安全高頻）
+        guideCard.style.background = "rgba(46, 125, 50, 0.15)"; 
         guideCard.style.borderColor = "#2e7d32";
     } else {
-        // ⚫ 負面：顯示壞的灰星（滿星灰色代表極度負面，提醒避雷）
-        // 為了凸顯雷區嚴重性，分數越低、摩擦越重，灰星填滿度越高
-        let grayCount = 6 - computedStars; // 1星等 = 5個灰星，2星等 = 4個灰星
-        starsHtml = `<span style="color: #757575;">` + "⚫".repeat(grayCount) + "⚪".repeat(5 - grayCount) + `</span>`;
+        // ⚫ 負面：壞的灰星
+        starsHtml = `<span style="color: #757575;">` + "⚫".repeat(computedStars) + "⚪".repeat(5 - computedStars) + `</span>`;
         
-        guideMessage = `⚠️ <b>高能雷區預警（極速避雷！）</b>：對方今日流日磁場受挫，或命盤正遭遇流日強烈<b>相衝/相刑摩擦</b>，內心小劇場激烈，情緒極易焦躁、防禦心重或背負巨大壓力。<br><br>`;
-        guideMessage += `❌ <b>避雷指引：</b>今日<b>強烈建議避開衝突、暫緩重大談判、不要在此時逼迫其做決定或簽約</b>。溝通時請多點包容、保持安全距離，或主動給予對方空間，切勿正面硬剛，以免踩中地雷導致合作破局！`;
+        guideMessage = `⚠️ <b>高能雷區預警（建議避雷）</b>：對方今日核心磁場（月支/日支）遭遇明顯衝刑摩擦，或整體能量陷入低迷、內耗狀態，容易產生焦躁、防禦心重或壓力爆棚的情況。<br><br>`;
+        guideMessage += `❌ <b>避雷指引：</b>今日談話請多點包容、保持安全距離。<b>強烈建議暫緩重大談判、不要在此時逼迫其做重要決定</b>，避免正面硬剛，以免踩到隱形地雷導致相處僵持！`;
         
-        guideCard.style.background = "rgba(198, 40, 40, 0.15)"; // 紅色底蘊（雷區預警）
+        guideCard.style.background = "rgba(198, 40, 40, 0.15)"; 
         guideCard.style.borderColor = "#c62828";
     }
 
