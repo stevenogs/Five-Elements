@@ -765,7 +765,7 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         specLog = `時空引動${relations.pairs}。`;
     }
 
-    // 💡 修正後的人性化 5 星等共振公式
+// 💡 進階優化：引入時間維度權重（月、日、時分數分流）
     let fortuneScore = 50;
     if (isStrong) {
         fortuneScore = Math.round(50 + (outStrength / (selfStrength + 1)) * 15);
@@ -773,30 +773,47 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         fortuneScore = Math.round(50 + (selfStrength / (outStrength + 1)) * 15);
     }
 
-    // 格局大加分
+    // 💡 根據時間維度調整格局加分（流日最強，流月次之，流時僅為微幅波動）
+    let bonus = 0;
     if (relations.triple.length > 0) {
-        fortuneScore = Math.max(88, fortuneScore + 20); 
+        if (predictType === 'daily') bonus = 25;       // 流日大運勢，加分最高
+        else if (predictType === 'monthly') bonus = 15; // 流月大方向，加分次之
+        else if (predictType === 'hourly') bonus = 8;   // 流時小波動，微幅加分
     } else if (relations.pairs) {
-        fortuneScore += 10;
+        if (predictType === 'daily') bonus = 10;
+        else if (predictType === 'monthly') bonus = 6;
+        else if (predictType === 'hourly') bonus = 3;
     }
+
+    fortuneScore += bonus;
+    
+    // 💡 根據時空維度進行極值縮放，避免全部塞在 100 分
+    if (predictType === 'hourly') {
+        // 時辰運勢回歸中庸，波動範圍縮小，不容易出現極端 5 星或 1 星
+        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.4);
+    } else if (predictType === 'monthly') {
+        // 月運勢中度縮放
+        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.7);
+    }
+    
     fortuneScore = Math.max(30, Math.min(100, fortuneScore));
 
-    // 🌟 將分數完美轉譯為 5 星級與人性化等階
+    // 🌟 將分流後的精算分數，對應到優雅的 5 星級與人性化等階
     let starCount = 3; 
-    let energyLevelName = "【能量平穩】";
+    let energyLevelName = "【和諧順遂】";
 
-    if (fortuneScore >= 90) {
+    if (fortuneScore >= 85) {
         starCount = 5;
-        energyLevelName = "【凌汛暴發】"; 
-    } else if (fortuneScore >= 75) {
+        energyLevelName = (predictType === 'hourly') ? "【靈感湧現】" : "【凌汛暴發】"; 
+    } else if (fortuneScore >= 68) {
         starCount = 4;
-        energyLevelName = "【氣場強勁】";
-    } else if (fortuneScore >= 45) {
+        energyLevelName = (predictType === 'hourly') ? "【執行力強】" : "【氣場強勁】";
+    } else if (fortuneScore >= 48) {
         starCount = 3;
         energyLevelName = "【和諧順遂】";
-    } else if (fortuneScore >= 35) {
+    } else if (fortuneScore >= 38) {
         starCount = 2;
-        energyLevelName = "【能量潛藏】";
+        energyLevelName = (predictType === 'hourly') ? " {機動待命} " : "【能量潛藏】";
     } else {
         starCount = 1;
         energyLevelName = "【靜心休整】";
