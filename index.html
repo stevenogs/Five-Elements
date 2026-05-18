@@ -390,14 +390,12 @@
             <p id="monthly-energy-text">尚未預測</p>
             <p id="monthly-energy-action">尚未預測</p>
         </div>
-        <button class="btn-primary" style="margin-top: 10px;" onclick="showMyMonthlyPrediction()">🗓️ 顯示本月能量預測</button>
 
         <div id="hourly-energy-card" class="energy-card-small" style="margin-top: 10px; display: none;">
             <h4>⏳ 本時辰能量提示</h4>
             <p id="hourly-energy-text">尚未預測</p>
             <p id="hourly-energy-action">尚未預測</p>
         </div>
-        <button class="btn-primary" style="margin-top: 10px;" onclick="showMyHourlyPrediction()">⏳ 顯示本時辰能量預測</button>
 
         <div id="resonance-board" class="dayun-section" style="display: none; border-color: #ffb300; background: rgba(255,179,0,0.08);">
             <div class="match-title" style="color: #ffb300; border-bottom: 1px solid rgba(255,179,0,0.3);">🔥 歲運交互共振引擎</div>
@@ -613,9 +611,8 @@ const ENERGY_CARD_THEMES = {
     'default': { action: '平穩', color: 'linear-gradient(135deg, #4b6cb7, #182848)', text_prefix: '能量穩定' } 
 };
 
-// 🌟 升級版：新手白話文與天干地支全功能辭典資料庫
+// 🌟 新手白話文與天干地支全功能辭典資料庫
 const DICTIONARY = {
-    // 核心觀念
     '日主': '<b>👤 角色本質與靈魂主體</b><br><br>代表你這個人的「初始設定」與根本性格。無論外在天氣（流年、流日）怎麼變，你的核心特質都由此決定。例如「戊土」日主就像穩重的高山。',
     '大運': '<b>⏳ 人生的十年季節地圖</b><br><br>命運每十年會為你切換一次大環境（例如從寒冬換到暖春）。大運決定了這十年的「人生主旋律」，是宏觀命運的基調。',
     '財星': '<b>💰 目標、掌控與資源收穫（金錢與成果）</b><br><br>代表你可以掌控、操作的資源。此運引動時目標感極強，適合執行具體計畫、理財或簽約。能量飽滿（身強）時最容易創造「噴寶」效應。',
@@ -624,19 +621,17 @@ const DICTIONARY = {
     '食傷': '<b>🎨 點子、才華、表達與輸出（發明與靈感）</b><br><br>你的能量迫不及待向外輸出的時期。頭腦特別靈光、邏輯清晰、點子源源不絕。非常適合進行創作、研發、寫代碼或開拓全新策略。',
     '比劫': '<b>🤝 同儕、自我意志與社交資源（自信與夥伴）</b><br><br>你的自我意識與意志力來到高峰，變得非常有自信、不服輸。適合社交合作、資源對接與擴展人脈，但也要注意避免固執而產生摩擦。',
 
-    // 🌲 10 天干屬性 (意象 + 職場角色)
     '甲': '<b>🌲 甲木：參天大樹（直爽、剛毅、領導者）</b><br><br>如同森林裡的巨木，充滿向上發展的鬥志。性格仁慈、注重榮譽、直來直往，不喜歡被束縛。在職場上通常具備獨當一面的管理或領導潛力，但有時較為固執、不善變通。',
     '乙': '<b>🌿 乙木：蔓藤花草（柔韌、靈活、外交家）</b><br><br>如同花草與攀援植物，雖然柔軟，卻具備極強的生存與適應能力。頭腦靈活、善於協調人際關係、借力使力。在職場上是優秀的幕僚與合作夥伴，但內心較容易多愁善感、依賴感較強。',
     '丙': '<b>🔥 丙火：普照太陽（熱情、亮眼、傳播者）</b><br><br>如同陽光般熾熱且無私，喜歡照顧他人、照亮群體。精力充沛、情感外顯、講求效率與光明正大。在舞台或社交場合上非常亮眼，適合公關、傳播與演講，缺點是容易缺乏耐心、三分鐘熱度。',
     '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
-    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固執、不喜歡突如其來的改變。',
+    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固估、不喜歡突如其來的改變。',
     '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行政策劃，不過內心較多慮、容易妥協而委屈自己。',
     '庚': '<b>🪙 庚金：剛鐵礦石（果断、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
     '辛': '<b>💎 辛金：璀璨珠寶（精密、精緻、完美主義）</b><br><br>如同璀璨的鑽石、黃金首飾，或是精密的醫療手術刀。心思細緻、追求極致的完美與質感、自尊心強且對美感有獨特堅持。適合需要高精準度、藝術、研發或精密工程的工作，但對批評較為敏感、容易自我要求過高。',
     '壬': '<b>🌊 壬水：奔騰江海（智慧、奔放、冒險家）</b><br><br>如同滔滔江水與汪洋大海，充滿無窮的智慧、宏觀的視野與大格局。不拘小節、適應力極強、善於整合資源與隨機應變。喜歡自由與挑戰，適合大型企劃、商務與開拓新市場，缺點是情緒波動大、有時較為任性。',
     '癸': '<b>💧 癸水：雨露泉水（靈動、體貼、思想家）</b><br><br>如同晶瑩的雨露、溫柔的泉水，或是清晨的霧氣。性格最為柔和、充滿靈性與想像力、記憶力奇佳，擅長以柔克剛。對周遭環境的磁場與情緒極度敏感（神準的第六感），適合創作、企劃與幕後智囊，但有時容易多愁善感、流於空想。',
 
-    // ⏳ 12 地支屬性 (時空意象)
     '子': '<b>💧 子水（仲冬）：正純之水，深邃的智慧</b><br><br>代表冬天的核心、深夜的子時（23~01點）。純度極高的水能量，象徵冷靜思考、精明、潛意識與靈性。引動時適合靜心策劃、沉澱思緒。',
     '丑': '<b>⛰️ 丑土（季冬）：冰凍之土，等待甦醒的寶藏</b><br><br>代表冬末、凌晨的丑時（01~03點）。是含有水與金的濕冷泥土。內心沉穩、極有耐力、默默耕耘，雖然外表冷靜，但藏有金庫之氣，厚積薄發。',
     '寅': '<b>🌲 寅木（孟春）：初春之木，爆發的生命力</b><br><br>代表春天的開始、清晨的寅時（03~05點）。如同剛發芽的巨木，帶有源源不絕的衝勁與火的熱情。象徵開拓、野心與大膽嘗試新事物。',
@@ -651,15 +646,18 @@ const DICTIONARY = {
     '亥': '<b>💧 亥水（孟冬）：初冬之水，流動的遠景</b><br><br>代表冬天的開始、夜晚的亥時（21~23點）。奔騰的大水，裡面還暗藏了木的創意。象徵宏觀的智慧、寬廣的包容力、喜歡自由，直覺力非常強。'
 };
     
-// 🛡️ 智慧防禦版：自動為天干地支加底線，但主動排除「時辰」、「已經」等生活詞彙
-function formatTextKeywords(text) {
+// 🛡️ 智慧防禦版：自動為天干地支加底線，並在特定模式下徹底禁止對建議內容加上超連結
+function formatTextKeywords(text, disableTooltip = false) {
     if (!text) return "";
     let formatted = text;
 
-    // 1. 先排序關鍵字（長名詞如：日主、財星先替換，避免單字干擾）
+    // 如果指定停用超連結，則只回傳原始文字（乾淨純文字講解）
+    if (disableTooltip) {
+        return text;
+    }
+
     const sortedKeys = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
 
-    // 2. 🛠️ 特殊防禦機制：先把生活中常見的、含有天干地支的詞彙「保護起來」，換成特殊佔位符
     const protections = [
         { word: '時辰', placeholder: '___SHICHEN___' },
         { word: '已經', placeholder: '___YIJING___' },
@@ -672,13 +670,11 @@ function formatTextKeywords(text) {
         formatted = formatted.replace(r, p.placeholder);
     });
 
-    // 3. 執行原本的天干地支關鍵字虛線化
     for (let key of sortedKeys) {
         const regex = new RegExp(key, 'g');
         formatted = formatted.replace(regex, `<span class="keyword-highlight" onclick="openModal('${key}')">${key}</span>`);
     }
 
-    // 4. 🛠️ 把被保護的詞彙老老實實還原回來（這時候它們就絕對不會帶有任何底線連結了！）
     protections.forEach(p => {
         const r = new RegExp(p.placeholder, 'g');
         formatted = formatted.replace(r, p.word);
@@ -687,7 +683,6 @@ function formatTextKeywords(text) {
     return formatted;
 }
 
-// 🌟 彈窗開關控制邏輯
 function openModal(keyword) {
     const modal = document.getElementById('info-modal');
     const title = document.getElementById('modal-title-text');
@@ -852,6 +847,7 @@ function analyzeEarthlyRelations(bazi, transitZhi) {
     return results;
 }
 
+// 🪐 核心重構：加入四柱地支刑沖破害大碰撞引擎
 function getEnergyPrediction(baziStems, predictType, baziObj) {
     const dayMaster = baziStems[2]; 
     const dayMasterElement = ELEMENT_MAP[dayMaster]; 
@@ -866,17 +862,16 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         targetZhi = lunarToday.getDayInGanZhi().substring(1, 2);
         timeUnit = '今日';
     } else if (predictType === 'monthly') {
-        const solarMonth = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, 1); 
+        const solarMonth = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate()); 
         const lunarMonth = Lunar.fromSolar(solarMonth);
         targetGan = lunarMonth.getMonthGan(); 
         targetZhi = lunarMonth.getMonthZhi();
         timeUnit = '本月';
     } else if (predictType === 'hourly') {
-        // 🛠️ 修正：精準取得當前時間的流時天干與地支
         const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
         targetGan = lunarNow.getTimeGan(); 
-        const targetZhi = lunarNow.getTimeZhi(); // 抓取當前地支（例如：未）
-        timeUnit = `本時辰 (${targetZhi}時)`;      // 動態變成 "本時辰 (未時)"
+        targetZhi = lunarNow.getTimeZhi(); 
+        timeUnit = `本時辰 (${targetZhi}時)`;      
     } else {
         return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
     }
@@ -947,8 +942,49 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
     let starsString = "🌟".repeat(starCount) + "⭐".repeat(5 - starCount);
     const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
 
-    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
+    let energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
     const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
+
+    // ⚡ 地支刑沖破害微觀雷達引擎
+    if (baziObj && baziObj.branches && baziObj.branches.length > 0 && targetZhi) {
+        let collisionMessages = [];
+
+        const liuChong = {'子':'午', '午':'子', '丑':'未', '未':'丑', '寅':'申', '申':'寅', '卯':'酉', '酉':'卯', '辰':'戌', '戌':'辰', '巳':'亥', '亥':'巳'};
+        const liuHe = {'子':'丑', '丑':'子', '寅':'亥', '亥':'寅', '卯':'戌', '戌':'卯', '辰':'酉', '酉':'辰', '巳':'申', '申':'巳', '午':'未', '未':'午'};
+        const liuHai = {'子':'未', '未':'子', '丑':'午', '午':'丑', '寅':'巳', '巳':'寅', '卯':'辰', '辰':'卯', '申':'亥', '亥':'申', '酉':'戌', '戌':'酉'};
+        const liuPo = {'子':'酉', '酉':'子', '卯':'午', '午':'卯', '辰':'丑', '丑':'辰', '戌':'未', '未':'戌', '寅':'亥', '亥':'寅', '巳':'申', '申':'巳'};
+        const sanXing = {'子':'卯', '卯':'子', '寅':'巳', '巳':'申', '申':'寅', '丑':'戌', '戌':'未', '未':'丑'};
+        const ziXing = ['辰', '午', '酉', '亥']; 
+
+        const positionNames = ['【年支】大環境', '【月支】事業內心', '【日支】身體配偶', '【時支】想法潛意'];
+
+        baziObj.branches.forEach((mb, idx) => {
+            if (!mb) return;
+            const pos = positionNames[idx];
+
+            if (liuChong[targetZhi] === mb) {
+                collisionMessages.push(`<br>⚠️ <b>${pos}與流動地支【${targetZhi}${mb}相衝】</b>：能量正面碰撞！局勢易面臨被迫變革或重組，是突破現狀或爆發的雙面刃契機。`);
+            }
+            else if (sanXing[targetZhi] === mb || (targetZhi === mb && ziXing.includes(mb))) {
+                collisionMessages.push(`<br>⚡ <b>${pos}與流動地支【${targetZhi}${mb}相刑】</b>：能量摩擦卡絆，容易流於執著、固執或內耗，多留心溝通可避免鑽牛角尖。`);
+            }
+            else if (liuHai[targetZhi] === mb) {
+                collisionMessages.push(`<br>🧩 <b>${pos}與流動地支【${targetZhi}${mb}相害】</b>：磁場拉扯不對頻，易有前進受阻之感，適合放慢腳步。`);
+            }
+            else if (liuPo[targetZhi] === mb) {
+                collisionMessages.push(`<br>🌱 <b>${pos}與流動地支【${targetZhi}${mb}相破】</b>：小細節隱性耗損，大方向無礙，在細部碎事上多點耐心即可。`);
+            }
+            else if (liuHe[targetZhi] === mb) {
+                collisionMessages.push(`<br>✅ <b>${pos}與流動地支【${targetZhi}${mb}相合】</b>：磁場強力凝聚！運行順暢、易得人緣協助，適合資源整合推進。`);
+            }
+        });
+
+        if (collisionMessages.length > 0) {
+            energyText += `<br><div style="text-align: left; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; line-height: 1.6; border-left: 4px solid #ffb300; color: #fff;">🪐 <b>地支磁場碰撞報告：</b>${collisionMessages.join('')}</div>`;
+        } else {
+            energyText += `<br><span style="color: #bbb; font-size: 0.82rem; display: block; margin-top: 8px;">(流動地支【${targetZhi}】與本命四柱磁場平穩，無明顯衝合摩擦。)</span>`;
+        }
+    }
 
     return { 
         text: energyText, 
@@ -957,7 +993,8 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         timeUnit: timeUnit, 
         cardColor: theme.color, 
         vibeAction: theme.action, 
-        vibeLabel: `日主 ${dayMaster} | ${relation}運` 
+        vibeLabel: `日主 ${dayMaster} | ${relation}運`,
+        predictType: predictType // 傳遞類型供渲染判斷
     };
 }
 
@@ -968,27 +1005,28 @@ function getDetailedAction(relation, isStrong) {
         case '印星': return `貴人運極佳，能量回補期。適合精密系統規劃、優化核心架構與吸收新知。`;
         case '食傷': return `思維邏輯爆發，點子源源不絕。適合發明創造、撰寫核心代碼與策略拓展。`;
         case '比劫': return `自我核心意志極強，適合社交合作、資源對接，但需沉著冷靜避免爭端。`;
-        default: return `保持平常心，穩步執行日常既定事務。`;
+        default: return `保持平常心，穩步執行日常既定事务。`;
     }
 }
 
-// 🛡️ 安全優化版：確保所有卡片標題與文字完美閉合，絕不漏出原始碼
+// 🛡️ 安全優化版：支援「建議欄純文字防禦」，確保本月/本時辰的建議沒有底線
 function updatePredictionCard(cardId, prediction) {
     const card = document.getElementById(cardId);
     if (!card) return;
 
     card.style.display = 'block';
     
-    // 使用我們強大的關鍵字轉換函數，讓卡片內文的天干地支也能點擊
+    // 判斷是否需要關閉建議欄（Action）的底線功能（本月、本時辰關閉）
+    const isMonthlyOrHourly = (prediction.predictType === 'monthly' || prediction.predictType === 'hourly');
+    
     const safeText = formatTextKeywords(prediction.text);
-    const safeAction = formatTextKeywords(prediction.action);
+    const safeAction = formatTextKeywords(prediction.action, isMonthlyOrHourly);
 
     if (cardId === 'daily-spectrum') { 
         card.querySelector('.vibe-label').innerText = prediction.vibeLabel;
         card.querySelector('.vibe-action').innerText = prediction.vibeAction;
         document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${safeText}`;
     } else { 
-        // 🛠️ 修正：用最乾淨、標準的 textContent 處理標題，用 innerHTML 處理帶有虛線超連結的內文
         card.querySelector('h4').textContent = `${prediction.timeUnit}能量提示`;
         card.querySelector('p:first-of-type').innerHTML = safeText;
         card.querySelector('p:last-of-type').innerHTML = safeAction;
@@ -1045,9 +1083,11 @@ function initHome() {
     const lunarInstance = Lunar.fromSolar(solarToday);
     const gzDay = lunarInstance.getDayInGanZhi(); 
     const liuNianGan = lunarInstance.getYearGan();
+    const liuYueGanZhi = lunarInstance.getMonthInGanZhi(); // 🌙 抓取當前流月干支
     
     document.getElementById('today-date').innerText = today.toLocaleDateString();
-    document.getElementById('today-bazi').innerText = `(流年：${lunarInstance.getYearInGanZhi()} / 流日：${gzDay})`;
+    // 🌙 在主頁面完美織入流月干支的排盤顯示
+    document.getElementById('today-bazi').innerText = `(流年：${lunarInstance.getYearInGanZhi()} / 流月：${liuYueGanZhi} / 流日：${gzDay})`;
 
     const mDate = localStorage.getItem('my_date');
     if (!mDate) {
@@ -1077,9 +1117,9 @@ function initHome() {
     const genderTerm = mGender === '1' ? '乾造' : '坤造';
     
     document.getElementById('my-bazi-display').style.display = 'block';
-    // 🌟 在這裡對命盤顯示的「日主」也加上點擊連結
     document.getElementById('my-bazi-display').innerHTML = formatTextKeywords(`我的命盤：[${genderTerm}] ${myBaziArray.formatStr} (日主 ${userDayGan})`);
 
+    // 🚀 自動觸發三大維度預測渲染（不再依賴舊按鈕）
     showMyDailyPrediction();
     showMyMonthlyPrediction(); 
     showMyHourlyPrediction();   
@@ -1118,7 +1158,6 @@ function initHome() {
         const dyRelation = RELATION_MAP[myElement][ELEMENT_MAP[activeDaYunGan]];
         const lnRelation = RELATION_MAP[myElement][ELEMENT_MAP[liuNianGan]];
         
-        // 🌟 在這裡對「大運」與交互共振結果也加上 Tooltip
         let resHtml = `目前您走在 <b>${activeDaYunGan}</b> 運 (<b>${dyRelation}</b>)，而今年是 <b>${liuNianGan}</b> 年 (<b>${lnRelation}</b>)。<br>`;
         
         if (dyRelation === lnRelation) {
@@ -1206,7 +1245,6 @@ function calculateMatch() {
     score = Math.max(10, Math.min(99, score)); 
     document.getElementById('match-score-value').innerText = `${score}%`;
     
-    // 🌟 合盤分析結果也一網打盡，自動附加名詞解釋彈窗
     document.getElementById('match-day-gan-desc').innerHTML = formatTextKeywords(dayGanLog);
     document.getElementById('match-group-desc').innerHTML = formatTextKeywords(groupLog);
     document.getElementById('match-branch-desc').innerHTML = formatTextKeywords(branchLog);
