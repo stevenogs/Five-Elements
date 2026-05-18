@@ -192,12 +192,19 @@
             font-size: 0.8rem; 
             border: 1px solid #444; 
             transition: 0.3s; 
+            cursor: pointer; /* 讓使用者知道大運是可以點擊的 */
+        }
+        .dayun-box:active {
+            transform: scale(0.95);
         }
         .dayun-box.current { 
             border-color: #ffb300; 
             background: rgba(255,179,0,0.15); 
             transform: scale(1.05); 
             box-shadow: 0 0 10px rgba(255,179,0,0.2); 
+        }
+        .dayun-box.current:active {
+            transform: scale(1);
         }
         .dayun-age { 
             color: #888; 
@@ -403,7 +410,7 @@
         </div>
 
         <div id="dayun-board" class="dayun-section" style="display: none;">
-            <div class="match-title">人生大運走勢 (每十年更換)</div>
+            <div class="match-title">人生大運走勢 (每十年更換，點擊可看解說)</div>
             <div id="dayun-list" class="dayun-grid"></div>
         </div>
     </div>
@@ -547,7 +554,7 @@
         <span class="nav-icon">🌌</span><span>我的能量</span>
     </div>
     <div class="nav-item" onclick="switchPage('match', this)">
-        <span class="nav-icon">💞</span><span>合盤分析</span>
+        <span class="nav-icon">💞</span><span>合盤 analysis</span>
     </div>
     <div class="nav-item" onclick="switchPage('record', this)">
         <span class="nav-icon">📝</span><span>打卡紀錄</span>
@@ -625,9 +632,9 @@ const DICTIONARY = {
     '乙': '<b>🌿 乙木：蔓藤花草（柔韌、靈活、外交家）</b><br><br>如同花草與攀援植物，雖然柔軟，卻具備極強的生存與適應能力。頭腦靈活、善於協調人際關係、借力使力。在職場上是優秀的幕僚與合作夥伴，但內心較容易多愁善感、依賴感較強。',
     '丙': '<b>🔥 丙火：普照太陽（熱情、亮眼、傳播者）</b><br><br>如同陽光般熾熱且無私，喜歡照顧他人、照亮群體。精力充沛、情感外顯、講求效率與光明正大。在舞台或社交場合上非常亮眼，適合公關、傳播與演講，缺點是容易缺乏耐心、三分鐘熱度。',
     '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
-    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固估、不喜歡突如其來的改變。',
-    '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行政策劃，不過內心較多慮、容易妥協而委屈自己。',
-    '庚': '<b>🪙 庚金：剛鐵礦石（果断、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
+    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固執、不喜歡突如其來的改變。',
+    '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行事情劃，不過內心較多慮、容易妥協而委屈自己。',
+    '庚': '<b>🪙 庚金：鋼鐵礦石（果斷、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
     '辛': '<b>💎 辛金：璀璨珠寶（精密、精緻、完美主義）</b><br><br>如同璀璨的鑽石、黃金首飾，或是精密的醫療手術刀。心思細緻、追求極致的完美與質感、自尊心強且對美感有獨特堅持。適合需要高精準度、藝術、研發或精密工程的工作，但對批評較為敏感、容易自我要求過高。',
     '壬': '<b>🌊 壬水：奔騰江海（智慧、奔放、冒險家）</b><br><br>如同滔滔江水與汪洋大海，充滿無窮的智慧、宏觀的視野與大格局。不拘小節、適應力極強、善於整合資源與隨機應變。喜歡自由與挑戰，適合大型企劃、商務與開拓新市場，缺點是情緒波動大、有時較為任性。',
     '癸': '<b>💧 癸水：雨露泉水（靈動、體貼、思想家）</b><br><br>如同晶瑩的雨露、溫柔的泉水，或是清晨的霧氣。性格最為柔和、充滿靈性與想像力、記憶力奇佳，擅長以柔克剛。對周遭環境的磁場與情緒極度敏感（神準的第六感），適合創作、企劃與幕後智囊，但有時容易多愁善感、流於空想。',
@@ -651,7 +658,6 @@ function formatTextKeywords(text, disableTooltip = false) {
     if (!text) return "";
     let formatted = text;
 
-    // 如果指定停用超連結，則只回傳原始文字（乾淨純文字講解）
     if (disableTooltip) {
         return text;
     }
@@ -693,6 +699,45 @@ function openModal(keyword) {
         body.innerHTML = DICTIONARY[keyword];
         modal.classList.add('active');
     }
+}
+
+// 🌟 新增：點擊大運週期的彈出式解說演算引擎
+function openDaYunModal(ganZhi, startAge, relation) {
+    const modal = document.getElementById('info-modal');
+    const title = document.getElementById('modal-title-text');
+    const body = document.getElementById('modal-body-text');
+    
+    const gan = ganZhi.substring(0, 1);
+    const zhi = ganZhi.substring(1, 2);
+    const endAge = startAge + 9;
+
+    title.innerText = `⏳ ${startAge} 歲 ～ ${endAge} 歲 專屬大運解說`;
+
+    let actionGuide = "";
+    switch (relation) {
+        case '財星': actionGuide = "這是全力「鋪路與收割成果」的黃金十年。目標感極強，在事業、創業或理財策略上面臨高密度實戰，適合將想法落地變成具體產出。身強者（能量飽滿）資產噴寶，身弱者宜結盟借力。"; break;
+        case '官殺': actionGuide = "這是面臨「高難度攻堅與名望突破」的磨練期。外在環境會交付重大責任、或產生較多制度性規範的壓迫感。只要沉著抗壓、建立嚴格自律，這十年將為你換來極高的社會地位與全新專業高度。"; break;
+        case '印星': actionGuide = "這是宇宙為你加持的「充電、深造與系統回補」十年。外在奔波感降低，貴人運大幅提升。適合潛心寫作、研發核心底層代碼、或重新優化自己的人生哲學與防護罩，能得到長輩、體制或學術的庇護。"; break;
+        case '食傷': actionGuide = "這是「才華輸出、創意爆發與開拓策略」的十年。點子源源不絕，邏輯思維極度靈敏，對傳統常規容易產生反叛與突破渴望。非常適合進行開創性項目、個人品牌打造、發明創造與大膽演說。"; break;
+        case '比劫': actionGuide = "這是「強化個人自我意志、人脈鏈接與自信心」的十年。整個人自信心與鬥志滿格，不服輸。在群體社交、資源對接、夥伴結盟上機會極多，需要注意收斂脾氣、冷靜對事，以防因過度固執而發生摩擦。"; break;
+        default: actionGuide = "能量運轉均衡，是平穩推展生活日常既定事務的穩健時期。";
+    }
+
+    let baziExplanation = `
+        <div style="font-size: 1.05rem; margin-bottom: 12px; color: #ffb300; font-weight: bold; text-align: center;">
+            🌟 【${ganZhi}】大運 ｜ 當前引動：【${relation}】氣候
+        </div>
+        <b>📊 核心引力走勢：</b><br>
+        您在 <b>${startAge}至${endAge}歲</b> 期間，生命磁場將全面受到流動天干 <b>${gan} (${ELEMENT_MAP[gan]}型)</b> 與地支 <b>${zhi}</b> 的能量合圍共振。<br><br>
+        <b>🎯 這十年的主旋律 (${relation}引力)：</b><br>
+        ${actionGuide}<br><br>
+        <span style="font-size: 0.8rem; color: #888; display: block; text-align: center; border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
+            提示：大運為十年的宏觀天氣。具體每一年，仍會與當年的流年（如今年丙午）天干地支進行二次化學碰撞。
+        </span>
+    `;
+
+    body.innerHTML = baziExplanation;
+    modal.classList.add('active');
 }
 
 function closeModal() {
@@ -847,7 +892,6 @@ function analyzeEarthlyRelations(bazi, transitZhi) {
     return results;
 }
 
-// 🪐 核心重構：加入四柱地支刑沖破害大碰撞引擎
 function getEnergyPrediction(baziStems, predictType, baziObj) {
     const dayMaster = baziStems[2]; 
     const dayMasterElement = ELEMENT_MAP[dayMaster]; 
@@ -945,7 +989,6 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
     let energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
     const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
 
-    // ⚡ 地支刑沖破害微觀雷達引擎
     if (baziObj && baziObj.branches && baziObj.branches.length > 0 && targetZhi) {
         let collisionMessages = [];
 
@@ -994,7 +1037,7 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         cardColor: theme.color, 
         vibeAction: theme.action, 
         vibeLabel: `日主 ${dayMaster} | ${relation}運`,
-        predictType: predictType // 傳遞類型供渲染判斷
+        predictType: predictType 
     };
 }
 
@@ -1009,14 +1052,12 @@ function getDetailedAction(relation, isStrong) {
     }
 }
 
-// 🛡️ 安全優化版：支援「建議欄純文字防禦」，確保本月/本時辰的建議沒有底線
 function updatePredictionCard(cardId, prediction) {
     const card = document.getElementById(cardId);
     if (!card) return;
 
     card.style.display = 'block';
     
-    // 判斷是否需要關閉建議欄（Action）的底線功能（本月、本時辰關閉）
     const isMonthlyOrHourly = (prediction.predictType === 'monthly' || prediction.predictType === 'hourly');
     
     const safeText = formatTextKeywords(prediction.text);
@@ -1083,10 +1124,9 @@ function initHome() {
     const lunarInstance = Lunar.fromSolar(solarToday);
     const gzDay = lunarInstance.getDayInGanZhi(); 
     const liuNianGan = lunarInstance.getYearGan();
-    const liuYueGanZhi = lunarInstance.getMonthInGanZhi(); // 🌙 抓取當前流月干支
+    const liuYueGanZhi = lunarInstance.getMonthInGanZhi(); 
     
     document.getElementById('today-date').innerText = today.toLocaleDateString();
-    // 🌙 在主頁面完美織入流月干支的排盤顯示
     document.getElementById('today-bazi').innerText = `(流年：${lunarInstance.getYearInGanZhi()} / 流月：${liuYueGanZhi} / 流日：${gzDay})`;
 
     const mDate = localStorage.getItem('my_date');
@@ -1119,7 +1159,6 @@ function initHome() {
     document.getElementById('my-bazi-display').style.display = 'block';
     document.getElementById('my-bazi-display').innerHTML = formatTextKeywords(`我的命盤：[${genderTerm}] ${myBaziArray.formatStr} (日主 ${userDayGan})`);
 
-    // 🚀 自動觸發三大維度預測渲染（不再依賴舊按鈕）
     showMyDailyPrediction();
     showMyMonthlyPrediction(); 
     showMyHourlyPrediction();   
@@ -1134,6 +1173,7 @@ function initHome() {
     dayunListContainer.innerHTML = '';
     
     let activeDaYunGan = null; 
+    const myElement = ELEMENT_MAP[userDayGan];
 
     yunList.forEach((y, i) => {
         if (i === 0) return; 
@@ -1141,10 +1181,15 @@ function initHome() {
         const gz = y.getGanZhi();
         const isCurrent = currentAge >= age && currentAge < age + 10;
         
-        if (isCurrent) activeDaYunGan = gz.substring(0, 1);
+        // 動態計算此大運天干與使用者日主的十神關係，以便點擊時能精準解說
+        const daYunGan = gz.substring(0, 1);
+        const loopRelation = RELATION_MAP[myElement][ELEMENT_MAP[daYunGan]] || 'default';
 
+        if (isCurrent) activeDaYunGan = daYunGan;
+
+        // 🌟 在 HTML 模板中注入動態點擊函數 openDaYunModal
         dayunListContainer.innerHTML += `
-            <div class="dayun-box ${isCurrent ? 'current' : ''}">
+            <div class="dayun-box ${isCurrent ? 'current' : ''}" onclick="openDaYunModal('${gz}', ${age}, '${loopRelation}')">
                 <span class="dayun-age">${age}歲</span>
                 <span class="dayun-gz">${gz}</span>
             </div>
@@ -1154,7 +1199,6 @@ function initHome() {
     if (activeDaYunGan) {
         document.getElementById('resonance-board').style.display = 'block';
         
-        const myElement = ELEMENT_MAP[userDayGan];
         const dyRelation = RELATION_MAP[myElement][ELEMENT_MAP[activeDaYunGan]];
         const lnRelation = RELATION_MAP[myElement][ELEMENT_MAP[liuNianGan]];
         
