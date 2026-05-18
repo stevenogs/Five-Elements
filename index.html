@@ -5,7 +5,7 @@
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1041/1041924.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>易能量</title> 
+    <title>易能量 Pro</title> 
     <meta name="apple-mobile-web-app-title" content="易能量"> 
     <meta name="application-name" content="易能量"> 
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -113,7 +113,6 @@
             cursor: pointer; 
         }
         
-/* 個人能量顯示卡片 (日) */
         .spectrum-display { 
             width: 100%; 
             height: 120px; 
@@ -129,12 +128,11 @@
             color: #fff; 
             background: linear-gradient(135deg, #4b6cb7, #182848); 
             transition: background 0.5s ease;
-            text-align: center; /* 🛠️ 強制內部所有行內文字水平居中 */
+            text-align: center; 
             box-sizing: border-box;
-            padding: 10px; /* 🛠️ 內襯墊，防止文字太長時貼邊 */
+            padding: 10px; 
         }
         
-        /* 🛠️ 順便確保裡面的子元件也完全置中且不疊在一起 */
         .spectrum-display .vibe-label {
             font-size: 0.8rem; 
             opacity: 0.7; 
@@ -149,15 +147,15 @@
         }
 
         .desc { 
-        font-size: 0.95rem;
+            font-size: 0.95rem;
             color: #cccccc; 
             margin-bottom: 20px; 
             line-height: 1.6; 
             min-height: 60px; 
             text-align: center;
-            width: 100%; /* 確保寬度佔滿容器 */
+            width: 100%; 
             box-sizing: border-box;
-            padding: 0 10px; /* 增加左右留白，避免字體貼邊 */
+            padding: 0 10px; 
         }
         
         .dayun-section, .energy-card-small { 
@@ -368,7 +366,7 @@
 
 <div id="page-match" class="page">
     <div class="container">
-        <h1>人際合盤分析</h1>
+        <h1>人際合盤 analysis</h1>
         <div class="input-group">
             <p>🎯 對方的出生資訊</p>
             <div class="flex-row">
@@ -508,7 +506,7 @@
 <script>
 const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec";
 
-// --- 核心資料矩陣 ---
+// --- 核心資料與地支藏干對照表 ---
 const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
 const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
 const RELATION_MAP = {
@@ -518,6 +516,39 @@ const RELATION_MAP = {
     '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
     '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
 };
+
+// 地支藏干比例百分比（本氣、中氣、餘氣計分）
+const ZHI_HIDDEN_MAP = {
+    '子': { '水': 1.00 },
+    '丑': { '土': 0.60, '水': 0.20, '金': 0.20 },
+    '寅': { '木': 0.60, '火': 0.20, '土': 0.20 },
+    '卯': { '木': 1.00 },
+    '辰': { '土': 0.60, '木': 0.20, '水': 0.20 },
+    '巳': { '火': 0.60, '土': 0.20, '金': 0.20 },
+    '午': { '火': 0.70, '土': 0.30 },
+    '未': { '土': 0.60, '火': 0.20, '木': 0.20 },
+    '申': { '金': 0.60, '水': 0.30, '土': 0.10 },
+    '酉': { '金': 1.00 },
+    '戌': { '土': 0.60, '金': 0.20, '火': 0.20 },
+    '亥': { '水': 0.70, '木': 0.30 }
+};
+
+// 12地支索引與二維交叉刑沖合害矩陣 (0=無關係, 1=六合, 2=六沖, 5=相刑, 6=相害)
+const DIZHI_INDEX = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const RELATION_MATRIX = [
+    [0, 1, 0, 5, 0, 0, 2, 6, 0, 0, 0, 0], // 子
+    [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0], // 丑
+    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1], // 寅
+    [5, 0, 0, 0, 0, 0, 2, 0, 0, 2, 1, 0], // 卯
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0], // 辰
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2], // 巳
+    [2, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0], // 午
+    [6, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], // 未
+    [0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0], // 申
+    [0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0], // 酉
+    [0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0], // 戌
+    [0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0]  // 亥
+];
 
 const ENERGY_CARD_THEMES = {
     '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text_prefix: '財星高照' }, 
@@ -569,7 +600,12 @@ function getBaziArray(lunarObj, isUnknown) {
         stems.push(bazi.getTimeGan()); 
         branches.push(bazi.getTimeZhi()); 
     }
-    return { stems, branches, formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` };
+    return { 
+        stems, 
+        branches, 
+        isUnknown,
+        formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` 
+    };
 }
 
 function saveMyBazi() {
@@ -589,50 +625,172 @@ function saveMyBazi() {
     alert("本命與大運已成功啟動！");
 }
 
-function getEnergyPrediction(baziStems, predictType) {
+// --- 💡 整合第二與第三階段：全動態五行權重計分引擎 ---
+function calculateElementWeights(bazi, transitGan, transitZhi) {
+    let scores = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
+    
+    // 定義基礎位置權重 (第二階段與第三階段自動切換機制)
+    let weights = {
+        year_gan: 8, year_zhi: 10,
+        month_gan: 10, month_zhi: 30, // 月令核心比重
+        day_gan: 12, day_zhi: 15,
+        hour_gan: 0, hour_zhi: 0,
+        transit_gan: 8, transit_zhi: 10  // 加入流日/流時氣場干擾分數
+    };
+    
+    if (!bazi.isUnknown) {
+        weights.hour_gan = 8;
+        weights.hour_zhi = 12;
+        weights.month_zhi = 25; // 有時辰時，微調月令比重平衡
+    }
+    
+    // 計算天干
+    scores[ELEMENT_MAP[bazi.stems[0]]] += weights.year_gan;
+    scores[ELEMENT_MAP[bazi.stems[1]]] += weights.month_gan;
+    scores[ELEMENT_MAP[bazi.stems[2]]] += weights.day_gan;
+    if (!bazi.isUnknown) scores[ELEMENT_MAP[bazi.stems[3]]] += weights.hour_gan;
+    if (transitGan) scores[ELEMENT_MAP[transitGan]] += weights.transit_gan;
+    
+    // 計算地支（導入隱藏本氣/中氣/餘氣精算）
+    const processZhi = (zhi, weight) => {
+        if (!zhi || !ZHI_HIDDEN_MAP[zhi]) return;
+        for (let elem in ZHI_HIDDEN_MAP[zhi]) {
+            scores[elem] += weight * ZHI_HIDDEN_MAP[zhi][elem];
+        }
+    };
+    
+    processZhi(bazi.branches[0], weights.year_zhi);
+    processZhi(bazi.branches[1], weights.month_zhi);
+    processZhi(bazi.branches[2], weights.day_zhi);
+    if (!bazi.isUnknown) processZhi(bazi.branches[3], weights.hour_zhi);
+    if (transitZhi) processZhi(transitZhi, weights.transit_zhi);
+    
+    // 月令節氣引導係數加乘 (月支五行當旺則得分增加20%，克泄則降低20%)
+    let seasonElement = ZHI_ELEMENT_MAP[bazi.branches[1]];
+    for (let key in scores) {
+        if (key === seasonElement) {
+            scores[key] *= 1.2;
+        } else if (RELATION_MAP[seasonElement][key] === '官殺' || RELATION_MAP[seasonElement][key] === '食傷') {
+            scores[key] *= 0.8;
+        }
+    }
+    return scores;
+}
+
+// --- 💡 整合第三階段：地支群體交互關係矩陣判定器 ---
+function analyzeEarthlyRelations(bazi, transitZhi) {
+    let list = [...bazi.branches];
+    if (transitZhi) list.push(transitZhi);
+    
+    let results = { triple: [], pairs: "" };
+    
+    // 1. 三合局獨立判斷 (申子辰、寅午戌、亥卯未、巳酉丑)
+    const TRIPLE_GROUPS = {
+        "申子辰三合偏財水局": ['申', '子', '辰'],
+        "寅午戌三合官殺火局": ['寅', '午', '戌'],
+        "亥卯未三合比劫木局": ['亥', '卯', '未'],
+        "巳酉丑三合食傷金局": ['巳', '酉', '丑']
+    };
+    
+    for (let name in TRIPLE_GROUPS) {
+        let match = TRIPLE_GROUPS[name].every(z => list.includes(z));
+        if (match) results.triple.push(name);
+    }
+    
+    // 2. 利用12x12二維矩陣進行兩兩沖合刑害判定
+    let logs = [];
+    for (let i = 0; i < list.length; i++) {
+        for (let j = i + 1; j < list.length; j++) {
+            let idx1 = DIZHI_INDEX.indexOf(list[i]);
+            let idx2 = DIZHI_INDEX.indexOf(list[j]);
+            if (idx1 !== -1 && idx2 !== -1) {
+                let code = RELATION_MATRIX[idx1][idx2];
+                if (code === 1) logs.push(`【${list[i]}${list[j]}六合】磁場凝聚`);
+                if (code === 2) logs.push(`【${list[i]}${list[j]}相衝】能量激盪與變動`);
+                if (code === 5) logs.push(`【${list[i]}${list[j]}相刑】細節摩擦`);
+                if (code === 6) logs.push(`【${list[i]}${list[j]}相害】防範暗流`);
+            }
+        }
+    }
+    results.pairs = logs.slice(0, 2).join("，"); // 僅抽取最關鍵的前兩組關係
+    return results;
+}
+
+function getEnergyPrediction(baziStems, predictType, baziObj) {
     const dayMaster = baziStems[2]; 
     const dayMasterElement = ELEMENT_MAP[dayMaster]; 
 
     const now = new Date();
     let targetGan = ''; 
+    let targetZhi = '';
     let timeUnit = ''; 
 
     if (predictType === 'daily') {
         const solarToday = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
         const lunarToday = Lunar.fromSolar(solarToday);
         targetGan = lunarToday.getDayInGanZhi().substring(0, 1);
+        targetZhi = lunarToday.getDayInGanZhi().substring(1, 2);
         timeUnit = '今日';
     } else if (predictType === 'monthly') {
         const solarMonth = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, 1); 
         const lunarMonth = Lunar.fromSolar(solarMonth);
         targetGan = lunarMonth.getMonthGan(); 
+        targetZhi = lunarMonth.getMonthZhi();
         timeUnit = '本月';
     } else if (predictType === 'hourly') {
         const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
         targetGan = lunarNow.getTimeGan(); 
+        targetZhi = lunarNow.getTimeZhi();
         timeUnit = '本時辰';
-    } else {
-        return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
     }
 
+    // 啟動進階綜合判定引擎
+    const weights = calculateElementWeights(baziObj, targetGan, targetZhi);
+    const relations = analyzeEarthlyRelations(baziObj, targetZhi);
+    
+    // 依據喜忌神演算法優化十神感受
     const targetElement = ELEMENT_MAP[targetGan];
     const relation = RELATION_MAP[dayMasterElement][targetElement] || 'default'; 
+    
+    // 依據命盤總體身強身弱（土、火對戊土為幫身幫扶得分）判定流日時空對喜用神的適配度
+    let selfStrength = weights['土'] + weights['火'];
+    let outStrength = weights['金'] + weights['水'] + weights['木'];
+    let isStrong = selfStrength > outStrength;
+    
+    // 建立客製化高維度運勢文案
+    let specLog = "";
+    if (relations.triple.length > 0) {
+        specLog = `觸發${relations.triple[0]}！`;
+    } else if (relations.pairs) {
+        specLog = `時空引動${relations.pairs}。`;
+    }
 
     const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}旺盛！`;
-    const energyAction = `建議：${theme.action}，${getDetailedAction(relation)}。`; 
+    let fortuneScore = isStrong ? Math.round(50 + (outStrength - selfStrength)) : Math.round(50 + (selfStrength - outStrength));
+    fortuneScore = Math.max(20, Math.min(98, fortuneScore)); // 確保不破表
 
-    return { text: energyText, action: energyAction, relation: relation, timeUnit: timeUnit, cardColor: theme.color, vibeAction: theme.action, vibeLabel: `日主 ${dayMaster} | ${relation}` };
+    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}氣場共振率達 ${fortuneScore}%。${specLog}`;
+    const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
+
+    return { 
+        text: energyText, 
+        action: energyAction, 
+        relation: relation, 
+        timeUnit: timeUnit, 
+        cardColor: theme.color, 
+        vibeAction: theme.action, 
+        vibeLabel: `日主 ${dayMaster} | ${relation}運` 
+    };
 }
 
-function getDetailedAction(relation) {
+function getDetailedAction(relation, isStrong) {
     switch (relation) {
-        case '財星': return `對金錢嗅覺靈敏，適合處理財務、投資或收入相關任務。`;
-        case '官殺': return `可能面臨挑戰或需承擔責任，適合處理重要公務、解決難題，但需避免衝突。`;
-        case '印星': return `貴人運佳，適合學習與補充內在能量，心態平和。適合研究、學習新知。`;
-        case '食傷': return `才華橫溢，點子極多，適合展現創意與表達自我。適合創作、開拓新項目。`;
-        case '比劫': return `能量充沛，適合交流合作，但也需注意競爭。適合團隊協作、參與社交活動。`;
-        default: return `保持平常心，執行日常事務。`;
+        case '財星': return isStrong ? `身強可任財，意外幸運極高，主動執行決策、投資或選號皆能完美捕捉。` : `財氣過旺耗身，宜保守、團隊協作，避免獨自承擔過重壓力。`;
+        case '官殺': return `適合攻堅難題、制定規章與高難度突破，需注意作息與情緒沉著。`;
+        case '印星': return `貴人運極佳，能量回補期。適合精密系統規劃、優化核心架構與吸收新知。`;
+        case '食傷': return `思維邏輯爆發，點子源源不絕。適合發明創造、撰寫核心代碼與策略拓展。`;
+        case '比劫': return `自我核心意志極強，適合社交合作、資源對接，但需沉著冷靜避免爭端。`;
+        default: return `保持平常心，穩步執行日常既定事務。`;
     }
 }
 
@@ -664,11 +822,10 @@ function showMyDailyPrediction() {
     const mUnknown = localStorage.getItem('my_unknown') === 'true';
     const myLunar = getLunarObj(mDate, mTime, mUnknown);
     const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'daily');
+    const prediction = getEnergyPrediction(myBazi.stems, 'daily', myBazi);
     updatePredictionCard('daily-spectrum', prediction);
     
-    // 這裡加上了換行，讓整體畫面更平衡
-    document.getElementById('daily-description').innerHTML = `<b style="color: #ffb300;">【今日核心感應】</b><br>${prediction.text}`;
+    document.getElementById('daily-description').innerHTML = `<b style="color: #ffb300;">【今日四柱全息共振】</b><br>${prediction.text}`;
     document.getElementById('daily-description').style.display = 'block';
 }
 
@@ -682,7 +839,7 @@ function showMyMonthlyPrediction() {
     const mUnknown = localStorage.getItem('my_unknown') === 'true';
     const myLunar = getLunarObj(mDate, mTime, mUnknown);
     const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'monthly');
+    const prediction = getEnergyPrediction(myBazi.stems, 'monthly', myBazi);
     updatePredictionCard('monthly-energy-card', prediction);
 }
 
@@ -696,19 +853,20 @@ function showMyHourlyPrediction() {
     const mUnknown = localStorage.getItem('my_unknown') === 'true';
     const myLunar = getLunarObj(mDate, mTime, mUnknown);
     const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'hourly');
+    const prediction = getEnergyPrediction(myBazi.stems, 'hourly', myBazi);
     updatePredictionCard('hourly-energy-card', prediction);
 }
 
 function initHome() {
     const today = new Date();
     const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunarToday = Lunar.fromSolar(solarToday);
-    const gzDay = lunarToday.getDayInGanZhi(); 
-    const liuNianGan = lunarToday.getYearGan();
+    const lunarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
+    const lunarInstance = Lunar.fromSolar(lunarToday);
+    const gzDay = lunarInstance.getDayInGanZhi(); 
+    const liuNianGan = lunarInstance.getYearGan();
     
     document.getElementById('today-date').innerText = today.toLocaleDateString();
-    document.getElementById('today-bazi').innerText = `(流年：${lunarToday.getYearInGanZhi()} / 流日：${gzDay})`;
+    document.getElementById('today-bazi').innerText = `(流年：${lunarInstance.getYearInGanZhi()} / 流日：${gzDay})`;
 
     const mDate = localStorage.getItem('my_date');
     if (!mDate) {
@@ -751,7 +909,7 @@ function initHome() {
     const myEightChar = myLunar.getEightChar();
     const yun = myEightChar.getYun(parseInt(mGender)); 
     const yunList = yun.getDaYun(); 
-    const currentAge = lunarToday.getYear() - myLunar.getYear() + 1; 
+    const currentAge = lunarInstance.getYear() - myLunar.getYear() + 1; 
     
     document.getElementById('dayun-board').style.display = 'block';
     const dayunListContainer = document.getElementById('dayun-list');
@@ -949,7 +1107,6 @@ async function submitRecord() {
     }
 }
 
-// --- 【補齊實作】分析他人能量邏輯 ---
 function analyzeBazi() {
     const aDate = document.getElementById('analyze-date').value;
     const aTime = document.getElementById('analyze-time').value;
@@ -958,24 +1115,20 @@ function analyzeBazi() {
     
     if (!aDate) return alert("請選擇對方的生日日期！");
     
-    // 暫存分析對方的輸入資料至瀏覽器快取
     localStorage.setItem('last_analyze_date', aDate);
     localStorage.setItem('last_analyze_time', aTime);
     localStorage.setItem('last_analyze_gender', aGender);
     localStorage.setItem('last_analyze_unknown', isUnknown);
     
-    // 進行八字排盤與預測
     const targetLunar = getLunarObj(aDate, aTime, isUnknown);
     const targetBazi = getBaziArray(targetLunar, isUnknown);
     const targetDayGan = targetBazi.stems[2];
     const genderTerm = aGender === '1' ? '乾造' : '坤造';
     
-    // 渲染 UI
     document.getElementById('analyze-result').style.display = 'block';
     document.getElementById('analyze-bazi').innerText = `[${genderTerm}] ${targetBazi.formatStr} (日主 ${targetDayGan})`;
     
-    // 呼叫流日能量預測
-    const prediction = getEnergyPrediction(targetBazi.stems, 'daily');
+    const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
     
     const energyCard = document.getElementById('analyze-energy-card');
     energyCard.style.display = 'block';
@@ -999,7 +1152,6 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function showHome() {
-    // 切換回首頁時，重新跑一次自己的命盤初始化，確保資料不打結
     initHome();
     switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]')); 
 }
