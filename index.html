@@ -192,7 +192,7 @@
             font-size: 0.8rem; 
             border: 1px solid #444; 
             transition: 0.3s; 
-            cursor: pointer; /* 讓使用者知道大運是可以點擊的 */
+            cursor: pointer;
         }
         .dayun-box:active {
             transform: scale(0.95);
@@ -311,7 +311,6 @@
             background: #f44336; 
         }
 
-        /* 🌟 精緻動態 Tooltip 彈窗樣式 */
         .keyword-highlight {
             color: #ffca28;
             font-weight: bold;
@@ -509,7 +508,7 @@
 <div id="page-analyze" class="page">
     <div class="container">
         <h1>🎯 分析他人能量</h1>
-        <p>請輸入對方的出生資訊，系統將為其生成「每日能量預測」。</p>
+        <p>輸入對方的出生資訊，系統將推演其流日狀態，並與您的八字共振，提供「避雷與合作」星級導航。</p>
         <div class="input-group">
             <div class="flex-row">
                 <select id="analyze-gender" style="flex: 1;">
@@ -526,14 +525,23 @@
             </label>
             <button class="btn-primary" onclick="analyzeBazi()">輸入八字並啟動能量預測</button>
         </div>
+        
         <div id="analyze-result" style="margin-top: 20px; display: none;">
             <h3>📊 對方的命盤：<br><span id="analyze-bazi" style="color: #ffb300; font-size: 1.1rem;">未設定</span></h3>
             <div class="desc" id="analyze-description">請先輸入出生資訊以啟動「每日能量預測」。</div>
+            
             <div id="analyze-energy-card" class="energy-card-small" style="margin-top: 20px; display: none; padding: 15px; border-radius: 15px;">
                 <h4>🎯 今日能量提示</h4>
                 <p id="analyze-energy-text" style="font-weight: bold; margin-bottom: 8px;">尚未預測</p>
                 <p id="analyze-energy-action">尚未預測</p>
             </div>
+            
+            <div id="analyze-guide-card" class="energy-card-small" style="margin-top: 15px; display: none; padding: 15px; border-radius: 15px; border: 1px solid #444;">
+                <h4 style="color: #ffca28; margin-bottom: 5px;">🤝 社交相處與行動導航</h4>
+                <div id="analyze-stars-display" style="font-size: 1.5rem; text-align: center; margin-bottom: 10px; letter-spacing: 3px;"></div>
+                <p id="analyze-guide-text" style="font-size: 0.9rem; line-height: 1.6; text-align: left; color: #fff;"></p>
+            </div>
+
             <button class="btn-primary" style="margin-top: 20px;" onclick="showHome()">回到我的能量</button>
         </div>
     </div>
@@ -618,9 +626,9 @@ const ENERGY_CARD_THEMES = {
     'default': { action: '平穩', color: 'linear-gradient(135deg, #4b6cb7, #182848)', text_prefix: '能量穩定' } 
 };
 
-// 🌟 新手白話文與天干地支全功能辭典資料庫
+// --- 全功能辭典資料庫 ---
 const DICTIONARY = {
-    '日主': '<b>👤 角色本質與靈魂主體</b><br><br>代表你這個人的「初始設定」與根本性格。無論外在天氣（流年、流日）怎麼變，你的核心特質都由此決定。例如「戊土」日主就像穩重的高山。',
+    '日主': '<b>👤 角色本質與靈魂主體</b><br><br>代表你這個人的「初始設定」與根本性格。無論外在天氣怎麼變，你的核心特質都由此決定。例如「戊土」日主就像穩重的高山。',
     '大運': '<b>⏳ 人生的十年季節地圖</b><br><br>命運每十年會為你切換一次大環境（例如從寒冬換到暖春）。大運決定了這十年的「人生主旋律」，是宏觀命運的基調。',
     '財星': '<b>💰 目標、掌控與資源收穫（金錢與成果）</b><br><br>代表你可以掌控、操作的資源。此運引動時目標感極強，適合執行具體計畫、理財或簽約。能量飽滿（身強）時最容易創造「噴寶」效應。',
     '官殺': '<b>⚔️ 責任、挑戰、名望與自律（主管與名聲）</b><br><br>外界對你產生規範、要求或壓力的時期。像是主管交給你重要任務，雖然有壓迫感，但只要成功攻堅突破，就能換來極高的社會地位與權力。',
@@ -631,7 +639,7 @@ const DICTIONARY = {
     '甲': '<b>🌲 甲木：參天大樹（直爽、剛毅、領導者）</b><br><br>如同森林裡的巨木，充滿向上發展的鬥志。性格仁慈、注重榮譽、直來直往，不喜歡被束縛。在職場上通常具備獨當一面的管理或領導潛力，但有時較為固執、不善變通。',
     '乙': '<b>🌿 乙木：蔓藤花草（柔韌、靈活、外交家）</b><br><br>如同花草與攀援植物，雖然柔軟，卻具備極強的生存與適應能力。頭腦靈活、善於協調人際關係、借力使力。在職場上是優秀的幕僚與合作夥伴，但內心較容易多愁善感、依賴感較強。',
     '丙': '<b>🔥 丙火：普照太陽（熱情、亮眼、傳播者）</b><br><br>如同陽光般熾熱且無私，喜歡照顧他人、照亮群體。精力充沛、情感外顯、講求效率與光明正大。在舞台或社交場合上非常亮眼，適合公關、傳播與演講，缺點是容易缺乏耐心、三分鐘熱度。',
-    '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
+    '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
     '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固執、不喜歡突如其來的改變。',
     '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行事情劃，不過內心較多慮、容易妥協而委屈自己。',
     '庚': '<b>🪙 庚金：鋼鐵礦石（果斷、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
@@ -653,17 +661,12 @@ const DICTIONARY = {
     '亥': '<b>💧 亥水（孟冬）：初冬之水，流動的遠景</b><br><br>代表冬天的開始、夜晚的亥時（21~23點）。奔騰的大水，裡面還暗藏了木的創意。象徵宏觀的智慧、寬廣的包容力、喜歡自由，直覺力非常強。'
 };
     
-// 🛡️ 智慧防禦版：自動為天干地支加底線，並在特定模式下徹底禁止對建議內容加上超連結
 function formatTextKeywords(text, disableTooltip = false) {
     if (!text) return "";
     let formatted = text;
-
-    if (disableTooltip) {
-        return text;
-    }
+    if (disableTooltip) return text;
 
     const sortedKeys = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
-
     const protections = [
         { word: '時辰', placeholder: '___SHICHEN___' },
         { word: '已經', placeholder: '___YIJING___' },
@@ -701,7 +704,6 @@ function openModal(keyword) {
     }
 }
 
-// 🌟 新增：點擊大運週期的彈出式解說演算引擎
 function openDaYunModal(ganZhi, startAge, relation) {
     const modal = document.getElementById('info-modal');
     const title = document.getElementById('modal-title-text');
@@ -1037,7 +1039,10 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
         cardColor: theme.color, 
         vibeAction: theme.action, 
         vibeLabel: `日主 ${dayMaster} | ${relation}運`,
-        predictType: predictType 
+        predictType: predictType,
+        fortuneScore: fortuneScore, // 🌟 傳出原始分數，方便「分析他人」頁面計算星級
+        relationsObj: relations,    // 🌟 傳出地支關係數據
+        targetZhi: targetZhi        // 🌟 傳出流日地支
     };
 }
 
@@ -1048,7 +1053,7 @@ function getDetailedAction(relation, isStrong) {
         case '印星': return `貴人運極佳，能量回補期。適合精密系統規劃、優化核心架構與吸收新知。`;
         case '食傷': return `思維邏輯爆發，點子源源不絕。適合發明創造、撰寫核心代碼與策略拓展。`;
         case '比劫': return `自我核心意志極強，適合社交合作、資源對接，但需沉著冷靜避免爭端。`;
-        default: return `保持平常心，穩步執行日常既定事务。`;
+        default: return `保持平常心，穩步執行日常既定事務。`;
     }
 }
 
@@ -1181,13 +1186,11 @@ function initHome() {
         const gz = y.getGanZhi();
         const isCurrent = currentAge >= age && currentAge < age + 10;
         
-        // 動態計算此大運天干與使用者日主的十神關係，以便點擊時能精準解說
         const daYunGan = gz.substring(0, 1);
         const loopRelation = RELATION_MAP[myElement][ELEMENT_MAP[daYunGan]] || 'default';
 
         if (isCurrent) activeDaYunGan = daYunGan;
 
-        // 🌟 在 HTML 模板中注入動態點擊函數 openDaYunModal
         dayunListContainer.innerHTML += `
             <div class="dayun-box ${isCurrent ? 'current' : ''}" onclick="openDaYunModal('${gz}', ${age}, '${loopRelation}')">
                 <span class="dayun-age">${age}歲</span>
@@ -1363,6 +1366,7 @@ async function submitRecord() {
     }
 }
 
+// 🌟 全新升級：「分析他人」避雷與合作星級推演核心引擎
 function analyzeBazi() {
     const aDate = document.getElementById('analyze-date').value;
     const aTime = document.getElementById('analyze-time').value;
@@ -1370,6 +1374,14 @@ function analyzeBazi() {
     const isUnknown = document.getElementById('analyze-unknown').checked;
     
     if (!aDate) return alert("請選擇對方的生日日期！");
+    
+    // 檢查是否有設定自己的生日以進行對比預警
+    const mDate = localStorage.getItem('my_date');
+    let myBazi = null;
+    if (mDate) {
+        const myLunar = getLunarObj(mDate, localStorage.getItem('my_time') || '12:00', localStorage.getItem('my_unknown') === 'true');
+        myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
+    }
     
     localStorage.setItem('last_analyze_date', aDate);
     localStorage.setItem('last_analyze_time', aTime);
@@ -1384,15 +1396,88 @@ function analyzeBazi() {
     document.getElementById('analyze-result').style.display = 'block';
     document.getElementById('analyze-bazi').innerHTML = formatTextKeywords(`[${genderTerm}] ${targetBazi.formatStr} (日主 ${targetDayGan})`);
     
+    // 取得對方今日的能量預測數據 (包含原始分數、地支碰撞關係等)
     const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
     
     const energyCard = document.getElementById('analyze-energy-card');
     energyCard.style.display = 'block';
-    energyCard.style.background = prediction.color || prediction.cardColor;
+    energyCard.style.background = prediction.cardColor;
     
     document.getElementById('analyze-description').innerHTML = `<b style="color: #fff;">今日核心感應 (${formatTextKeywords(prediction.vibeLabel)})</b>`;
     document.getElementById('analyze-energy-text').innerHTML = formatTextKeywords(prediction.text);
     document.getElementById('analyze-energy-action').innerHTML = formatTextKeywords(prediction.action);
+
+    // 🌟 --- 避雷與合作星級演算板塊 ---
+    const guideCard = document.getElementById('analyze-guide-card');
+    const starsDisplay = document.getElementById('analyze-stars-display');
+    const guideText = document.getElementById('analyze-guide-text');
+    
+    guideCard.style.display = 'block';
+    
+    let rawScore = prediction.fortuneScore; // 取得 30 ~ 100 的流日共振分數
+    let isPositive = true;
+    let computedStars = 3;
+    
+    // 依據命理邏輯判定是否屬於「能量非常負面/雷區」或「正面高頻狀態」
+    // 分數低於 48 或流日觸發了重度相衝、相刑、相害等摩擦報告，則列入雷區
+    const hasSevereClash = prediction.text.includes('相衝') || prediction.text.includes('相刑');
+    
+    if (rawScore < 48 || hasSevereClash) {
+        isPositive = false;
+    }
+
+    // 將分數線性映射到 1 ~ 5 星級
+    if (rawScore >= 85) computedStars = 5;
+    else if (rawScore >= 68) computedStars = 4;
+    else if (rawScore >= 48) computedStars = 3;
+    else if (rawScore >= 38) computedStars = 2;
+    else computedStars = 1;
+
+    // 如果地支碰撞極度慘烈，強行校正星等權重，使其符合「避雷」視覺化
+    if (hasSevereClash && isPositive) {
+        computedStars = Math.max(1, computedStars - 1); // 酌情扣星
+    }
+
+    let starsHtml = "";
+    let guideMessage = "";
+
+    if (isPositive) {
+        // ✨ 正面：顯示好的黃星 🌟
+        starsHtml = `<span style="color: #ffca28;">` + "🌟".repeat(computedStars) + "⭐".repeat(5 - computedStars) + `</span>`;
+        
+        // 根據不同星等與十神特質給予動態合作建議
+        if (computedStars >= 4) {
+            guideMessage = `🔥 <b>高頻合作期（極力推薦）</b>：對方今日磁場順暢、喜氣臨門或才華湧現！極度適合在今天與其進行<b>重要會議、商業談判、合夥簽約或重大提案</b>。此時商談，對方心態開放，推進事務的阻力最小，成功率翻倍！`;
+        } else {
+            guideMessage = `😊 <b>和諧相處期（穩步推進）</b>：對方今日狀態穩定。適合進行正常的業務溝通、工作交接或日常聚餐。氛圍和睦，可以按照既定計畫放心地與其推進各項事務。`;
+        }
+        
+        // 如果對方今日是使用者的財星/官星，加碼提示
+        if (myBazi) {
+            const myDayGan = myBazi.stems[2];
+            const relationMeToTarget = RELATION_MAP[ELEMENT_MAP[myDayGan]][ELEMENT_MAP[targetDayGan]];
+            if (relationMeToTarget === '財星') {
+                guideMessage += `<br>💡 <b>加碼提示：</b>此人為您的【財星】，在今日高頻狀態下，與其探討商業方向，更容易激發出具體能變現的妙計！`;
+            }
+        }
+        
+        guideCard.style.background = "rgba(46, 125, 50, 0.15)"; // 綠色底蘊（安全高頻）
+        guideCard.style.borderColor = "#2e7d32";
+    } else {
+        // ⚫ 負面：顯示壞的灰星（滿星灰色代表極度負面，提醒避雷）
+        // 為了凸顯雷區嚴重性，分數越低、摩擦越重，灰星填滿度越高
+        let grayCount = 6 - computedStars; // 1星等 = 5個灰星，2星等 = 4個灰星
+        starsHtml = `<span style="color: #757575;">` + "⚫".repeat(grayCount) + "⚪".repeat(5 - grayCount) + `</span>`;
+        
+        guideMessage = `⚠️ <b>高能雷區預警（極速避雷！）</b>：對方今日流日磁場受挫，或命盤正遭遇流日強烈<b>相衝/相刑摩擦</b>，內心小劇場激烈，情緒極易焦躁、防禦心重或背負巨大壓力。<br><br>`;
+        guideMessage += `❌ <b>避雷指引：</b>今日<b>強烈建議避開衝突、暫緩重大談判、不要在此時逼迫其做決定或簽約</b>。溝通時請多點包容、保持安全距離，或主動給予對方空間，切勿正面硬剛，以免踩中地雷導致合作破局！`;
+        
+        guideCard.style.background = "rgba(198, 40, 40, 0.15)"; // 紅色底蘊（雷區預警）
+        guideCard.style.borderColor = "#c62828";
+    }
+
+    starsDisplay.innerHTML = starsHtml + `<br><span style="font-size:0.85rem; color:#aaa;">(今日磁場引力綜合判定)</span>`;
+    guideText.innerHTML = guideMessage;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
