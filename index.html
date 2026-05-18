@@ -766,8 +766,65 @@ function getEnergyPrediction(baziStems, predictType, baziObj) {
     }
 
     const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-    let fortuneScore = isStrong ? Math.round(50 + (outStrength - selfStrength)) : Math.round(50 + (selfStrength - outStrength));
-    fortuneScore = Math.max(20, Math.min(98, fortuneScore)); // 確保不破表
+// 💡 修正後的寫法：改用絕對差距比例與格局加成，轉換為優雅的 5 星等
+    let diff = Math.abs(outStrength - selfStrength);
+    let fortuneScore = 50;
+
+    if (isStrong) {
+        // 身強：外在克洩（金水木）越旺越好
+        fortuneScore = Math.round(50 + (outStrength / (selfStrength + 1)) * 15);
+    } else {
+        // 身弱：外在幫扶（火土）越旺越好
+        fortuneScore = Math.round(50 + (selfStrength / (outStrength + 1)) * 15);
+    }
+
+    // 格局大加分：只要觸發了三合大局，這天的磁場契合度直接衝上黃金波段
+    if (relations.triple.length > 0) {
+        fortuneScore = Math.max(88, fortuneScore + 20); 
+    } else if (relations.pairs) {
+        fortuneScore += 10;
+    }
+    fortuneScore = Math.max(30, Math.min(100, fortuneScore));
+
+    // 🌟 將分數完美轉譯為 5 星級與人性化等階
+    let starCount = 3; // 預設 3 顆星（平穩順暢）
+    let energyLevelName = "【能量平穩】";
+
+    if (fortuneScore >= 90) {
+        starCount = 5;
+        energyLevelName = "【凌汛暴發】"; // 針對你今天滿盤大水的極致包裝
+    } else if (fortuneScore >= 75) {
+        starCount = 4;
+        energyLevelName = "【氣場強勁】";
+    } else if (fortuneScore >= 45) {
+        starCount = 3;
+        energyLevelName = "【和諧順遂】";
+    } else if (fortuneScore >= 35) {
+        starCount = 2;
+        energyLevelName = "【能量潛藏】";
+    } else {
+        starCount = 1;
+        energyLevelName = "【靜心休整】";
+    }
+
+    // 建立星星符號字串 (例如：🌟🌟🌟🌟🌟 或 🌟🌟🌟⭐⭐)
+    let starsString = "🌟".repeat(starCount) + "⭐".repeat(5 - starCount);
+
+    const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
+    
+    // 💡 修改回傳的 text，將原本的百分比換成閃耀的星星與等階描述！
+    const energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.2rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
+    const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
+
+    return { 
+        text: energyText, 
+        action: energyAction, 
+        relation: relation, 
+        timeUnit: timeUnit, 
+        cardColor: theme.color, 
+        vibeAction: theme.action, 
+        vibeLabel: `日主 ${dayMaster} | ${relation}運` 
+    };
 
     const energyText = `🗓️ ${timeUnit}${theme.text_prefix}，${relation}氣場共振率達 ${fortuneScore}%。${specLog}`;
     const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
