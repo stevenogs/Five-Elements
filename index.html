@@ -953,23 +953,26 @@ function getDetailedAction(relation, isStrong) {
     }
 }
 
+// 🛡️ 安全優化版：確保所有卡片標題與文字完美閉合，絕不漏出原始碼
 function updatePredictionCard(cardId, prediction) {
     const card = document.getElementById(cardId);
     if (!card) return;
 
     card.style.display = 'block';
+    
+    // 使用我們強大的關鍵字轉換函數，讓卡片內文的天干地支也能點擊
+    const safeText = formatTextKeywords(prediction.text);
+    const safeAction = formatTextKeywords(prediction.action);
+
     if (cardId === 'daily-spectrum') { 
-        // 🌟 核心標籤與動作先注入，並透過格式化函數將「日主」與「十神」加上 Tooltip
-        card.querySelector('.vibe-label').innerHTML = formatTextKeywords(prediction.vibeLabel);
+        card.querySelector('.vibe-label').innerText = prediction.vibeLabel;
         card.querySelector('.vibe-action').innerText = prediction.vibeAction;
-        
-        // 今日核心說明文字自動關鍵字化
-        document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${formatTextKeywords(prediction.text)}`;
+        document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${safeText}`;
     } else { 
-        // 🛠️ 修正：確保標題能完美動態反映「本月」或「本時辰 (未時)」
-        card.querySelector('h4').innerText = `${prediction.timeUnit}能量提示`;
-        card.querySelector('p:first-of-type').innerText = prediction.text;
-        card.querySelector('p:last-of-type').innerText = prediction.action;
+        // 🛠️ 修正：用最乾淨、標準的 textContent 處理標題，用 innerHTML 處理帶有虛線超連結的內文
+        card.querySelector('h4').textContent = `${prediction.timeUnit}能量提示`;
+        card.querySelector('p:first-of-type').innerHTML = safeText;
+        card.querySelector('p:last-of-type').innerHTML = safeAction;
     }
     card.style.background = prediction.cardColor;
 }
