@@ -651,20 +651,39 @@ const DICTIONARY = {
     '亥': '<b>💧 亥水（孟冬）：初冬之水，流動的遠景</b><br><br>代表冬天的開始、夜晚的亥時（21~23點）。奔騰的大水，裡面還暗藏了木的創意。象徵宏觀的智慧、寬廣的包容力、喜歡自由，直覺力非常強。'
 };
     
-// 🌟 升級版：自動為文字加上點擊彈窗連結的核心函數（天干地支精準分流）
+// 🛡️ 智慧防禦版：自動為天干地支加底線，但主動排除「時辰」、「已經」等生活詞彙
 function formatTextKeywords(text) {
     if (!text) return "";
     let formatted = text;
 
-    // 先排序關鍵字（長名詞如：日主、財星先替換，避免單字干擾）
+    // 1. 先排序關鍵字（長名詞如：日主、財星先替換，避免單字干擾）
     const sortedKeys = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
 
+    // 2. 🛠️ 特殊防禦機制：先把生活中常見的、含有天干地支的詞彙「保護起來」，換成特殊佔位符
+    const protections = [
+        { word: '時辰', placeholder: '___SHICHEN___' },
+        { word: '已經', placeholder: '___YIJING___' },
+        { word: '日子', placeholder: '___RIZI___' },
+        { word: '甲方的', placeholder: '___JIAFANG___' }
+    ];
+
+    protections.forEach(p => {
+        const r = new RegExp(p.word, 'g');
+        formatted = formatted.replace(r, p.placeholder);
+    });
+
+    // 3. 執行原本的天干地支關鍵字虛線化
     for (let key of sortedKeys) {
-        // 如果是單獨的一柱天干地支（如 戊、土、申、子），我們使用正則表達式，確保它們是在適當的文字語境下被虛線化
-        // 這樣可以避免內文一般正常的字被誤點擊
         const regex = new RegExp(key, 'g');
         formatted = formatted.replace(regex, `<span class="keyword-highlight" onclick="openModal('${key}')">${key}</span>`);
     }
+
+    // 4. 🛠️ 把被保護的詞彙老老實實還原回來（這時候它們就絕對不會帶有任何底線連結了！）
+    protections.forEach(p => {
+        const r = new RegExp(p.placeholder, 'g');
+        formatted = formatted.replace(r, p.word);
+    });
+
     return formatted;
 }
 
