@@ -15,8 +15,7 @@
     
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            background-color: #121212; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; \n            background-color: #121212; 
             color: #ffffff; 
             display: flex; 
             flex-direction: column; 
@@ -25,1348 +24,72 @@
             margin: 0; 
             padding-bottom: 80px; 
         }
-        .container { 
-            background: #1e1e1e; 
-            padding: 25px; 
-            border-radius: 20px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
-            width: 100%; 
-            max-width: 400px; 
-            margin-bottom: 20px; 
-            box-sizing: border-box; 
-        }
-        h1 { 
-            font-size: 1.5rem; 
-            margin-top: 0; 
-            margin-bottom: 15px; 
-            color: #aaaaaa; 
-            text-align: center;
-        }
-        
-        .page { 
-            display: none; 
-            width: 100%; 
-            max-width: 400px; 
-            animation: fadeIn 0.3s; 
-        }
-        .page.active { 
-            display: block; 
-        }
-        @keyframes fadeIn { 
-            from { opacity: 0; transform: translateY(10px); } 
-            to { opacity: 1; transform: translateY(0); } 
-        }
-
-        .input-group { 
-            background: #2a2a2a; 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            border: 1px solid #444; 
-        }
-        .input-group p { 
-            font-size: 0.85rem; 
-            margin: 0 0 10px 0; 
-            color: #aaa; 
-        }
-        .flex-row { 
-            display: flex; 
-            gap: 10px; 
-            margin-bottom: 10px; 
-        }
-        input[type="date"], input[type="time"], input[type="text"], select, textarea { 
-            padding: 10px; 
-            border-radius: 8px; 
-            border: none; 
-            background: #333; 
-            color: #fff; 
-            box-sizing: border-box; 
-            font-size: 0.9rem; 
-            width: 100%; 
-        }
-        
-        .btn-primary { 
-            width: 100%; 
-            background: #4caf50; 
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 8px; 
-            cursor: pointer; 
-            font-weight: bold; 
-            transition: 0.2s;
-        }
-        .btn-primary:active { 
-            transform: scale(0.98); 
-        }
-        .btn-primary:disabled { 
-            background: #666; 
-            cursor: not-allowed; 
-        }
-        .checkbox-container { 
-            display: flex; 
-            justify-content: flex-end; 
-            align-items: center; 
-            margin-bottom: 10px; 
-            font-size: 0.8rem; 
-            color: #aaa; 
-            cursor: pointer; 
-        }
-        
-        .spectrum-display { 
-            width: 100%; 
-            height: 120px; 
-            border-radius: 15px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            font-size: 1.8rem; 
-            font-weight: bold; 
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
-            margin-bottom: 20px; 
-            flex-direction: column; 
-            color: #fff; 
-            background: linear-gradient(135deg, #4b6cb7, #182848); 
-            transition: background 0.5s ease;
-            text-align: center; 
-            box-sizing: border-box;
-            padding: 10px; 
-        }
-        
-        .spectrum-display .vibe-label {
-            font-size: 0.8rem; 
-            opacity: 0.7; 
-            margin-bottom: 5px;
-            width: 100%;
-            text-align: center;
-        }
-        .spectrum-display .vibe-action {
-            font-size: 2.2rem;
-            width: 100%;
-            text-align: center;
-        }
-
-        .desc { 
-            font-size: 0.95rem;
-            color: #cccccc; 
-            margin-bottom: 20px; 
-            line-height: 1.6; 
-            min-height: 60px; 
-            text-align: center;
-            width: 100%; 
-            box-sizing: border-box;
-            padding: 0 10px; 
-        }
-        
-        .dayun-section, .energy-card-small { 
-            background: #222; 
-            border-radius: 15px; 
-            padding: 15px; 
-            margin-bottom: 20px; 
-            border: 1px solid #333; 
-        }
-        .energy-card-small h4 {
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            text-align: center;
-            color: #f0f0f0;
-        }
-        .energy-card-small p {
-            font-size: 0.9rem;
-            line-height: 1.5;
-            color: #ccc;
-            text-align: center;
-        }
-
-        .dayun-grid { 
-            display: grid; 
-            grid-template-columns: repeat(5, 1fr); 
-            gap: 8px; 
-            margin-top: 10px; 
-        }
-        .dayun-box { 
-            background: #333; 
-            padding: 8px 2px; 
-            border-radius: 8px; 
-            text-align: center; 
-            font-size: 0.8rem; 
-            border: 1px solid #444; 
-            transition: 0.3s; 
-            cursor: pointer;
-        }
-        .dayun-box:active {
-            transform: scale(0.95);
-        }
-        .dayun-box.current { 
-            border-color: #ffb300; 
-            background: rgba(255,179,0,0.15); 
-            transform: scale(1.05); 
-            box-shadow: 0 0 10px rgba(255,179,0,0.2); 
-        }
-        .dayun-box.current:active {
-            transform: scale(1);
-        }
-        .dayun-age { 
-            color: #888; 
-            font-size: 0.7rem; 
-            display: block; 
-            margin-bottom: 2px;
-        }
-        .dayun-gz { 
-            font-weight: bold; 
-            color: #ffb300; 
-            font-size: 0.95rem;
-        }
-        
-        .resonance-highlight { 
-            color: #ffb300; 
-            font-size: 1.1rem; 
-            font-weight: bold; 
-            margin-top: 8px; 
-            text-shadow: 0 0 5px rgba(255,179,0,0.5); 
-        }
-
-        .bottom-nav { 
-            position: fixed; 
-            bottom: 0; 
-            left: 0; 
-            width: 100%; 
-            background: #1a1a1a; 
-            display: flex; 
-            justify-content: space-around; 
-            padding: 10px 0; 
-            border-top: 1px solid #333; 
-            z-index: 100; 
-        }
-        .nav-item { 
-            color: #888; 
-            text-align: center; 
-            font-size: 0.8rem; 
-            cursor: pointer; 
-            padding: 5px 15px; 
-            border-radius: 10px; 
-            transition: 0.3s; 
-            flex: 1; 
-        }
-        .nav-item.active { 
-            color: #ffb300; 
-            font-weight: bold; 
-            background: rgba(255, 179, 0, 0.1); 
-        }
-        .nav-icon { 
-            font-size: 1.2rem; 
-            display: block; 
-            margin-bottom: 3px; 
-        }
-
-        .match-score { 
-            font-size: 3rem; 
-            color: #ffb300; 
-            text-align: center; 
-            font-weight: bold; 
-            margin: 10px 0; 
-            text-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
-        }
-        .match-card { 
-            background: #222; 
-            border: 1px solid #444; 
-            border-radius: 10px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-        }
-        .match-title { 
-            font-size: 0.9rem; 
-            color: #aaa; 
-            border-bottom: 1px solid #444; 
-            padding-bottom: 5px; 
-            margin-bottom: 10px;
-        }
-        .bazi-compare-grid { 
-            display: grid; 
-            grid-template-columns: 1fr 1fr; 
-            gap: 10px; 
-            text-align: center; 
-            font-size: 0.9rem; 
-            margin-bottom: 10px;
-        }
-        
-        input[type=range] { 
-            -webkit-appearance: none; 
-            background: #444; 
-            height: 6px; 
-            border-radius: 5px; 
-            outline: none; 
-            margin-top: 5px; 
-        }
-        input[type=range]::-webkit-slider-thumb { 
-            -webkit-appearance: none; 
-            appearance: none; 
-            width: 18px; 
-            height: 18px; 
-            border-radius: 50%; 
-            background: #4caf50; 
-            cursor: pointer; 
-        }
-        #rec-impact::-webkit-slider-thumb { 
-            background: #f44336; 
-        }
-
-        .keyword-highlight {
-            color: #ffca28;
-            font-weight: bold;
-            text-decoration: underline dashed #ffca28;
-            cursor: pointer;
-            padding: 0 2px;
-        }
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(4px);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 1000; opacity: 0; pointer-events: none;
-            transition: opacity 0.3s ease;
-        }
-        .modal-overlay.active {
-            opacity: 1; pointer-events: auto;
-        }
-        .modal-card {
-            background: #252525;
-            border: 1px solid #444;
-            border-radius: 16px;
-            padding: 20px;
-            width: 85%; max-width: 340px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-            text-align: left;
-        }
-        .modal-overlay.active .modal-card {
-            transform: scale(1);
-        }
-        .modal-title {
-            font-size: 1.1rem; color: #ffb300;
-            font-weight: bold; margin-bottom: 10px;
-            border-bottom: 1px solid #333; padding-bottom: 8px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-close {
-            cursor: pointer; color: #888; font-size: 1.2rem;
-        }
-        .modal-body {
-            font-size: 0.9rem; color: #ccc; line-height: 1.6;
-        }
     </style>
 </head>
 <body>
 
-<div id="page-home" class="page active">
-    <div class="container">
-        <h1>個人能量引擎</h1>
-        <div class="input-group">
-            <p>🌌 我的出生資訊</p>
-            <div class="flex-row">
-                <select id="my-gender" style="flex: 1;">
-                    <option value="1">男</option>
-                    <option value="0">女</option>
-                </select>
-                <input type="date" id="my-date" style="flex: 2;">
-            </div>
-            <div class="flex-row">
-                <input type="time" id="my-time" value="12:00" style="width: 100%;">
-            </div>
-            <label class="checkbox-container">
-                <input type="checkbox" id="my-unknown" onchange="toggleTime('my')"> 不知道時辰
-            </label>
-            <button class="btn-primary" onclick="saveMyBazi()">設定命盤與啟動大運</button>
-        </div>
-        
-        <div id="my-bazi-display" style="text-align: center; color: #ffb300; font-weight: bold; margin-bottom: 20px; display: none;"></div>
-        <div style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 5px;" id="today-date">--</div>
-        <div style="font-size: 1rem; color: #ffb300; text-align: center; margin-bottom: 15px;" id="today-bazi">--</div>
-        
-        <div class="spectrum-display" id="daily-spectrum">
-            <span class="vibe-label">今日能量狀態</span><br>
-            <span class="vibe-action">未設定命盤</span>
-        </div>
-        <div class="desc" id="daily-description">請先輸入您的出生時間以啟動流日共振引擎。</div>
-
-        <div id="monthly-energy-card" class="energy-card-small" style="display: none;">
-            <h4>🗓️ 本月能量提示</h4>
-            <p id="monthly-energy-text">尚未預測</p>
-            <p id="monthly-energy-action">尚未預測</p>
-        </div>
-
-        <div id="hourly-energy-card" class="energy-card-small" style="margin-top: 10px; display: none;">
-            <h4>⏳ 本時辰能量提示</h4>
-            <p id="hourly-energy-text">尚未預測</p>
-            <p id="hourly-energy-action">尚未預測</p>
-        </div>
-
-        <div id="resonance-board" class="dayun-section" style="display: none; border-color: #ffb300; background: rgba(255,179,0,0.08);">
-            <div class="match-title" style="color: #ffb300; border-bottom: 1px solid rgba(255,179,0,0.3);">🔥 歲運交互共振引擎</div>
-            <div id="resonance-desc" style="font-size: 0.9rem; line-height: 1.6; text-align: center; padding-top: 5px;"></div>
-        </div>
-
-        <div id="dayun-board" class="dayun-section" style="display: none;">
-            <div class="match-title">人生大運走勢 (每十年更換，點擊可看解說)</div>
-            <div id="dayun-list" class="dayun-grid"></div>
-        </div>
-    </div>
-</div>
-
-<div id="page-match" class="page">
-    <div class="container">
-        <h1>人際合盤 analysis</h1>
-        <div class="input-group">
-            <p>🎯 對方的出生資訊</p>
-            <div class="flex-row">
-                <select id="target-gender" style="flex: 1;">
-                    <option value="1">男</option>
-                    <option value="0">女</option>
-                </select>
-                <input type="date" id="target-date" style="flex: 2;">
-            </div>
-            <div class="flex-row">
-                <input type="time" id="target-time" value="12:00" style="width: 100%;">
-            </div>
-            <label class="checkbox-container">
-                <input type="checkbox" id="target-unknown" onchange="toggleTime('target')"> 對方不知道時辰
-            </label>
-            <button class="btn-primary" onclick="calculateMatch()">執行合盤推演</button>
-        </div>
-
-        <div id="match-result" style="display: none;">
-            <div class="match-card">
-                <div class="match-title">能量引力指數</div>
-                <div class="match-score" id="match-score-value">0%</div>
-                <div style="text-align: center; font-size: 0.85rem; color: #888;" id="match-summary">計算中...</div>
-            </div>
-            <div class="match-card">
-                <div class="match-title">本命結構對比</div>
-                <div class="bazi-compare-grid">
-                    <div style="color: #4caf50;"><b id="compare-my-label">我</b><br><span id="compare-my-bazi"></span></div>
-                    <div style="color: #2196f3;"><b id="compare-target-label">對方</b><br><span id="compare-target-bazi"></span></div>
-                </div>
-            </div>
-            <div class="match-card">
-                <div class="match-title">日主化學反應 (核心定位)</div>
-                <div id="match-day-gan-desc" style="font-size: 0.9rem; line-height: 1.5;"></div>
-            </div>
-            <div class="match-card">
-                <div class="match-title">地支群體緣分 (三合 / 三會)</div>
-                <div id="match-group-desc" style="font-size: 0.85rem; line-height: 1.5;"></div>
-            </div>
-            <div class="match-card">
-                <div class="match-title">地支一對一引力 (衝合判定)</div>
-                <div id="match-branch-desc" style="font-size: 0.85rem; color: #ccc; line-height: 1.5;"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div id="page-record" class="page">
-    <div class="container">
-        <h1>📝 能量監測紀錄</h1>
-        <div class="input-group">
-            <p>📊 當下狀態觀測</p>
-            <div class="flex-row">
-                <input type="text" id="rec-target" placeholder="觀測對象 (如: 我)" style="flex: 1;">
-                <input type="text" id="rec-master" placeholder="對象日主 (如: 戊或戊土)" style="flex: 1;">
-            </div>
-            
-            <p>🎭 心情類別</p>
-            <select id="rec-mood" style="margin-bottom: 15px;">
-                <option value="平靜">平靜</option>
-                <option value="快樂">快樂</option>
-                <option value="壓力">壓力</option>
-                <option value="悲傷">悲傷</option>
-                <option value="憤怒">憤怒</option>
-                <option value="驚訝">驚訝</option>
-            </select>
-
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
-                <span>能量穩定 (1-10)</span>
-                <span id="val-stability" style="font-weight:bold; color:#4caf50;">5</span>
-            </div>
-            <input type="range" id="rec-stability" min="1" max="10" value="5" style="margin-bottom: 15px;" oninput="document.getElementById('val-stability').innerText=this.value">
-
-            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
-                <span>碰撞強度 (1-5)</span>
-                <span id="val-impact" style="font-weight:bold; color:#f44336;">1</span>
-            </div>
-            <input type="range" id="rec-impact" min="1" max="5" value="1" oninput="document.getElementById('val-impact').innerText=this.value">
-
-            <p style="margin-top: 20px;">📄 事件簡述</p>
-            <textarea id="rec-note" placeholder="紀錄發生了什麼事..." style="height: 70px; resize: none;"></textarea>
-            
-            <button id="btn-submit-record" class="btn-primary" style="margin-top: 15px; background: #2196f3;" onclick="submitRecord()">送出打卡數據</button>
-        </div>
-    </div>
-</div>
-
-<div id="page-analyze" class="page">
-    <div class="container">
-        <h1>🎯 分析他人能量</h1>
-        <p>輸入對方的出生資訊，系統將推演其流日狀態，並與您的八字共振，提供「避雷與合作」星級導航。</p>
-        <div class="input-group">
-            <div class="flex-row">
-                <select id="analyze-gender" style="flex: 1;">
-                    <option value="1">男</option>
-                    <option value="0">女</option>
-                </select>
-                <input type="date" id="analyze-date" style="flex: 2;">
-            </div>
-            <div class="flex-row">
-                <input type="time" id="analyze-time" value="12:00" style="width: 100%;">
-            </div>
-            <label class="checkbox-container">
-                <input type="checkbox" id="analyze-unknown" onchange="toggleTime('analyze')"> 對方不知道時辰
-            </label>
-            <button class="btn-primary" onclick="analyzeBazi()">輸入八字並啟動能量預測</button>
-        </div>
-        
-        <div id="analyze-result" style="margin-top: 20px; display: none;">
-            <h3>📊 對方的命盤：<br><span id="analyze-bazi" style="color: #ffb300; font-size: 1.1rem;">未設定</span></h3>
-            <div class="desc" id="analyze-description">請先輸入出生資訊以啟動「每日能量預測」。</div>
-            
-            <div id="analyze-energy-card" class="energy-card-small" style="margin-top: 20px; display: none; padding: 15px; border-radius: 15px;">
-                <h4>🎯 今日能量提示</h4>
-                <p id="analyze-energy-text" style="font-weight: bold; margin-bottom: 8px;">尚未預測</p>
-                <p id="analyze-energy-action">尚未預測</p>
-            </div>
-            
-            <div id="analyze-guide-card" class="energy-card-small" style="margin-top: 15px; display: none; padding: 15px; border-radius: 15px; border: 1px solid #444;">
-                <h4 style="color: #ffca28; margin-bottom: 5px;">🤝 社交相處與行動導航</h4>
-                <div id="analyze-stars-display" style="font-size: 1.5rem; text-align: center; margin-bottom: 10px; letter-spacing: 3px;"></div>
-                <p id="analyze-guide-text" style="font-size: 0.9rem; line-height: 1.6; text-align: left; color: #fff;"></p>
-            </div>
-
-            <button class="btn-primary" style="margin-top: 20px;" onclick="showHome()">回到我的能量</button>
-        </div>
-    </div>
-</div>
-
-<div id="info-modal" class="modal-overlay" onclick="closeModal()">
-    <div class="modal-card" onclick="event.stopPropagation()">
-        <div class="modal-title">
-            <span id="modal-title-text">能量名詞解釋</span>
-            <span class="modal-close" onclick="closeModal()">✕</span>
-        </div>
-        <div id="modal-body-text" class="modal-body">說明內容</div>
-    </div>
-</div>
-
-<div class="bottom-nav">
-    <div class="nav-item active" onclick="switchPage('home', this)">
-        <span class="nav-icon">🌌</span><span>我的能量</span>
-    </div>
-    <div class="nav-item" onclick="switchPage('match', this)">
-        <span class="nav-icon">💞</span><span>合盤 analysis</span>
-    </div>
-    <div class="nav-item" onclick="switchPage('record', this)">
-        <span class="nav-icon">📝</span><span>打卡紀錄</span>
-    </div>
-    <div class="nav-item" onclick="switchPage('analyze', this)">
-        <span class="nav-icon">👥</span><span>分析他人</span>
+<div id="ten-god-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
+    <div style="background: #1e1e1e; border: 1px solid #ffca28; border-radius: 12px; width: 100%; max-width: 430px; padding: 22px; box-sizing: border-box; position: relative; color: #fff; box-shadow: 0 4px 25px rgba(0,0,0,0.6);">
+        <h3 id="tg-modal-title" style="margin-top: 0; color: #ffca28; border-bottom: 1px solid #333; padding-bottom: 12px; font-size: 1.15rem; letter-spacing: 1px;">十神運勢解讀</h3>
+        <p id="tg-modal-desc" style="font-size: 0.95rem; line-height: 1.6; color: #e0e0e0; margin-bottom: 22px; letter-spacing: 0.5px;"></p>
+        <button onclick="closeTenGodModal()" style="width: 100%; background: #ffca28; color: #121212; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s;">我知道了</button>
     </div>
 </div>
 
 <script>
-const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec";
-
-// --- 核心資料與對照表 ---
-const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
-const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
-const RELATION_MAP = {
-    '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
-    '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
-    '土': { '木': '官殺', '火': '印星', '土': '比劫', '金': '食傷', '水': '財星' },
-    '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
-    '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
+// 🔮 十神當日引力與商務防禦白話辭典
+const TEN_GODS_DICT = {
+    "印星運": {
+        title: "正印/偏印運：能量吸收與直覺內耗期",
+        desc: "<b>【今日心理狀態】</b> 磁場處於充電與吸收狀態。大腦像海綿一樣，非常適合沉澱、看書、學習或進行深度思考。<br><br><b>【商務與社交防禦】</b> 今日行動力稍微放緩，內心防禦機制較強，容易想得太多、流於內耗，或者顯得有點孤僻。在商務談判上，今天適合當個『傾聽與觀察者』，不宜盲目衝動做決定。"
+    },
+    "官殺運": {
+        title: "正官/七殺運：自律約束與高壓聚焦期",
+        desc: "<b>【今日心理狀態】</b> 磁場迎來強烈的責任感與外部壓力。當天會明顯感覺到事情排山倒海而來，或是受到主管、環境、法規的嚴格檢視。<br><br><b>【商務與社交防禦】</b> 今日自律指數爆表，執行力強。但要注意容易因為防禦心過強，導致與人溝通時顯得嚴肅、死板。面對客戶時請多點微笑，避免把當天的『高壓氣候』變成對別人的殺氣。"
+    },
+    "食傷運": {
+        title: "食神/傷官運：創意爆發與表達慾期",
+        desc: "<b>【今日心理狀態】</b> 靈感與創意如泉湧的一天！腦袋轉得極快，表達慾望強烈，不甘於墨守成規，很想打破現狀。<br><br><b>【商務與社交防禦】</b> 適合進行頭腦風暴、產品研發或行銷提案。但防禦側要注意『言多必失』，口才太好容易顯得咄咄逼人或是不夠沉穩，當天與人相處要稍微收斂一點鋒芒。"
+    },
+    "財星運": {
+        title: "正財/偏財運：商務執行與財富流動期",
+        desc: "<b>【今日心理狀態】</b> 目標導向非常明確的一天！當天對數字、利潤、實質結果的敏銳度極高，做事的控制慾 and 務實感大幅提升。<br><br><b>【商務與社交防禦】</b> 這是推進專案、簽約、檢視財務報表的最佳流日。社交上會很注重『這件事有沒有效益』。注意不要因為太追求效率，而忽略了合作夥伴的情緒感受。"
+    },
+    "比劫運": {
+        title: "比肩/劫財運：自我核心與同儕連結期",
+        desc: "<b>【今日心理狀態】</b> 自我意識高度抬頭，意志力堅定，不容易被別人的意見動搖。同時也會有較多與同儕、朋友、同事平級互動的機會。<br><br><b>【商務與社交防禦】</b> 適合團隊作戰、拓展人脈。但因為主觀意識強、防禦心轉為『自我保護』，容易在合作中跟人硬剛、互不相讓，記得當天多聽聽別人的意見，避免流於固執。"
+    }
 };
 
-const ZHI_HIDDEN_MAP = {
-    '子': { '水': 1.00 },
-    '丑': { '土': 0.60, '水': 0.20, '金': 0.20 },
-    '寅': { '木': 0.60, '火': 0.20, '土': 0.20 },
-    '卯': { '木': 1.00 },
-    '辰': { '土': 0.60, '木': 0.20, '水': 0.20 },
-    '巳': { '火': 0.60, '土': 0.20, '金': 0.20 },
-    '午': { '火': 0.70, '土': 0.30 },
-    '未': { '土': 0.60, '火': 0.20, '木': 0.20 },
-    '申': { '金': 0.60, '水': 0.30, '土': 0.10 },
-    '酉': { '金': 1.00 },
-    '戌': { '土': 0.60, '金': 0.20, '火': 0.20 },
-    '亥': { '水': 0.70, '木': 0.30 }
-};
-
-const DIZHI_INDEX = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
-const RELATION_MATRIX = [
-    [0, 1, 0, 5, 0, 0, 2, 6, 0, 0, 0, 0], 
-    [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1], 
-    [5, 0, 0, 0, 0, 0, 2, 0, 0, 2, 1, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0], 
-    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2], 
-    [2, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0], 
-    [6, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], 
-    [0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0], 
-    [0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0]  
-];
-
-const ENERGY_CARD_THEMES = {
-    '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text_prefix: '財星高照' }, 
-    '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text_prefix: '壓力與名望' }, 
-    '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text_prefix: '貴人運佳' }, 
-    '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text_prefix: '才華橫溢' }, 
-    '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text_prefix: '能量充沛' }, 
-    'default': { action: '平穩', color: 'linear-gradient(135deg, #4b6cb7, #182848)', text_prefix: '能量穩定' } 
-};
-
-// --- 全功能辭典資料庫 ---
-const DICTIONARY = {
-    '日主': '<b>👤 角色本質與靈魂主體</b><br><br>代表你這個人的「初始設定」與根本性格。無論外在天氣怎麼變，你的核心特質都由此決定。例如「戊土」日主就像穩重的高山。',
-    '大運': '<b>⏳ 人生的十年季節地圖</b><br><br>命運每十年會為你切換一次大環境（例如從寒冬換到暖春）。大運決定了這十年的「人生主旋律」，是宏觀命運的基調。',
-    '財星': '<b>💰 目標、掌控與資源收穫（金錢與成果）</b><br><br>代表你可以掌控、操作的資源。此運引動時目標感極強，適合執行具體計畫、理財或簽約。能量飽滿（身強）時最容易創造「噴寶」效應。',
-    '官殺': '<b>⚔️ 責任、挑戰、名望與自律（主管與名聲）</b><br><br>外界對你產生規範、要求或壓力的時期。像是主管交給你重要任務，雖然有壓迫感，但只要成功攻堅突破，就能換來極高的社會地位與權力。',
-    '印星': '<b>🛡️ 守護、滋養、貴人與充電（吸收與長輩）</b><br><br>宇宙在幫你補血、提供庇護的時期。容易得到長輩或貴人相助，思緒平穩，非常適合靜心學習、吸收新知，或是優化自己核心的系統架構。',
-    '食傷': '<b>🎨 點子、才華、表達與輸出（發明與靈感）</b><br><br>你的能量迫不及待向外輸出的時期。頭腦特別靈光、邏輯清晰、點子源源不絕。非常適合進行創作、研發、寫代碼或開拓全新策略。',
-    '比劫': '<b>🤝 同儕、自我意志與社交資源（自信與夥伴）</b><br><br>你的自我意識與意志力來到高峰，變得非常有自信、不服輸。適合社交合作、資源對接與擴展人脈，但也要注意避免固執而產生摩擦。',
-
-    '甲': '<b>🌲 甲木：參天大樹（直爽、剛毅、領導者）</b><br><br>如同森林裡的巨木，充滿向上發展的鬥志。性格仁慈、注重榮譽、直來直往，不喜歡被束縛。在職場上通常具備獨當一面的管理或領導潛力，但有時較為固執、不善變通。',
-    '乙': '<b>🌿 乙木：蔓藤花草（柔韌、靈活、外交家）</b><br><br>如同花草與攀援植物，雖然柔軟，卻具備極強的生存與適應能力。頭腦靈活、善於協調人際關係、借力使力。在職場上是優秀的幕僚與合作夥伴，但內心較容易多愁善感、依賴感較強。',
-    '丙': '<b>🔥 丙火：普照太陽（熱情、亮眼、傳播者）</b><br><br>如同陽光般熾熱且無私，喜歡照顧他人、照亮群體。精力充沛、情感外顯、講求效率與光明正大。在舞台或社交場合上非常亮眼，適合公關、傳播與演講，缺點是容易缺乏耐心、三分鐘熱度。',
-    '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
-    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固執、不喜歡突如其來的改變。',
-    '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行事情劃，不過內心較多慮、容易妥協而委屈自己。',
-    '庚': '<b>🪙 庚金：鋼鐵礦石（果斷、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
-    '辛': '<b>💎 辛金：璀璨珠寶（精密、精緻、完美主義）</b><br><br>如同璀璨的鑽石、黃金首飾，或是精密的醫療手術刀。心思細緻、追求極致的完美與質感、自尊心強且對美感有獨特堅持。適合需要高精準度、藝術、研發或精密工程的工作，但對批評較為敏感、容易自我要求過高。',
-    '壬': '<b>🌊 壬水：奔騰江海（智慧、奔放、冒險家）</b><br><br>如同滔滔江水與汪洋大海，充滿無窮的智慧、宏觀的視野與大格局。不拘小節、適應力極強、善於整合資源與隨機應變。喜歡自由與挑戰，適合大型企劃、商務與開拓新市場，缺點是情緒波動大、有時較為任性。',
-    '癸': '<b>💧 癸水：雨露泉水（靈動、體貼、思想家）</b><br><br>如同晶瑩的雨露、溫柔的泉水，或是清晨的霧氣。性格最為柔和、充滿靈性與想像力、記憶力奇佳，擅長以柔克剛。對周遭環境的磁場與情緒極度敏感（神準的第六感），適合創作、企劃與幕後智囊，但有時容易多愁善感、流於空想。',
-
-    '子': '<b>💧 子水（仲冬）：正純之水，深邃的智慧</b><br><br>代表冬天的核心、深夜的子時（23~01點）。純度極高的水能量，象徵冷靜思考、精明、潛意識與靈性。引動時適合靜心策劃、沉澱思緒。',
-    '丑': '<b>⛰️ 丑土（季冬）：冰凍之土，等待甦醒的寶藏</b><br><br>代表冬末、凌晨的丑時（01~03點）。是含有水與金的濕冷泥土。內心沉穩、極有耐力、默默耕耘，雖然外表冷靜，但藏有金庫之氣，厚積薄發。',
-    '寅': '<b>🌲 寅木（孟春）：初春之木，爆發的生命力</b><br><br>代表春天的開始、清晨的寅時（03~05點）。如同剛發芽的巨木，帶有源源不絕的衝勁與火的熱情。象徵開拓、野心與大膽嘗試新事物。',
-    '卯': '<b>🌿 卯木（仲春）：繁茂之木，優雅與擴展</b><br><br>代表春天的核心、早晨的卯時（05~07點）。最純正的木能量，如同繁茂的花草樹木。象徵溫和、充滿生命力、社交與桃花，也代表靈活的思維。',
-    '辰': '<b>⛰️ 辰土（季春）：水庫之土，變革與展現</b><br><br>代表春末、上午的辰時（07~09點）。是含有水與木能量的豐饒土壤，也稱為「水庫」。象徵包容、充滿變革的雄心、點子豐富，極具群體影響力。',
-    '巳': '<b>🔥 巳火（孟夏）：初夏之火，耀眼的開端</b><br><br>代表夏天的開始、上午的巳時（09~11點）。是充滿動能的陽火，裡面還暗藏了金的果斷。象徵熱情、高效率、傳播力與強烈的行動渴望。',
-    '午': '<b>🔥 午火（仲夏）：正午之火，熱情的巔峰</b><br><br>代表夏天的核心、中午的午時（11~13點）。最純粹且強烈的火能量，代表光明、爆發力、直爽與核心關注度。引動時執行力極高。',
-    '未': '<b>⛰️ 未土（季夏）：木庫之土，穩重與收斂</b><br><br>代表夏末、下午的未時（13~15點）。是含有火與木的乾燥熱土，也稱為「木庫」。象徵為人溫和謙遜、內心有底線、擅長守成與整理資源。',
-    '申': '<b>🪙 申金（孟秋）：初秋之金，精密的收斂</b><br><br>代表秋天的開始、下午的申時（15~17點）。剛強且靈活的鐵礦之金，裡面暗藏了水的智慧（水局之源）。象徵邏輯犀利、果斷、善於規劃精密架構。',
-    '酉': '<b>💎 酉金（仲秋）：正純之金，極致的完美</b><br><br>代表秋天的核心、傍晚的酉時（17~19點）。最純粹的珠寶刀刃之金。象徵黑白分明、追求完美質感、專注度極高、講效率，也帶有獨特的個人魅力。',
-    '戌': '<b>⛰️ 戌土（季秋）：火庫之土，忠誠與守護</b><br><br>代表秋末、晚上的戌時（19~21點）。含有火與金的乾燥土壤，也稱為「火庫」。性格極度忠誠、有正義感、責任心強，對玄學或深層思想很有共鳴。',
-    '亥': '<b>💧 亥水（孟冬）：初冬之水，流動的遠景</b><br><br>代表冬天的開始、夜晚的亥時（21~23點）。奔騰的大水，裡面還暗藏了木的創意。象徵宏觀的智慧、寬廣的包容力、喜歡自由，直覺力非常強。'
-};
-    
-function formatTextKeywords(text, disableTooltip = false) {
-    if (!text) return "";
-    let formatted = text;
-    if (disableTooltip) return text;
-
-    const sortedKeys = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
-    const protections = [
-        { word: '時辰', placeholder: '___SHICHEN___' },
-        { word: '已經', placeholder: '___YIJING___' },
-        { word: '日子', placeholder: '___RIZI___' },
-        { word: '甲方的', placeholder: '___JIAFANG___' }
-    ];
-
-    protections.forEach(p => {
-        const r = new RegExp(p.word, 'g');
-        formatted = formatted.replace(r, p.placeholder);
-    });
-
-    for (let key of sortedKeys) {
-        const regex = new RegExp(key, 'g');
-        formatted = formatted.replace(regex, `<span class="keyword-highlight" onclick="openModal('${key}')">${key}</span>`);
+function detectTenGodKey(text) {
+    if (!text) return "印星運";
+    for (let key in TEN_GODS_DICT) {
+        if (text.includes(key.substring(0, 2))) return key; // 模糊比對「印星」、「官殺」
     }
-
-    protections.forEach(p => {
-        const r = new RegExp(p.placeholder, 'g');
-        formatted = formatted.replace(r, p.word);
-    });
-
-    return formatted;
+    return "印星運"; // 預設防呆
 }
 
-function openModal(keyword) {
-    const modal = document.getElementById('info-modal');
-    const title = document.getElementById('modal-title-text');
-    const body = document.getElementById('modal-body-text');
-    
-    if (DICTIONARY[keyword]) {
-        title.innerText = keyword;
-        body.innerHTML = DICTIONARY[keyword];
-        modal.classList.add('active');
-    }
+function openTenGodModal(key) {
+    const data = TEN_GODS_DICT[key];
+    if (!data) return;
+    document.getElementById('tg-modal-title').innerHTML = data.title;
+    document.getElementById('tg-modal-desc').innerHTML = data.desc;
+    document.getElementById('ten-god-modal').style.display = 'flex';
 }
 
-function openDaYunModal(ganZhi, startAge, relation) {
-    const modal = document.getElementById('info-modal');
-    const title = document.getElementById('modal-title-text');
-    const body = document.getElementById('modal-body-text');
-    
-    const gan = ganZhi.substring(0, 1);
-    const zhi = ganZhi.substring(1, 2);
-    const endAge = startAge + 9;
-
-    title.innerText = `⏳ ${startAge} 歲 ～ ${endAge} 歲 專屬大運解說`;
-
-    let actionGuide = "";
-    switch (relation) {
-        case '財星': actionGuide = "這是全力「鋪路與收割成果」的黃金十年。目標感極強，在事業、創業或理財策略上面臨高密度實戰，適合將想法落地變成具體產出。身強者（能量飽滿）資產噴寶，身弱者宜結盟借力。"; break;
-        case '官殺': actionGuide = "這是面臨「高難度攻堅與名望突破」的磨練期。外在環境會交付重大責任、或產生較多制度性規範的壓迫感。只要沉著抗壓、建立嚴格自律，這十年將為你換來極高的社會地位與全新專業高度。"; break;
-        case '印星': actionGuide = "這是宇宙為你加持的「充電、深造與系統回補」十年。外在奔波感降低，貴人運大幅提升。適合潛心寫作、研發核心底層代碼、或重新優化自己的人生哲學與防護罩，能得到長輩、體制或學術的庇護。"; break;
-        case '食傷': actionGuide = "這是「才華輸出、創意爆發與開拓策略」的十年。點子源源不絕，邏輯思維極度靈敏，對傳統常規容易產生反叛與突破渴望。非常適合進行開創性項目、個人品牌打造、發明創造與大膽演說。"; break;
-        case '比劫': actionGuide = "這是「強化個人自我意志、人脈鏈接與自信心」的十年。整個人自信心與鬥志滿格，不服輸。在群體社交、資源對接、夥伴結盟上機會極多，需要注意收斂脾氣、冷靜對事，以防因過度固執而發生摩擦。"; break;
-        default: actionGuide = "能量運轉均衡，是平穩推展生活日常既定事務的穩健時期。";
-    }
-
-    let baziExplanation = `
-        <div style="font-size: 1.05rem; margin-bottom: 12px; color: #ffb300; font-weight: bold; text-align: center;">
-            🌟 【${ganZhi}】大運 ｜ 當前引動：【${relation}】氣候
-        </div>
-        <b>📊 核心引力走勢：</b><br>
-        您在 <b>${startAge}至${endAge}歲</b> 期間，生命磁場將全面受到流動天干 <b>${gan} (${ELEMENT_MAP[gan]}型)</b> 與地支 <b>${zhi}</b> 的能量合圍共振。<br><br>
-        <b>🎯 這十年的主旋律 (${relation}引力)：</b><br>
-        ${actionGuide}<br><br>
-        <span style="font-size: 0.8rem; color: #888; display: block; text-align: center; border-top: 1px solid #333; padding-top: 8px; margin-top: 8px;">
-            提示：大運為十年的宏觀天氣。具體每一年，仍會與當年的流年（如今年丙午）天干地支進行二次化學碰撞。
-        </span>
-    `;
-
-    body.innerHTML = baziExplanation;
-    modal.classList.add('active');
+function closeTenGodModal() {
+    document.getElementById('ten-god-modal').style.display = 'none';
 }
 
-function closeModal() {
-    document.getElementById('info-modal').classList.remove('active');
-}
-
-
-// --- UI 切換邏輯 ---
-function switchPage(pageId, navElement) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(`page-${pageId}`).classList.add('active');
-    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-    
-    if (navElement) {
-        navElement.classList.add('active');
-    } else { 
-        const targetNav = document.querySelector(`.nav-item[onclick*="\'${pageId}\'"]`);
-        if (targetNav) targetNav.classList.add('active');
+// 點擊彈窗外部關閉
+window.addEventListener('click', function(e) {
+    const modal = document.getElementById('ten-god-modal');
+    if (e.target === modal) {
+        modal.style.display = 'none';
     }
-    
-    if(pageId === 'record') updateRecordFields();
-}
+});
 
-function toggleTime(prefix) {
-    const timeInput = document.getElementById(`${prefix}-time`);
-    const isUnknown = document.getElementById(`${prefix}-unknown`).checked;
-    timeInput.disabled = isUnknown;
-    timeInput.style.opacity = isUnknown ? '0.4' : '1';
-}
-
-function getLunarObj(dateStr, timeStr, isUnknown) {
-    if (!dateStr) return null;
-    const [y, m, d] = dateStr.split('-');
-    const hr = isUnknown ? 12 : parseInt(timeStr.split(':')[0]);
-    const min = isUnknown ? 0 : parseInt(timeStr.split(':')[1]);
-    const solar = Solar.fromYmdHms(parseInt(y), parseInt(m), parseInt(d), hr, min, 0);
-    return Lunar.fromSolar(solar);
-}
-
-function getBaziArray(lunarObj, isUnknown) {
-    if (!lunarObj) return null;
-    const bazi = lunarObj.getEightChar();
-    let stems = [bazi.getYearGan(), bazi.getMonthGan(), bazi.getDayGan()];
-    let branches = [bazi.getYearZhi(), bazi.getMonthZhi(), bazi.getDayZhi()];
-    if (!isUnknown) { 
-        stems.push(bazi.getTimeGan()); 
-        branches.push(bazi.getTimeZhi()); 
-    }
-    return { 
-        stems, 
-        branches, 
-        isUnknown,
-        formatStr: `${stems[0]}${branches[0]} ${stems[1]}${branches[1]} ${stems[2]}${branches[2]} ${isUnknown ? '？？' : stems[3]+branches[3]}` 
-    };
-}
-
-function saveMyBazi() {
-    const bDate = document.getElementById('my-date').value;
-    const bTime = document.getElementById('my-time').value;
-    const bGender = document.getElementById('my-gender').value;
-    const isUnknown = document.getElementById('my-unknown').checked;
-    
-    if (!bDate) return alert("請選擇生日日期！");
-    
-    localStorage.setItem('my_date', bDate);
-    localStorage.setItem('my_time', bTime);
-    localStorage.setItem('my_gender', bGender);
-    localStorage.setItem('my_unknown', isUnknown);
-    
-    initHome(); 
-    alert("本命與大運已成功啟動！");
-}
-
-function calculateElementWeights(bazi, transitGan, transitZhi) {
-    let scores = { '木': 0, '火': 0, '土': 0, '金': 0, '水': 0 };
-    let weights = {
-        year_gan: 8, year_zhi: 10,
-        month_gan: 10, month_zhi: 30, 
-        day_gan: 12, day_zhi: 15,
-        hour_gan: 0, hour_zhi: 0,
-        transit_gan: 8, transit_zhi: 10  
-    };
-    
-    if (!bazi.isUnknown) {
-        weights.hour_gan = 8;
-        weights.hour_zhi = 12;
-        weights.month_zhi = 25; 
-    }
-    
-    scores[ELEMENT_MAP[bazi.stems[0]]] += weights.year_gan;
-    scores[ELEMENT_MAP[bazi.stems[1]]] += weights.month_gan;
-    scores[ELEMENT_MAP[bazi.stems[2]]] += weights.day_gan;
-    if (!bazi.isUnknown) scores[ELEMENT_MAP[bazi.stems[3]]] += weights.hour_gan;
-    if (transitGan) scores[ELEMENT_MAP[transitGan]] += weights.transit_gan;
-    
-    const processZhi = (zhi, weight) => {
-        if (!zhi || !ZHI_HIDDEN_MAP[zhi]) return;
-        for (let elem in ZHI_HIDDEN_MAP[zhi]) {
-            scores[elem] += weight * ZHI_HIDDEN_MAP[zhi][elem];
-        }
-    };
-    
-    processZhi(bazi.branches[0], weights.year_zhi);
-    processZhi(bazi.branches[1], weights.month_zhi);
-    processZhi(bazi.branches[2], weights.day_zhi);
-    if (!bazi.isUnknown) processZhi(bazi.branches[3], weights.hour_zhi);
-    if (transitZhi) processZhi(transitZhi, weights.transit_zhi);
-    
-    let seasonElement = ZHI_ELEMENT_MAP[bazi.branches[1]];
-    for (let key in scores) {
-        if (key === seasonElement) {
-            scores[key] *= 1.2;
-        } else if (RELATION_MAP[seasonElement][key] === '官殺' || RELATION_MAP[seasonElement][key] === '食傷') {
-            scores[key] *= 0.8;
-        }
-    }
-    return scores;
-}
-
-function analyzeEarthlyRelations(bazi, transitZhi) {
-    let list = [...bazi.branches];
-    if (transitZhi) list.push(transitZhi);
-    let results = { triple: [], pairs: "" };
-    
-    const TRIPLE_GROUPS = {
-        "申子辰三合偏財水局": ['申', '子', '辰'],
-        "寅午戌三合官殺火局": ['寅', '午', '戌'],
-        "亥卯未三合比劫木局": ['亥', '卯', '未'],
-        "巳酉丑三合食傷金局": ['巳', '酉', '丑']
-    };
-    
-    for (let name in TRIPLE_GROUPS) {
-        let match = TRIPLE_GROUPS[name].every(z => list.includes(z));
-        if (match) results.triple.push(name);
-    }
-    
-    let logs = [];
-    for (let i = 0; i < list.length; i++) {
-        for (let j = i + 1; j < list.length; j++) {
-            let idx1 = DIZHI_INDEX.indexOf(list[i]);
-            let idx2 = DIZHI_INDEX.indexOf(list[j]);
-            if (idx1 !== -1 && idx2 !== -1) {
-                let code = RELATION_MATRIX[idx1][idx2];
-                if (code === 1) logs.push(`【${list[i]}${list[j]}六合】`);
-                if (code === 2) logs.push(`【${list[i]}${list[j]}相衝】`);
-                if (code === 5) logs.push(`【${list[i]}${list[j]}相刑】`);
-                if (code === 6) logs.push(`【${list[i]}${list[j]}相害】`);
-            }
-        }
-    }
-    results.pairs = logs.slice(0, 2).join("，"); 
-    return results;
-}
-
-function getEnergyPrediction(baziStems, predictType, baziObj) {
-    const dayMaster = baziStems[2]; 
-    const dayMasterElement = ELEMENT_MAP[dayMaster]; 
-
-    const now = new Date();
-    let targetGan = ''; let targetZhi = ''; let timeUnit = ''; 
-
-    if (predictType === 'daily') {
-        const solarToday = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate());
-        const lunarToday = Lunar.fromSolar(solarToday);
-        targetGan = lunarToday.getDayInGanZhi().substring(0, 1);
-        targetZhi = lunarToday.getDayInGanZhi().substring(1, 2);
-        timeUnit = '今日';
-    } else if (predictType === 'monthly') {
-        const solarMonth = Solar.fromYmd(now.getFullYear(), now.getMonth() + 1, now.getDate()); 
-        const lunarMonth = Lunar.fromSolar(solarMonth);
-        targetGan = lunarMonth.getMonthGan(); 
-        targetZhi = lunarMonth.getMonthZhi();
-        timeUnit = '本月';
-    } else if (predictType === 'hourly') {
-        const lunarNow = Lunar.fromYmdHms(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds());
-        targetGan = lunarNow.getTimeGan(); 
-        targetZhi = lunarNow.getTimeZhi(); 
-        timeUnit = `本時辰 (${targetZhi}時)`;      
-    } else {
-        return { text: "未知預測類型。", action: "", relation: "default", timeUnit: "" };
-    }
-
-    const weights = calculateElementWeights(baziObj, targetGan, targetZhi);
-    const relations = analyzeEarthlyRelations(baziObj, targetZhi);
-    
-    const targetElement = ELEMENT_MAP[targetGan];
-    const relation = RELATION_MAP[dayMasterElement][targetElement] || 'default'; 
-    
-    let selfStrength = weights['土'] + weights['火'];
-    let outStrength = weights['金'] + weights['水'] + weights['木'];
-    let isStrong = selfStrength > outStrength;
-    
-    let specLog = "";
-    if (relations.triple.length > 0) {
-        specLog = `觸發${relations.triple[0]}！`;
-    } else if (relations.pairs) {
-        specLog = `時空引動${relations.pairs}。`;
-    }
-
-    let fortuneScore = 50;
-    if (isStrong) {
-        fortuneScore = Math.round(50 + (outStrength / (selfStrength + 1)) * 15);
-    } else {
-        fortuneScore = Math.round(50 + (selfStrength / (outStrength + 1)) * 15);
-    }
-
-    let bonus = 0;
-    if (relations.triple.length > 0) {
-        if (predictType === 'daily') bonus = 25;       
-        else if (predictType === 'monthly') bonus = 15; 
-        else if (predictType === 'hourly') bonus = 8;   
-    } else if (relations.pairs) {
-        if (predictType === 'daily') bonus = 10;
-        else if (predictType === 'monthly') bonus = 6;
-        else if (predictType === 'hourly') bonus = 3;
-    }
-    fortuneScore += bonus;
-    
-    if (predictType === 'hourly') {
-        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.4);
-    } else if (predictType === 'monthly') {
-        fortuneScore = Math.round(50 + (fortuneScore - 50) * 0.7);
-    }
-    fortuneScore = Math.max(30, Math.min(100, fortuneScore));
-
-    let starCount = 3; 
-    let energyLevelName = "【和諧順遂】";
-
-    if (fortuneScore >= 85) {
-        starCount = 5;
-        energyLevelName = (predictType === 'hourly') ? "【靈感湧現】" : "【凌汛暴發】"; 
-    } else if (fortuneScore >= 68) {
-        starCount = 4;
-        energyLevelName = (predictType === 'hourly') ? "【執行力強】" : "【氣場強勁】";
-    } else if (fortuneScore >= 48) {
-        starCount = 3;
-        energyLevelName = "【和諧順遂】";
-    } else if (fortuneScore >= 38) {
-        starCount = 2;
-        energyLevelName = (predictType === 'hourly') ? " {機動待命} " : "【能量潛藏】";
-    } else {
-        starCount = 1;
-        energyLevelName = "【靜心休整】";
-    }
-
-    let starsString = "🌟".repeat(starCount) + "⭐".repeat(5 - starCount);
-    const theme = ENERGY_CARD_THEMES[relation] || ENERGY_CARD_THEMES['default'];
-
-    let energyText = `🗓️ ${timeUnit}${theme.text_prefix}。<br><span style="font-size: 1.1rem; color: #ffb300; font-weight: bold;">共振星等：${starsString} ${energyLevelName}</span><br>${specLog}`;
-    const energyAction = `建議：${theme.action}，${getDetailedAction(relation, isStrong)}`; 
-
-    if (baziObj && baziObj.branches && baziObj.branches.length > 0 && targetZhi) {
-        let collisionMessages = [];
-
-        const liuChong = {'子':'午', '午':'子', '丑':'未', '未':'丑', '寅':'申', '申':'寅', '卯':'酉', '酉':'卯', '辰':'戌', '戌':'辰', '巳':'亥', '亥':'巳'};
-        const liuHe = {'子':'丑', '丑':'子', '寅':'亥', '亥':'寅', '卯':'戌', '戌':'卯', '辰':'酉', '酉':'辰', '巳':'申', '申':'巳', '午':'未', '未':'午'};
-        const liuHai = {'子':'未', '未':'子', '丑':'午', '午':'丑', '寅':'巳', '巳':'寅', '卯':'辰', '辰':'卯', '申':'亥', '亥':'申', '酉':'戌', '戌':'酉'};
-        const liuPo = {'子':'酉', '酉':'子', '卯':'午', '午':'卯', '辰':'丑', '丑':'辰', '戌':'未', '未':'戌', '寅':'亥', '亥':'寅', '巳':'申', '申':'巳'};
-        const sanXing = {'子':'卯', '卯':'子', '寅':'巳', '巳':'申', '申':'寅', '丑':'戌', '戌':'未', '未':'丑'};
-        const ziXing = ['辰', '午', '酉', '亥']; 
-
-        const positionNames = ['【年支】大環境', '【月支】事業內心', '【日支】身體配偶', '【時支】想法潛意'];
-
-        baziObj.branches.forEach((mb, idx) => {
-            if (!mb) return;
-            const pos = positionNames[idx];
-
-            if (liuChong[targetZhi] === mb) {
-                collisionMessages.push(`<br>⚠️ <b>${pos}與流動地支【${targetZhi}${mb}相衝】</b>：能量正面碰撞！局勢易面臨被迫變革或重組，是突破現狀或爆發的雙面刃契機。`);
-            }
-            else if (sanXing[targetZhi] === mb || (targetZhi === mb && ziXing.includes(mb))) {
-                collisionMessages.push(`<br>⚡ <b>${pos}與流動地支【${targetZhi}${mb}相刑】</b>：能量摩擦卡絆，容易流於執著、固執或內耗，多留心溝通可避免鑽牛角尖。`);
-            }
-            else if (liuHai[targetZhi] === mb) {
-                collisionMessages.push(`<br>🧩 <b>${pos}與流動地支【${targetZhi}${mb}相害】</b>：磁場拉扯不對頻，易有前進受阻之感，適合放慢腳步。`);
-            }
-            else if (liuPo[targetZhi] === mb) {
-                collisionMessages.push(`<br>🌱 <b>${pos}與流動地支【${targetZhi}${mb}相破】</b>：小細節隱性耗損，大方向無礙，在細部碎事上多點耐心即可。`);
-            }
-            else if (liuHe[targetZhi] === mb) {
-                collisionMessages.push(`<br>✅ <b>${pos}與流動地支【${targetZhi}${mb}相合】</b>：磁場強力凝聚！運行順暢、易得人緣協助，適合資源整合推進。`);
-            }
-        });
-
-        if (collisionMessages.length > 0) {
-            energyText += `<br><div style="text-align: left; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 8px; margin-top: 10px; font-size: 0.85rem; line-height: 1.6; border-left: 4px solid #ffb300; color: #fff;">🪐 <b>地支磁場碰撞報告：</b>${collisionMessages.join('')}</div>`;
-        } else {
-            energyText += `<br><span style="color: #bbb; font-size: 0.82rem; display: block; margin-top: 8px;">(流動地支【${targetZhi}】與本命四柱磁場平穩，無明顯衝合摩擦。)</span>`;
-        }
-    }
-
-    return { 
-        text: energyText, 
-        action: energyAction, 
-        relation: relation, 
-        timeUnit: timeUnit, 
-        cardColor: theme.color, 
-        vibeAction: theme.action, 
-        vibeLabel: `日主 ${dayMaster} | ${relation}運`,
-        predictType: predictType,
-        fortuneScore: fortuneScore, // 🌟 傳出原始分數，方便「分析他人」頁面計算星級
-        relationsObj: relations,    // 🌟 傳出地支關係數據
-        targetZhi: targetZhi        // 🌟 傳出流日地支
-    };
-}
-
-function getDetailedAction(relation, isStrong) {
-    switch (relation) {
-        case '財星': return isStrong ? `身強可任財，意外幸運極高，主動執行決策、投資或選號皆能完美捕捉。` : `財氣過旺耗身，宜保守、團隊協作，避免獨自承擔過重壓力。`;
-        case '官殺': return `適合攻堅難題、制定規章與高難度突破，需注意作息與情緒沉著。`;
-        case '印星': return `貴人運極佳，能量回補期。適合精密系統規劃、優化核心架構與吸收新知。`;
-        case '食傷': return `思維邏輯爆發，點子源源不絕。適合發明創造、撰寫核心代碼與策略拓展。`;
-        case '比劫': return `自我核心意志極強，適合社交合作、資源對接，但需沉著冷靜避免爭端。`;
-        default: return `保持平常心，穩步執行日常既定事務。`;
-    }
-}
-
-function updatePredictionCard(cardId, prediction) {
-    const card = document.getElementById(cardId);
-    if (!card) return;
-
-    card.style.display = 'block';
-    
-    const isMonthlyOrHourly = (prediction.predictType === 'monthly' || prediction.predictType === 'hourly');
-    
-    const safeText = formatTextKeywords(prediction.text);
-    const safeAction = formatTextKeywords(prediction.action, isMonthlyOrHourly);
-
-    if (cardId === 'daily-spectrum') { 
-        card.querySelector('.vibe-label').innerText = prediction.vibeLabel;
-        card.querySelector('.vibe-action').innerText = prediction.vibeAction;
-        document.getElementById('daily-description').innerHTML = `<b style="color: #fff;">今日核心感應</b><br>${safeText}`;
-    } else { 
-        card.querySelector('h4').textContent = `${prediction.timeUnit}能量提示`;
-        card.querySelector('p:first-of-type').innerHTML = safeText;
-        card.querySelector('p:last-of-type').innerHTML = safeAction;
-    }
-    card.style.background = prediction.cardColor;
-}
-
-function showMyDailyPrediction() {
-    const mDate = localStorage.getItem('my_date');
-    if (!mDate) { 
-        document.getElementById('daily-spectrum').style.display = 'none';
-        document.getElementById('daily-description').style.display = 'none';
-        return;
-    }
-    const mTime = localStorage.getItem('my_time');
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    const myLunar = getLunarObj(mDate, mTime, mUnknown);
-    const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'daily', myBazi);
-    updatePredictionCard('daily-spectrum', prediction);
-}
-
-function showMyMonthlyPrediction() {
-    const mDate = localStorage.getItem('my_date');
-    if (!mDate) { 
-        document.getElementById('monthly-energy-card').style.display = 'none';
-        return;
-    }
-    const mTime = localStorage.getItem('my_time');
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    const myLunar = getLunarObj(mDate, mTime, mUnknown);
-    const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'monthly', myBazi);
-    updatePredictionCard('monthly-energy-card', prediction);
-}
-
-function showMyHourlyPrediction() {
-    const mDate = localStorage.getItem('my_date');
-    if (!mDate) { 
-        document.getElementById('hourly-energy-card').style.display = 'none';
-        return;
-    }
-    const mTime = localStorage.getItem('my_time');
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    const myLunar = getLunarObj(mDate, mTime, mUnknown);
-    const myBazi = getBaziArray(myLunar, mUnknown);
-    const prediction = getEnergyPrediction(myBazi.stems, 'hourly', myBazi);
-    updatePredictionCard('hourly-energy-card', prediction);
-}
-
-function initHome() {
-    const today = new Date();
-    const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunarInstance = Lunar.fromSolar(solarToday);
-    const gzDay = lunarInstance.getDayInGanZhi(); 
-    const liuNianGan = lunarInstance.getYearGan();
-    const liuYueGanZhi = lunarInstance.getMonthInGanZhi(); 
-    
-    document.getElementById('today-date').innerText = today.toLocaleDateString();
-    document.getElementById('today-bazi').innerText = `(流年：${lunarInstance.getYearInGanZhi()} / 流月：${liuYueGanZhi} / 流日：${gzDay})`;
-
-    const mDate = localStorage.getItem('my_date');
-    if (!mDate) {
-        document.getElementById('my-bazi-display').style.display = 'none';
-        document.getElementById('daily-spectrum').style.display = 'none';
-        document.getElementById('daily-description').style.display = 'none';
-        document.getElementById('monthly-energy-card').style.display = 'none';
-        document.getElementById('hourly-energy-card').style.display = 'none';
-        document.getElementById('resonance-board').style.display = 'none';
-        document.getElementById('dayun-board').style.display = 'none';
-        return;
-    }
-    
-    const mTime = localStorage.getItem('my_time') || '12:00';
-    const mGender = localStorage.getItem('my_gender') || '1';
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    
-    document.getElementById('my-date').value = mDate;
-    document.getElementById('my-time').value = mTime;
-    document.getElementById('my-gender').value = mGender;
-    document.getElementById('my-unknown').checked = mUnknown;
-    toggleTime('my');
-
-    const myLunar = getLunarObj(mDate, mTime, mUnknown);
-    const myBaziArray = getBaziArray(myLunar, mUnknown);
-    const userDayGan = myBaziArray.stems[2]; 
-    const genderTerm = mGender === '1' ? '乾造' : '坤造';
-    
-    document.getElementById('my-bazi-display').style.display = 'block';
-    document.getElementById('my-bazi-display').innerHTML = formatTextKeywords(`我的命盤：[${genderTerm}] ${myBaziArray.formatStr} (日主 ${userDayGan})`);
-
-    showMyDailyPrediction();
-    showMyMonthlyPrediction(); 
-    showMyHourlyPrediction();   
-
-    const myEightChar = myLunar.getEightChar();
-    const yun = myEightChar.getYun(parseInt(mGender)); 
-    const yunList = yun.getDaYun(); 
-    const currentAge = lunarInstance.getYear() - myLunar.getYear() + 1; 
-    
-    document.getElementById('dayun-board').style.display = 'block';
-    const dayunListContainer = document.getElementById('dayun-list');
-    dayunListContainer.innerHTML = '';
-    
-    let activeDaYunGan = null; 
-    const myElement = ELEMENT_MAP[userDayGan];
-
-    yunList.forEach((y, i) => {
-        if (i === 0) return; 
-        const age = y.getStartAge();
-        const gz = y.getGanZhi();
-        const isCurrent = currentAge >= age && currentAge < age + 10;
-        
-        const daYunGan = gz.substring(0, 1);
-        const loopRelation = RELATION_MAP[myElement][ELEMENT_MAP[daYunGan]] || 'default';
-
-        if (isCurrent) activeDaYunGan = daYunGan;
-
-        dayunListContainer.innerHTML += `
-            <div class="dayun-box ${isCurrent ? 'current' : ''}" onclick="openDaYunModal('${gz}', ${age}, '${loopRelation}')">
-                <span class="dayun-age">${age}歲</span>
-                <span class="dayun-gz">${gz}</span>
-            </div>
-        `;
-    });
-
-    if (activeDaYunGan) {
-        document.getElementById('resonance-board').style.display = 'block';
-        
-        const dyRelation = RELATION_MAP[myElement][ELEMENT_MAP[activeDaYunGan]];
-        const lnRelation = RELATION_MAP[myElement][ELEMENT_MAP[liuNianGan]];
-        
-        let resHtml = `目前您走在 <b>${activeDaYunGan}</b> 運 (<b>${dyRelation}</b>)，而今年是 <b>${liuNianGan}</b> 年 (<b>${lnRelation}</b>)。<br>`;
-        
-        if (dyRelation === lnRelation) {
-            resHtml += `<div class="resonance-highlight">⚡ 歲運交疊！雙重【${dyRelation}】能量引爆！<br><span style="font-size: 0.8rem; color: #fff; font-weight: normal;">今年的磁場與你十年大運完全同頻，請勇敢執行這方面的計畫！</span></div>`;
-        } else {
-            resHtml += `<span style="color: #aaa; font-size: 0.85rem;">(大運主導方向，流年帶來機遇，兩股能量交織出豐富的體驗)</span>`;
-        }
-        document.getElementById('resonance-desc').innerHTML = formatTextKeywords(resHtml);
-    }
-}
-
-function calculateMatch() {
-    const mDate = localStorage.getItem('my_date');
-    if (!mDate) return alert("請先回到「我的能量」設定您的出生資訊！");
-    
-    const mGender = localStorage.getItem('my_gender') || '1';
-    const mUnknown = localStorage.getItem('my_unknown') === 'true';
-    const myLunar = getLunarObj(mDate, localStorage.getItem('my_time'), mUnknown);
-    const myBazi = getBaziArray(myLunar, mUnknown);
-
-    const tDate = document.getElementById('target-date').value;
-    const tTime = document.getElementById('target-time').value;
-    const tGender = document.getElementById('target-gender').value;
-    const tUnknown = document.getElementById('target-unknown').checked;
-    
-    if (!tDate) return alert("請輸入對方的出生日期！");
-    
-    const targetLunar = getLunarObj(tDate, tTime, tUnknown);
-    const targetBazi = getBaziArray(targetLunar, tUnknown);
-
-    document.getElementById('match-result').style.display = 'block';
-    document.getElementById('compare-my-label').innerText = `我 (${mGender === '1' ? '男' : '女'})`;
-    document.getElementById('compare-target-label').innerText = `對方 (${tGender === '1' ? '男' : '女'})`;
-    document.getElementById('compare-my-bazi').innerText = myBazi.formatStr;
-    document.getElementById('compare-target-bazi').innerText = targetBazi.formatStr;
-
-    let score = 50; 
-    let dayGanLog = ""; let groupLog = ""; let branchLog = "";
-
-    const myDayGan = myBazi.stems[2];
-    const tDayGan = targetBazi.stems[2];
-    const myElement = ELEMENT_MAP[myDayGan];
-    const tElement = ELEMENT_MAP[tDayGan];
-    const hePairs = { '甲':'己', '己':'甲', '乙':'庚', '庚':'乙', '丙':'辛', '辛':'丙', '丁':'壬', '壬':'丁', '戊':'癸', '癸':'戊' };
-    
-    if (myDayGan === tDayGan) {
-        score += 15; dayGanLog = `您們日主同為「${myDayGan}${myElement}」，屬於【比肩】關係。`;
-    } else if (hePairs[myDayGan] === tDayGan) {
-        score += 30; dayGanLog = `🔥 <b>強烈吸引！</b>形成【天干五合】，具極強化學反應！`;
-    } else {
-        const relationMeToTarget = RELATION_MAP[myElement][tElement];
-        if (relationMeToTarget === '財星') { score += 10; dayGanLog = `對方是您的【財星】，具務實吸引力。`; } 
-        else if (relationMeToTarget === '官殺') { score -= 5; dayGanLog = `對方是您的【官殺】，會產生敬畏或壓力。`; } 
-        else if (relationMeToTarget === '印星') { score += 15; dayGanLog = `對方是您的【印星】，跟對方在一起特別安心。`; } 
-        else if (relationMeToTarget === '食傷') { score += 10; dayGanLog = `對方是您的【食傷】，激發您的保護慾。`; } 
-        else if (relationMeToTarget === '比劫') { score += 10; dayGanLog = `對方是您的【比劫】，頻率相近。`; }
-    }
-
-    const sanHeGroups = [['申','子','辰', '三合局'], ['寅','午','戌', '三合局'], ['亥','卯','未', '三合局'], ['巳','酉','丑', '三合局']];
-    const sanHuiGroups = [['寅','卯','辰', '三會方'], ['巳','午','未', '三會方'], ['申','酉','戌', '三會方'], ['亥','子','丑', '三會方']];
-    let myUB = [...new Set(myBazi.branches)]; let tUB = [...new Set(targetBazi.branches)];
-    let cB = [...new Set([...myUB, ...tUB])];
-
-    [...sanHeGroups, ...sanHuiGroups].forEach(group => {
-        const [b1, b2, b3, name] = group;
-        if (cB.includes(b1) && cB.includes(b2) && cB.includes(b3) && !(myUB.includes(b1)&&myUB.includes(b2)&&myUB.includes(b3)) && !(tUB.includes(b1)&&tUB.includes(b2)&&tUB.includes(b3))) {
-            score += 20; groupLog += `✨ <b>【${name}：${b1}${b2}${b3}】</b> 命定互補，拼湊出完整能量陣！<br>`;
-        }
-    });
-    if(!groupLog) groupLog = `<span style="color: #888;">無特殊的群體合化。</span>`;
-
-    let heCount = 0; let chongCount = 0;
-    const liuHe = {'子':'丑', '寅':'亥', '卯':'戌', '辰':'酉', '巳':'申', '午':'未'};
-    const liuChong = {'子':'午', '丑':'未', '寅':'申', '卯':'酉', '辰':'戌', '巳':'亥'};
-
-    myBazi.branches.forEach((mb, mIdx) => {
-        targetBazi.branches.forEach((tb, tIdx) => {
-            if (liuHe[mb] === tb || liuHe[tb] === mb) { heCount++; score += 5; branchLog += `✅ <b>【吸引】</b> 第${mIdx+1}柱與對方第${tIdx+1}柱相合。<br>`; }
-            if (liuChong[mb] === tb || liuChong[tb] === mb) { chongCount++; score -= 5; branchLog += `⚠️ <b>【摩擦】</b> 第${mIdx+1}柱與對方第${tIdx+1}柱相衝。<br>`; }
-        });
-    });
-
-    if (heCount === 0 && chongCount === 0) branchLog = "🌱 磁場平穩，無強烈衝合。";
-
-    score = Math.max(10, Math.min(99, score)); 
-    document.getElementById('match-score-value').innerText = `${score}%`;
-    
-    document.getElementById('match-day-gan-desc').innerHTML = formatTextKeywords(dayGanLog);
-    document.getElementById('match-group-desc').innerHTML = formatTextKeywords(groupLog);
-    document.getElementById('match-branch-desc').innerHTML = formatTextKeywords(branchLog);
-    document.getElementById('match-summary').innerText = score >= 80 ? "✨ 靈魂伴侶級別！" : score >= 60 ? "😊 相處融洽。" : "🌱 挑戰與成長並存。";
-}
-
-function updateRecordFields() {
-    const mDate = localStorage.getItem('my_date');
-    if (mDate && !document.getElementById('rec-master').value) {
-        const myLunar = getLunarObj(mDate, localStorage.getItem('my_time') || '12:00', localStorage.getItem('my_unknown') === 'true');
-        const dayMaster = myLunar.getEightChar().getDayGan();
-        document.getElementById('rec-target').value = '我';
-        document.getElementById('rec-master').value = dayMaster;
-    }
-}
-
-async function submitRecord() {
-    if(GOOGLE_API_URL.includes("請替換")) return alert("⚠️ 請先在程式碼中填寫 Google API 網址！");
-    const targetName = document.getElementById('rec-target').value || "未填寫";
-    let rawMaster = document.getElementById('rec-master').value.trim();
-    let coreStem = rawMaster.substring(0, 1); 
-    const note = document.getElementById('rec-note').value;
-    
-    const today = new Date();
-    const solarToday = Solar.fromYmd(today.getFullYear(), today.getMonth() + 1, today.getDate());
-    const lunarToday = Lunar.fromSolar(solarToday);
-    const gzDay = lunarToday.getDayInGanZhi(); 
-    
-    const nowSolar = Solar.fromYmdHms(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes(), 0);
-    const nowLunar = Lunar.fromSolar(nowSolar);
-    const timeZhi = nowLunar.getTimeZhi(); 
-
-    let tenGod = "未知"; let finalDayMaster = "未填寫"; 
-
-    if (coreStem && ELEMENT_MAP[coreStem]) {
-        finalDayMaster = coreStem + ELEMENT_MAP[coreStem]; 
-        const todayGan = gzDay.substring(0, 1);
-        tenGod = RELATION_MAP[ELEMENT_MAP[coreStem]][ELEMENT_MAP[todayGan]];
-    } else if (rawMaster) {
-        return alert("日主請輸入正確的天干開頭 (甲乙丙丁戊己庚辛壬癸)。");
-    }
-
-    const payload = {
-        date: today.toLocaleDateString(),
-        timeZhi: timeZhi,
-        targetName: targetName,
-        dayMaster: finalDayMaster, 
-        gzDay: gzDay,
-        tenGod: tenGod,
-        mood: document.getElementById('rec-mood').value,
-        stability: document.getElementById('rec-stability').value,
-        impact: document.getElementById('rec-impact').value,
-        note: note
-    };
-
-    const btn = document.getElementById('btn-submit-record');
-    btn.innerText = "🚀 數據傳送中..."; btn.disabled = true;
-
-    try {
-        await fetch(GOOGLE_API_URL, {
-            method: 'POST',
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify(payload)
-        });
-        alert("✅ 打卡成功！能量數據已寫入雲端。");
-        document.getElementById('rec-note').value = ""; 
-    } catch (error) {
-        console.error(error);
-        alert("❌ 傳送失敗，請檢查網路狀態或 API 網址設定。");
-    } finally {
-        btn.innerText = "送出打卡數據"; btn.disabled = false;
-    }
-}
-
-// 🌟 優化升級版：「分析他人」避雷與合作星級推演核心引擎 (避免過度敏感)
+// 🌟 精密降噪兼具點擊跳窗的「他人分析引擎」核心
 function analyzeBazi() {
     const aDate = document.getElementById('analyze-date').value;
     const aTime = document.getElementById('analyze-time').value;
@@ -1375,7 +98,6 @@ function analyzeBazi() {
     
     if (!aDate) return alert("請選擇對方的生日日期！");
     
-    // 檢查是否有設定自己的生日以進行對比預警
     const mDate = localStorage.getItem('my_date');
     let myBazi = null;
     if (mDate) {
@@ -1393,39 +115,47 @@ function analyzeBazi() {
     const targetDayGan = targetBazi.stems[2];
     const genderTerm = aGender === '1' ? '乾造' : '坤造';
     
-    document.getElementById('analyze-result').style.display = 'block';
-    document.getElementById('analyze-bazi').innerHTML = formatTextKeywords(`[${genderTerm}] ${targetBazi.formatStr} (日主 ${targetDayGan})`);
-    
     // 取得對方今日的能量預測數據
     const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
     
+    // 🔍 核心捕捉：分析今日十神究竟屬於哪一個字典檔
+    const detectedKey = detectTenGodKey(prediction.vibeLabel + prediction.text);
+    
+    document.getElementById('analyze-result').style.display = 'block';
+    
+    // 改造渲染格式：包裝成精美的點擊膠囊按鈕
+    document.getElementById('analyze-bazi').innerHTML = `
+        [${genderTerm}] ${targetBazi.formatStr} <br>
+        <div onclick="openTenGodModal('${detectedKey}')" style="display:inline-block; margin-top:10px; background: rgba(255, 202, 40, 0.12); border: 1px solid #ffca28; color: #ffca28; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; font-weight: 500; letter-spacing: 0.5px;">
+            🔍 日主 ${targetDayGan} | ${detectedKey} (點擊解讀今日磁場)
+        </div>
+    `;
+    
     const energyCard = document.getElementById('analyze-energy-card');
     energyCard.style.display = 'block';
-    energyCard.style.background = prediction.cardColor;
+    energyCard.style.background = prediction.color || prediction.cardColor;
     
     document.getElementById('analyze-description').innerHTML = `<b style="color: #fff;">今日核心感應 (${formatTextKeywords(prediction.vibeLabel)})</b>`;
     document.getElementById('analyze-energy-text').innerHTML = formatTextKeywords(prediction.text);
     document.getElementById('analyze-energy-action').innerHTML = formatTextKeywords(prediction.action);
 
-    // 🌟 --- 避雷與合作星級演算板塊 (精密降噪版) ---
+    // --- 避雷與合作星級演算板塊 (精密降噪版) ---
     const guideCard = document.getElementById('analyze-guide-card');
     const starsDisplay = document.getElementById('analyze-stars-display');
     const guideText = document.getElementById('analyze-guide-text');
     
     guideCard.style.display = 'block';
     
-    let rawScore = prediction.fortuneScore; // 30 ~ 100
+    let rawScore = prediction.fortuneScore || 60; 
     let isPositive = true;
     
-    // 🎯 精密判定：只有當「月支(內心)」或「日支(配偶/主體)」遭遇衝或刑，或者總分太低，才算真正雷區
-    const hasCoreClash = prediction.text.includes('【月支】') && (prediction.text.includes('相衝') || prediction.text.includes('相刑')) ||
-                         prediction.text.includes('【日支】') && (prediction.text.includes('相衝') || prediction.text.includes('相刑'));
+    const hasCoreClash = (prediction.text.includes('【月支】') || prediction.text.includes('【日支】')) && 
+                         (prediction.text.includes('相衝') || prediction.text.includes('相刑'));
     
     if (rawScore < 46 || hasCoreClash) {
         isPositive = false;
     }
 
-    // 計算星等 (進行對稱平滑處理)
     let computedStars = 3;
     if (isPositive) {
         if (rawScore >= 82) computedStars = 5;
@@ -1433,17 +163,15 @@ function analyzeBazi() {
         else if (rawScore >= 48) computedStars = 3;
         else computedStars = 2;
     } else {
-        // 負面雷區：分數越低或核心衝刑越重，灰星越多
-        if (rawScore <= 40 || (hasCoreClash && rawScore < 50)) computedStars = 5; // 5顆灰星 = 大雷
+        if (rawScore <= 40 || (hasCoreClash && rawScore < 50)) computedStars = 5; 
         else if (rawScore < 46) computedStars = 4;
-        else computedStars = 3; // 輕微雷區
+        else computedStars = 3; 
     }
 
     let starsHtml = "";
     let guideMessage = "";
 
     if (isPositive) {
-        // ✨ 正面：好的黃星 🌟
         starsHtml = `<span style="color: #ffca28;">` + "🌟".repeat(computedStars) + "⭐".repeat(5 - computedStars) + `</span>`;
         
         if (computedStars >= 4) {
@@ -1463,7 +191,6 @@ function analyzeBazi() {
         guideCard.style.background = "rgba(46, 125, 50, 0.15)"; 
         guideCard.style.borderColor = "#2e7d32";
     } else {
-        // ⚫ 負面：壞的灰星
         starsHtml = `<span style="color: #757575;">` + "⚫".repeat(computedStars) + "⚪".repeat(5 - computedStars) + `</span>`;
         
         guideMessage = `⚠️ <b>高能雷區預警（建議避雷）</b>：對方今日核心磁場（月支/日支）遭遇明顯衝刑摩擦，或整體能量陷入低迷、內耗狀態，容易產生焦躁、防禦心重或壓力爆棚的情況。<br><br>`;
@@ -1493,6 +220,5 @@ function showHome() {
     switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]')); 
 }
 </script>
-
 </body>
 </html>
