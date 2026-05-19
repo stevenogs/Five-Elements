@@ -15,7 +15,8 @@
     
     <style>
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; \n            background-color: #121212; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background-color: #121212; 
             color: #ffffff; 
             display: flex; 
             flex-direction: column; 
@@ -24,112 +25,1181 @@
             margin: 0; 
             padding-bottom: 80px; 
         }
+        .container { 
+            background: #1e1e1e; 
+            padding: 25px; 
+            border-radius: 20px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); 
+            width: 100%; 
+            max-width: 400px; 
+            margin-bottom: 20px; 
+            box-sizing: border-box; 
+        }
+        h1 { 
+            font-size: 1.5rem; 
+            margin-top: 0; 
+            margin-bottom: 15px; 
+            color: #aaaaaa; 
+            text-align: center;
+        }
+        
+        .page { 
+            display: none; 
+            width: 100%; 
+            max-width: 400px; 
+            animation: fadeIn 0.3s; 
+        }
+        .page.active { 
+            display: block; 
+        }
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .input-group { 
+            background: #2a2a2a; 
+            padding: 15px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid #444; 
+        }
+        .input-group p { 
+            font-size: 0.85rem; 
+            margin: 0 0 10px 0; 
+            color: #aaa; 
+        }
+        .flex-row { 
+            display: flex; 
+            gap: 10px; 
+            margin-bottom: 10px; 
+        }
+        input[type="date"], input[type="time"], input[type="text"], select, textarea { 
+            padding: 10px; 
+            border-radius: 8px; 
+            border: none; 
+            background: #333; 
+            color: #fff; 
+            box-sizing: border-box; 
+            font-size: 0.9rem; 
+            width: 100%; 
+        }
+        
+        .btn-primary { 
+            width: 100%; 
+            background: #4caf50; 
+            color: white; 
+            border: none; 
+            padding: 12px; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            transition: 0.2s;
+        }
+        .btn-primary:active { 
+            transform: scale(0.98); 
+        }
+        .btn-primary:disabled { 
+            background: #666; 
+            cursor: not-allowed; 
+        }
+        .checkbox-container { 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            margin-bottom: 10px; 
+            font-size: 0.8rem; 
+            color: #aaa; 
+            cursor: pointer; 
+        }
+        
+        .spectrum-display { 
+            width: 100%; 
+            height: 120px; 
+            border-radius: 15px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 1.8rem; 
+            font-weight: bold; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5); 
+            margin-bottom: 20px; 
+            flex-direction: column; 
+            color: #fff; 
+            background: linear-gradient(135deg, #4b6cb7, #182848); 
+            transition: background 0.5s ease;
+            text-align: center; 
+            box-sizing: border-box;
+            padding: 10px; 
+        }
+        
+        .spectrum-display .vibe-label {
+            font-size: 0.8rem; 
+            opacity: 0.7; 
+            margin-bottom: 5px;
+            width: 100%;
+            text-align: center;
+        }
+        .spectrum-display .vibe-action {
+            font-size: 2.2rem;
+            width: 100%;
+            text-align: center;
+        }
+
+        .desc { 
+            font-size: 0.95rem;
+            color: #cccccc; 
+            margin-bottom: 20px; 
+            line-height: 1.6; 
+            min-height: 60px; 
+            text-align: center;
+            width: 100%; 
+            box-sizing: border-box;
+            padding: 0 10px; 
+        }
+        
+        .dayun-section, .energy-card-small { 
+            background: #222; 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border: 1px solid #333; 
+        }
+        .energy-card-small h4 {
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+            text-align: center;
+            color: #f0f0f0;
+        }
+        .energy-card-small p {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #ccc;
+            text-align: center;
+        }
+
+        .dayun-grid { 
+            display: grid; 
+            grid-template-columns: repeat(5, 1fr); 
+            gap: 8px; 
+            margin-top: 10px; 
+        }
+        .dayun-box { 
+            background: #333; 
+            padding: 8px 2px; 
+            border-radius: 8px; 
+            text-align: center; 
+            font-size: 0.8rem; 
+            border: 1px solid #444; 
+            transition: 0.3s; 
+            cursor: pointer;
+        }
+        .dayun-box:active {
+            transform: scale(0.95);
+        }
+        .dayun-box.current { 
+            border-color: #ffb300; 
+            background: rgba(255,179,0,0.15); 
+            transform: scale(1.05); 
+            box-shadow: 0 0 10px rgba(255,179,0,0.2); 
+        }
+        .dayun-box.current:active {
+            transform: scale(1);
+        }
+        .dayun-age { 
+            color: #888; 
+            font-size: 0.7rem; 
+            display: block; 
+            margin-bottom: 2px;
+        }
+        .dayun-gz { 
+            font-weight: bold; 
+            color: #ffb300; 
+            font-size: 0.95rem;
+        }
+        
+        .resonance-highlight { 
+            color: #ffb300; 
+            font-size: 1.1rem; 
+            font-weight: bold; 
+            margin-top: 8px; 
+            text-shadow: 0 0 5px rgba(255,179,0,0.5); 
+        }
+
+        .bottom-nav { 
+            position: fixed; 
+            bottom: 0; 
+            left: 0; 
+            width: 100%; 
+            background: #1a1a1a; 
+            display: flex; 
+            justify-content: space-around; 
+            padding: 10px 0; 
+            border-top: 1px solid #333; 
+            z-index: 100; 
+        }
+        .nav-item { 
+            color: #888; 
+            text-align: center; 
+            font-size: 0.8rem; 
+            cursor: pointer; 
+            padding: 5px 15px; 
+            border-radius: 10px; 
+            transition: 0.3s; 
+            flex: 1; 
+        }
+        .nav-item.active { 
+            color: #ffb300; 
+            font-weight: bold; 
+            background: rgba(255, 179, 0, 0.1); 
+        }
+        .nav-icon { 
+            font-size: 1.2rem; 
+            display: block; 
+            margin-bottom: 3px; 
+        }
+
+        .match-score { 
+            font-size: 3rem; 
+            color: #ffb300; 
+            text-align: center; 
+            font-weight: bold; 
+            margin: 10px 0; 
+            text-shadow: 0 0 10px rgba(255, 179, 0, 0.5);
+        }
+        .match-card { 
+            background: #222; 
+            border: 1px solid #444; 
+            border-radius: 10px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+        }
+        .match-title { 
+            font-size: 0.9rem; 
+            color: #aaa; 
+            border-bottom: 1px solid #444; 
+            padding-bottom: 5px; 
+            margin-bottom: 10px;
+        }
+        .bazi-compare-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 10px; 
+            text-align: center; 
+            font-size: 0.9rem; 
+            margin-bottom: 10px;
+        }
+        
+        input[type=range] { 
+            -webkit-appearance: none; 
+            background: #444; 
+            height: 6px; 
+            border-radius: 5px; 
+            outline: none; 
+            margin-top: 5px; 
+        }
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            appearance: none; 
+            width: 18px; 
+            height: 18px; 
+            border-radius: 50%; 
+            background: #4caf50; 
+            cursor: pointer; 
+        }
+        #rec-impact::-webkit-slider-thumb { 
+            background: #f44336; 
+        }
+
+        .keyword-highlight {
+            color: #ffca28;
+            font-weight: bold;
+            text-decoration: underline dashed #ffca28;
+            cursor: pointer;
+            padding: 0 2px;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000; opacity: 0; pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1; pointer-events: auto;
+        }
+        .modal-card {
+            background: #252525;
+            border: 1px solid #444;
+            border-radius: 16px;
+            padding: 20px;
+            width: 85%; max-width: 340px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+            text-align: left;
+        }
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+        .modal-title {
+            font-size: 1.1rem; color: #ffb300;
+            font-weight: bold; margin-bottom: 10px;
+            border-bottom: 1px solid #333; padding-bottom: 8px;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-close {
+            cursor: pointer; color: #888; font-size: 1.2rem;
+        }
+        .modal-body {
+            font-size: 0.9rem; color: #ccc; line-height: 1.6;
+        }
     </style>
 </head>
 <body>
 
-<div id="ten-god-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 9999; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;">
-    <div style="background: #1e1e1e; border: 1px solid #ffca28; border-radius: 12px; width: 100%; max-width: 430px; padding: 22px; box-sizing: border-box; position: relative; color: #fff; box-shadow: 0 4px 25px rgba(0,0,0,0.6);">
-        <h3 id="tg-modal-title" style="margin-top: 0; color: #ffca28; border-bottom: 1px solid #333; padding-bottom: 12px; font-size: 1.15rem; letter-spacing: 1px;">十神運勢解讀</h3>
-        <p id="tg-modal-desc" style="font-size: 0.95rem; line-height: 1.6; color: #e0e0e0; margin-bottom: 22px; letter-spacing: 0.5px;"></p>
-        <button onclick="closeTenGodModal()" style="width: 100%; background: #ffca28; color: #121212; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s;">我知道了</button>
+<div id="page-home" class="page active">
+    <div class="container">
+        <h1>個人能量引擎</h1>
+        <div class="input-group">
+            <p>🌌 我的出生資訊</p>
+            <div class="flex-row">
+                <select id="my-gender" style="flex: 1;">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+                <input type="date" id="my-date" style="flex: 2;">
+            </div>
+            <div class="flex-row">
+                <input type="time" id="my-time" value="12:00" style="width: 100%;">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="my-unknown" onchange="toggleTime('my')"> 不知道時辰
+            </label>
+            <button class="btn-primary" onclick="saveMyBazi()">設定命盤與啟動大運</button>
+        </div>
+        
+        <div id="my-bazi-display" style="text-align: center; color: #ffb300; font-weight: bold; margin-bottom: 20px; display: none;"></div>
+        <div style="font-size: 1.2rem; font-weight: bold; text-align: center; margin-bottom: 5px;" id="today-date">--</div>
+        <div style="font-size: 1rem; color: #ffb300; text-align: center; margin-bottom: 15px;" id="today-bazi">--</div>
+        
+        <div class="spectrum-display" id="daily-spectrum">
+            <span class="vibe-label">今日能量狀態</span><br>
+            <span class="vibe-action">未設定命盤</span>
+        </div>
+        <div class="desc" id="daily-description">請先輸入您的出生時間以啟動流日共振引擎。</div>
+
+        <div id="monthly-energy-card" class="energy-card-small" style="display: none;">
+            <h4>🗓️ 本月能量提示</h4>
+            <p id="monthly-energy-text">尚未預測</p>
+            <p id="monthly-energy-action">尚未預測</p>
+        </div>
+
+        <div id="hourly-energy-card" class="energy-card-small" style="margin-top: 10px; display: none;">
+            <h4>⏳ 本時辰能量提示</h4>
+            <p id="hourly-energy-text">尚未預測</p>
+            <p id="hourly-energy-action">尚未預測</p>
+        </div>
+
+        <div id="resonance-board" class="dayun-section" style="display: none; border-color: #ffb300; background: rgba(255,179,0,0.08);">
+            <div class="match-title" style="color: #ffb300; border-bottom: 1px solid rgba(255,179,0,0.3);">🔥 歲運交互共振引擎</div>
+            <div id="resonance-desc" style="font-size: 0.9rem; line-height: 1.6; text-align: center; padding-top: 5px;"></div>
+        </div>
+
+        <div id="dayun-board" class="dayun-section" style="display: none;">
+            <div class="match-title">人生大運走勢 (每十年更換，點擊可看解說)</div>
+            <div id="dayun-list" class="dayun-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div id="page-match" class="page">
+    <div class="container">
+        <h1>人際合盤 analysis</h1>
+        <div class="input-group">
+            <p>🎯 對方的出生資訊</p>
+            <div class="flex-row">
+                <select id="target-gender" style="flex: 1;">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+                <input type="date" id="target-date" style="flex: 2;">
+            </div>
+            <div class="flex-row">
+                <input type="time" id="target-time" value="12:00" style="width: 100%;">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="target-unknown" onchange="toggleTime('target')"> 對方不知道時辰
+            </label>
+            <button class="btn-primary" onclick="calculateMatch()">執行合盤推演</button>
+        </div>
+
+        <div id="match-result" style="display: none;">
+            <div class="match-card">
+                <div class="match-title">能量引力指數</div>
+                <div class="match-score" id="match-score-value">0%</div>
+                <div style="text-align: center; font-size: 0.85rem; color: #888;" id="match-summary">計算中...</div>
+            </div>
+            <div class="match-card">
+                <div class="match-title">本命結構對比</div>
+                <div class="bazi-compare-grid">
+                    <div style="color: #4caf50;"><b id="compare-my-label">我</b><br><span id="compare-my-bazi"></span></div>
+                    <div style="color: #2196f3;"><b id="compare-target-label">對方</b><br><span id="compare-target-bazi"></span></div>
+                </div>
+            </div>
+            <div class="match-card">
+                <div class="match-title">日主化學反應 (核心定位)</div>
+                <div id="match-day-gan-desc" style="font-size: 0.9rem; line-height: 1.5;"></div>
+            </div>
+            <div class="match-card">
+                <div class="match-title">地支群體緣分 (三合 / 三會)</div>
+                <div id="match-group-desc" style="font-size: 0.85rem; line-height: 1.5;"></div>
+            </div>
+            <div class="match-card">
+                <div class="match-title">地支一對一引力 (衝合判定)</div>
+                <div id="match-branch-desc" style="font-size: 0.85rem; color: #ccc; line-height: 1.5;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="page-record" class="page">
+    <div class="container">
+        <h1>📝 能量監測紀錄</h1>
+        <div class="input-group">
+            <p>📊 當下狀態觀測</p>
+            <div class="flex-row">
+                <input type="text" id="rec-target" placeholder="觀測對象 (如: 我)" style="flex: 1;">
+                <input type="text" id="rec-master" placeholder="對象日主 (如: 戊或戊土)" style="flex: 1;">
+            </div>
+            
+            <p>🎭 心情類別</p>
+            <select id="rec-mood" style="margin-bottom: 15px;">
+                <option value="平靜">平靜</option>
+                <option value="快樂">快樂</option>
+                <option value="壓力">壓力</option>
+                <option value="悲傷">悲傷</option>
+                <option value="憤怒">憤怒</option>
+                <option value="驚訝">驚訝</option>
+            </select>
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
+                <span>能量穩定 (1-10)</span>
+                <span id="val-stability" style="font-weight:bold; color:#4caf50;">5</span>
+            </div>
+            <input type="range" id="rec-stability" min="1" max="10" value="5" style="margin-bottom: 15px;" oninput="document.getElementById('val-stability').innerText=this.value">
+
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: #aaa;">
+                <span>碰撞強度 (1-5)</span>
+                <span id="val-impact" style="font-weight:bold; color:#f44336;">1</span>
+            </div>
+            <input type="range" id="rec-impact" min="1" max="5" value="1" oninput="document.getElementById('val-impact').innerText=this.value">
+
+            <p style="margin-top: 20px;">📄 事件簡述</p>
+            <textarea id="rec-note" placeholder="紀錄發生了什麼事..." style="height: 70px; resize: none;"></textarea>
+            
+            <button id="btn-submit-record" class="btn-primary" style="margin-top: 15px; background: #2196f3;" onclick="submitRecord()">送出打卡數據</button>
+        </div>
+    </div>
+</div>
+
+<div id="page-analyze" class="page">
+    <div class="container">
+        <h1>🎯 分析他人能量</h1>
+        <p>輸入對方的出生資訊，系統將推演其流日狀態，並與您的八字共振，提供「避雷與合作」星級導航。</p>
+        <div class="input-group">
+            <div class="flex-row">
+                <select id="analyze-gender" style="flex: 1;">
+                    <option value="1">男</option>
+                    <option value="0">女</option>
+                </select>
+                <input type="date" id="analyze-date" style="flex: 2;">
+            </div>
+            <div class="flex-row">
+                <input type="time" id="analyze-time" value="12:00" style="width: 100%;">
+            </div>
+            <label class="checkbox-container">
+                <input type="checkbox" id="analyze-unknown" onchange="toggleTime('analyze')"> 對方不知道時辰
+            </label>
+            <button class="btn-primary" onclick="analyzeBazi()">輸入八字並啟動能量預測</button>
+        </div>
+        
+        <div id="analyze-result" style="margin-top: 20px; display: none;">
+            <h3>📊 對方的命盤：<br><span id="analyze-bazi" style="color: #ffb300; font-size: 1.1rem;">未設定</span></h3>
+            <div class="desc" id="analyze-description">請先輸入出生資訊以啟動「每日能量預測」。</div>
+            
+            <div id="analyze-energy-card" class="energy-card-small" style="margin-top: 20px; display: none; padding: 15px; border-radius: 15px;">
+                <h4>🎯 今日能量提示</h4>
+                <p id="analyze-energy-text" style="font-weight: bold; margin-bottom: 8px;">尚未預測</p>
+                <p id="analyze-energy-action">尚未預測</p>
+            </div>
+            
+            <div id="analyze-guide-card" class="energy-card-small" style="margin-top: 15px; display: none; padding: 15px; border-radius: 15px; border: 1px solid #444;">
+                <h4 style="color: #ffca28; margin-bottom: 5px;">🤝 社交相處與行動導航</h4>
+                <div id="analyze-stars-display" style="font-size: 1.5rem; text-align: center; margin-bottom: 10px; letter-spacing: 3px;"></div>
+                <p id="analyze-guide-text" style="font-size: 0.9rem; line-height: 1.6; text-align: left; color: #fff;"></p>
+            </div>
+
+            <button class="btn-primary" style="margin-top: 20px;" onclick="showHome()">回到我的能量</button>
+        </div>
+    </div>
+</div>
+
+<div id="info-modal" class="modal-overlay" onclick="closeModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-title">
+            <span id="modal-title-text">能量名詞解釋</span>
+            <span class="modal-close" onclick="closeModal()">✕</span>
+        </div>
+        <div id="modal-body-text" class="modal-body">說明內容</div>
+    </div>
+</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchPage('home', this)">
+        <span class="nav-icon">🌌</span><span>我的能量</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('match', this)">
+        <span class="nav-icon">💞</span><span>合盤 analysis</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('record', this)">
+        <span class="nav-icon">📝</span><span>打卡紀錄</span>
+    </div>
+    <div class="nav-item" onclick="switchPage('analyze', this)">
+        <span class="nav-icon">👥</span><span>分析他人</span>
     </div>
 </div>
 
 <script>
-// 🔮 十神當日引力與商務防禦白話辭典
-const TEN_GODS_DICT = {
-    "印星運": {
-        title: "正印/偏印運：能量吸收與直覺內耗期",
-        desc: "<b>【今日心理狀態】</b> 磁場處於充電與吸收狀態。大腦像海綿一樣，非常適合沉澱、看書、學習或進行深度思考。<br><br><b>【商務與社交防禦】</b> 今日行動力稍微放緩，內心防禦機制較強，容易想得太多、流於內耗，或者顯得有點孤僻。在商務談判上，今天適合當個『傾聽與觀察者』，不宜盲目衝動做決定。"
-    },
-    "官殺運": {
-        title: "正官/七殺運：自律約束與高壓聚焦期",
-        desc: "<b>【今日心理狀態】</b> 磁場迎來強烈的責任感與外部壓力。當天會明顯感覺到事情排山倒海而來，或是受到主管、環境、法規的嚴格檢視。<br><br><b>【商務與社交防禦】</b> 今日自律指數爆表，執行力強。但要注意容易因為防禦心過強，導致與人溝通時顯得嚴肅、死板。面對客戶時請多點微笑，避免把當天的『高壓氣候』變成對別人的殺氣。"
-    },
-    "食傷運": {
-        title: "食神/傷官運：創意爆發與表達慾期",
-        desc: "<b>【今日心理狀態】</b> 靈感與創意如泉湧的一天！腦袋轉得極快，表達慾望強烈，不甘於墨守成規，很想打破現狀。<br><br><b>【商務與社交防禦】</b> 適合進行頭腦風暴、產品研發或行銷提案。但防禦側要注意『言多必失』，口才太好容易顯得咄咄逼人或是不夠沉穩，當天與人相處要稍微收斂一點鋒芒。"
-    },
-    "財星運": {
-        title: "正財/偏財運：商務執行與財富流動期",
-        desc: "<b>【今日心理狀態】</b> 目標導向非常明確的一天！當天對數字、利潤、實質結果的敏銳度極高，做事的控制慾 and 務實感大幅提升。<br><br><b>【商務與社交防禦】</b> 這是推進專案、簽約、檢視財務報表的最佳流日。社交上會很注重『這件事有沒有效益』。注意不要因為太追求效率，而忽略了合作夥伴的情緒感受。"
-    },
-    "比劫運": {
-        title: "比肩/劫財運：自我核心與同儕連結期",
-        desc: "<b>【今日心理狀態】</b> 自我意識高度抬頭，意志力堅定，不容易被別人的意見動搖。同時也會有較多與同儕、朋友、同事平級互動的機會。<br><br><b>【商務與社交防禦】</b> 適合團隊作戰、拓展人脈。但因為主觀意識強、防禦心轉為『自我保護』，容易在合作中跟人硬剛、互不相讓，記得當天多聽聽別人的意見，避免流於固執。"
-    }
+const GOOGLE_API_URL = "https://script.google.com/macros/s/AKfycbxM2jXk0wbZrQZWfcgLzK_LIjuR-szF1xw9EBU2qAyPfXTBCUFS4Am4muTGGX6yDs2q/exec";
+
+// --- 核心資料與對照表 ---
+const ELEMENT_MAP = { '甲': '木', '乙': '木', '丙': '火', '丁': '火', '戊': '土', '己': '土', '庚': '金', '辛': '金', '壬': '水', '癸': '水' };
+const ZHI_ELEMENT_MAP = { '寅': '木', '卯': '木', '巳': '火', '午': '火', '申': '金', '酉': '金', '亥': '水', '子': '水', '辰': '土', '戌': '土', '丑': '土', '未': '土' };
+const RELATION_MAP = {
+    '木': { '木': '比劫', '火': '食傷', '土': '財星', '金': '官殺', '水': '印星' },
+    '火': { '木': '印星', '火': '比劫', '土': '食傷', '金': '財星', '水': '官殺' },
+    '土': { '木': '官殺', '火': '印星', '土': '比劫', '金': '食傷', '水': '財星' },
+    '金': { '木': '財星', '火': '官殺', '土': '印星', '金': '比劫', '水': '食傷' },
+    '水': { '木': '食傷', '火': '財星', '土': '官殺', '金': '印星', '水': '比劫' }
 };
 
-function detectTenGodKey(text) {
-    if (!text) return "印星運";
-    for (let key in TEN_GODS_DICT) {
-        if (text.includes(key.substring(0, 2))) return key; // 模糊比對「印星」、「官殺」
+const ZHI_HIDDEN_MAP = {
+    '子': { '水': 1.00 },
+    '丑': { '土': 0.60, '水': 0.20, '金': 0.20 },
+    '寅': { '木': 0.60, '火': 0.20, '土': 0.20 },
+    '卯': { '木': 1.00 },
+    '辰': { '土': 0.60, '木': 0.20, '水': 0.20 },
+    '巳': { '火': 0.60, '土': 0.20, '金': 0.20 },
+    '午': { '火': 0.70, '土': 0.30 },
+    '未': { '土': 0.60, '火': 0.20, '木': 0.20 },
+    '申': { '金': 0.60, '水': 0.30, '土': 0.10 },
+    '酉': { '金': 1.00 },
+    '戌': { '土': 0.60, '金': 0.20, '火': 0.20 },
+    '亥': { '水': 0.70, '木': 0.30 }
+};
+
+const DIZHI_INDEX = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
+const RELATION_MATRIX = [
+    [0, 1, 0, 5, 0, 0, 2, 6, 0, 0, 0, 0], 
+    [1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0], 
+    [0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1], 
+    [5, 0, 0, 0, 0, 0, 2, 0, 0, 2, 1, 0], 
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0], 
+    [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2], 
+    [2, 0, 0, 2, 0, 0, 0, 1, 0, 0, 0, 0], 
+    [6, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0], 
+    [0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0], 
+    [0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0], 
+    [0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0], 
+    [0, 0, 1, 0, 0, 2, 0, 0, 0, 0, 0, 0]  
+];
+
+const ENERGY_CARD_THEMES = {
+    '財星': { action: '噴寶', color: 'linear-gradient(135deg, #f1c40f, #f39c12)', text_prefix: '財星高照' }, 
+    '官殺': { action: '突破', color: 'linear-gradient(135deg, #2c3e50, #1e3c72)', text_prefix: '壓力與名望' }, 
+    '印星': { action: '吸收', color: 'linear-gradient(135deg, #d35400, #e67e22)', text_prefix: '貴人運佳' }, 
+    '食傷': { action: '輸出', color: 'linear-gradient(135deg, #16a085, #2980b9)', text_prefix: '才華橫溢' }, 
+    '比劫': { action: '自信', color: 'linear-gradient(135deg, #795548, #4e342e)', text_prefix: '能量充沛' }, 
+    'default': { action: '平穩', color: 'linear-gradient(135deg, #4b6cb7, #182848)', text_prefix: '能量穩定' } 
+};
+
+// --- 全功能辭典資料庫 ---
+const DICTIONARY = {
+    '日主': '<b>👤 角色本質與靈魂主體</b><br><br>代表你這個人的「初始設定」與根本性格。無論外在天氣怎麼變，你的核心特質都由此決定。例如「戊土」日主就像穩重的高山。',
+    '大運': '<b>⏳ 人生的十年季節地圖</b><br><br>命運每十年會為你切換一次大環境（例如從寒冬換到暖春）。大運決定了這十年的「人生主旋律」，是宏觀命運的基調。',
+    '財星': '<b>💰 目標、掌控與資源收穫（金錢與成果）</b><br><br>代表你可以掌控、操作的資源。此運引動時目標感極強，適合執行具體計畫、理財或簽約。能量飽滿（身強）時最容易創造「噴寶」效應。',
+    '官殺': '<b>⚔️ 責任、挑戰、名望與自律（主管與名聲）</b><br><br>外界對你產生規範、要求或壓力的時期。像是主管交給你重要任務，雖然有壓迫感，但只要成功攻堅突破，就能換來極高的社會地位與權力。',
+    '印星': '<b>🛡️ 守護、滋養、貴人與充電（吸收與長輩）</b><br><br>宇宙在幫你補血、提供庇護的時期。容易得到長輩或貴人相助，思緒平穩，非常適合靜心學習、吸收新知，或是優化自己核心的系統架構。',
+    '食傷': '<b>🎨 點子、才華、表達與輸出（發明與靈感）</b><br><br>你的能量迫不及待向外輸出的時期。頭腦特別靈光、邏輯清晰、點子源源不絕。非常適合進行創作、研發、寫代碼或開拓全新策略。',
+    '比劫': '<b>🤝 同儕、自我意志與社交資源（自信與夥伴）</b><br><br>你的自我意識與意志力來到高峰，變得非常有自信、不服輸。適合社交合作、資源對接與擴展人脈，但也要注意避免固執而產生摩擦。',
+
+    '甲': '<b>🌲 甲木：參天大樹（直爽、剛毅、領導者）</b><br><br>如同森林裡的巨木，充滿向上發展的鬥志。性格仁慈、注重榮譽、直來直往，不喜歡被束縛。在職場上通常具備獨當一面的管理或領導潛力，但有時較為固執、不善變通。',
+    '乙': '<b>🌿 乙木：蔓藤花草（柔韌、靈活、外交家）</b><br><br>如同花草與攀援植物，雖然柔軟，卻具備極強的生存與適應能力。頭腦靈活、善於協調人際關係、借力使力。在職場上是優秀的幕僚與合作夥伴，但內心較容易多愁善感、依賴感較強。',
+    '丙': '<b>🔥 丙火：普照太陽（熱情、亮眼、傳播者）</b><br><br>如同陽光般熾熱且無私，喜歡照顧他人、照亮群體。精力充沛、情感外顯、講求效率與光明正大。在舞台或社交場合上非常亮眼，適合公關、傳播與演講，缺點是容易缺乏耐心、三分鐘熱度。',
+    '丁': '<b>🕯️ 丁火：人間燈燭（溫暖、細膩、引導者）</b><br><br>如同星光、燭火或手電筒，能量內斂而精準。心思細膩、充滿直覺與洞察力、擅長思考與研究。對人體體貼且願意默默奉獻，適合研發、設計、心理諮商等精細工作，但內心小劇場較多、容易鑽牛角尖。',
+    '戊': '<b>⛰️ 戊土：高山厚土（沉穩、可靠、守護者）</b><br><br>如同雄偉的高山或寬廣的大地，具備極強的包容力與穩定度。性格誠實重信用、能承受巨大的壓力和秘密，不輕易隨波逐流。是團隊中讓人安心的基石，但缺點是性格較為固執、不喜歡突如其來的改變。',
+    '己': '<b>🏡 己土：田園熟土（包容、育人、策劃者）</b><br><br>如同孕育萬物的農田、泥土，充滿可塑性與多元才華。心思細密、擅長理解他人、具備極高的學習吸收能力。在職場上非常適合教育、人力資源、行事情劃，不過內心較多慮、容易妥協而委屈自己。',
+    '庚': '<b>🪙 庚金：鋼鐵礦石（果斷、剛直、開拓者）</b><br><br>如同剛硬的鋼鐵或未經雕琢的刀劍，充滿義氣與決斷力。講求邏輯與黑白分明、辦事有效率、不懼艱難與挑戰。在職場上通常是執行力極強的開路先鋒，適合攻堅與管理，但講話過於直接時容易不小心傷到人。',
+    '辛': '<b>💎 辛金：璀璨珠寶（精密、精緻、完美主義）</b><br><br>如同璀璨的鑽石、黃金首飾，或是精密的醫療手術刀。心思細緻、追求極致的完美與質感、自尊心強且對美感有獨特堅持。適合需要高精準度、藝術、研發或精密工程的工作，但對批評較為敏感、容易自我要求過高。',
+    '壬': '<b>🌊 壬水：奔騰江海（智慧、奔放、冒險家）</b><br><br>如同滔滔江水與汪洋大海，充滿無窮的智慧、宏觀的視野與大格局。不拘小節、適應力極強、善於整合資源與隨機應變。喜歡自由與挑戰，適合大型企劃、商務與開拓新市場，缺點是情緒波動大、有時較為任性。',
+    '癸': '<b>💧 癸水：雨露泉水（靈動、體貼、思想家）</b><br><br>如同晶瑩的雨露、溫柔的泉水，或是清晨的霧氣。性格最為柔和、充滿靈性與想像力、記憶力奇佳，擅長以柔克剛。對周遭環境的磁場與情緒極度敏感（神準的第六感），適合創作、企劃與幕後智囊，但有時容易多愁善感、流於空想。',
+
+    '子': '<b>💧 子水（仲冬）：正純之水，深邃的智慧</b><br><br>代表冬天的核心、深夜的子時（23~01點）。純度極高的水能量，象徵冷靜思考、精明、潛意識與靈性。引動時適合靜心策劃、沉澱思緒。',
+    '丑': '<b>⛰️ 丑土（季冬）：冰凍之土，等待甦醒的寶藏</b><br><br>代表冬末、凌晨的丑時（01~03點）。是含有水與金的濕冷泥土。內心沉穩、極有耐力、默默耕耘，雖然外表冷靜，但藏有金庫之氣，厚積薄發。',
+    '寅': '<b>🌲 寅木（孟春）：初春之木，爆發的生命力</b><br><br>代表春天的開始、清晨的寅時（03~05點）。如同剛發芽的巨木，帶有源源不絕的衝勁與火的熱情。象徵開拓、野心與大膽嘗試新事物。',
+    '卯': '<b>🌿 卯木（仲春）：繁茂之木，優雅與擴展</b><br><br>代表春天的核心、早晨的卯時（05~07點）。最純正的木能量，如同繁茂的花草樹木。象徵溫和、充滿生命力、社交與桃花，也代表靈活的思維。',
+    '辰': '<b>⛰️ 辰土（季春）：水庫之土，變革與展現</b><br><br>代表春末、上午的辰時（07~09點）。是含有水與木能量的豐饒土壤，也稱為「水庫」。象徵包容、充滿變革的雄心、點子豐富，極具群體影響力。',
+    '巳': '<b>🔥 巳火（孟夏）：初夏之火，耀眼的開端</b><br><br>代表夏天的開始、上午的巳時（09~11點）。是充滿動能的陽火，裡面還暗藏了金的果斷。象徵熱情、高效率、傳播力與強烈的行動渴望。',
+    '午': '<b>🔥 午火（仲夏）：正午之火，熱情的巔峰</b><br><br>代表夏天的核心、中午的午時（11~13點）。最純粹且強烈的火能量，代表光明、爆發力、直爽與核心關注度。引動時執行力極高。',
+    '未': '<b>⛰️ 未土（季夏）：木庫之土，穩重與收斂</b><br><br>代表夏末、下午的未時（13~15點）。是含有火與木的乾燥熱土，也稱為「木庫」。象徵為人溫和謙遜、內心有底線、擅長守成與整理資源。',
+    '申': '<b>🪙 申金（孟秋）：初秋之金，精密的收斂</b><br><br>代表秋天的開始、下午的申時（15~17點）。剛強且靈活的鐵礦之金，裡面暗藏了水的智慧（水局之源）。象徵邏輯犀利、果斷、善於規劃精密架構。',
+    '酉': '<b>💎 酉金（仲秋）：正純之金，極致的完美</b><br><br>代表秋天的核心、傍晚的酉時（17~19點）。最純粹的珠寶刀刃之金。象徵黑白分明、追求完美質感、專注度極高、講效率，也帶有獨特的個人魅力。',
+    '戌': '<b>⛰️ 戌土（季秋）：火庫之土，忠誠與守護</b><br><br>代表秋末、晚上的戌時（19~21點）。含有火與金的乾燥土壤，也稱為「火庫」。性格極度忠誠、有正義感、責任心強，對玄學或深層思想很有共鳴。',
+    '亥': '<b>💧 亥水（孟冬）：初冬之水，流動的遠景</b><br><br>代表冬天的開始、夜晚的亥時（21~23點）。奔騰的大水，裡面還暗藏了木的創意。象徵宏觀的智慧、寬廣的包容力、喜歡自由，直覺力非常強。'
+};
+
+function formatTextKeywords(text, disableTooltip = false) {
+    if (!text) return "";
+    let formatted = text;
+    if (disableTooltip) return text;
+    
+    const sortedKeys = Object.keys(DICTIONARY).sort((a, b) => b.length - a.length);
+    const protections = [
+        { word: '時辰', placeholder: '___SHICHEN___' },
+        { word: '已經', placeholder: '___YIJING___' },
+        { word: '日子', placeholder: '___RIZI___' },
+        { word: '甲方的', placeholder: '___JIAFANG___' }
+    ];
+    
+    protections.forEach(p => {
+        const r = new RegExp(p.word, 'g');
+        formatted = formatted.replace(r, p.placeholder);
+    });
+    
+    for (let key of sortedKeys) {
+        const regex = new RegExp(key, 'g');
+        formatted = formatted.replace(regex, `<span class="keyword-highlight" onclick="openModal('${key}')">${key}</span>`);
     }
-    return "印星運"; // 預設防呆
+    
+    protections.forEach(p => {
+        const r = new RegExp(p.placeholder, 'g');
+        formatted = formatted.replace(r, p.word);
+    });
+    
+    return formatted;
 }
 
-function openTenGodModal(key) {
-    const data = TEN_GODS_DICT[key];
-    if (!data) return;
-    document.getElementById('tg-modal-title').innerHTML = data.title;
-    document.getElementById('tg-modal-desc').innerHTML = data.desc;
-    document.getElementById('ten-god-modal').style.display = 'flex';
-}
-
-function closeTenGodModal() {
-    document.getElementById('ten-god-modal').style.display = 'none';
-}
-
-// 點擊彈窗外部關閉
-window.addEventListener('click', function(e) {
-    const modal = document.getElementById('ten-god-modal');
-    if (e.target === modal) {
-        modal.style.display = 'none';
+function openModal(keyword) {
+    const modal = document.getElementById('info-modal');
+    const title = document.getElementById('modal-title-text');
+    const body = document.getElementById('modal-body-text');
+    
+    if (DICTIONARY[keyword]) {
+        title.innerText = keyword;
+        body.innerHTML = DICTIONARY[keyword];
+        modal.classList.add('active');
     }
-});
+}
 
-// 🌟 精密降噪兼具點擊跳窗的「他人分析引擎」核心
+function openDaYunModal(ganZhi, startAge, relation) {
+    const modal = document.getElementById('info-modal');
+    const title = document.getElementById('modal-title-text');
+    const body = document.getElementById('modal-body-text');
+    
+    const gan = ganZhi.substring(0, 1);
+    const zhi = ganZhi.substring(1, 2);
+    const endAge = startAge + 9;
+    
+    title.innerText = `⏳ ${startAge} 歲 ～ ${endAge} 歲 專屬大運解說`;
+    
+    let actionGuide = "";
+    switch (relation) {
+        case '財星':
+            actionGuide = "這是全力「鋪路與收割成果」的黃金十年。目標感極強，在事業、創業或理財策略上面臨高密度實戰，適合將想法落地變成具體產出。身強者（能量飽滿）資產有大幅提升機會；身弱者要防範因壓力或過勞導致資產外流。";
+            break;
+        case '官殺':
+            actionGuide = "迎來極具挑戰性與開拓性的「突破與攻堅時期」。外界的要求、職位轉變或家庭責任會帶來沉重壓力，逼迫你突破舒適圈。適合接受磨練、爭取管理權、升職或建立制度，要特別注意情緒調控，防範過勞。";
+            break;
+        case '印星':
+            actionGuide = "進入深度「補血、防禦與優化系統」的重整期。大環境流動變慢，推動大動作較難立刻見效，但非常有利於長輩長官的貴人相助、買房置產、考照學習與靜心內省。這十年是磨練內在、優化底層架構的最佳充電期。";
+            break;
+        case '食傷':
+            actionGuide = "這是一段點子爆發、展現「極致才華與靈感輸出」的黃金十年。不論是搞研發、寫代碼、做設計還是策略創新，大腦都處於超頻狀態。賺錢點子源源不絕，但也要提防自己脾氣變硬、說話過於直白，而造成職場人際的摩擦。";
+            break;
+        case '比劫':
+            actionGuide = "這十年「意志力爆棚、自我意識強烈」。你的自信度會來到人生高峰，不服輸且充滿開創精神。適合拓展人脈網絡、資源對接、跨界合作或是合夥創業。但要特別提防性格變得固執聽不進勸，或因過度自信盲目投資而導致損耗。";
+            break;
+    }
+    
+    body.innerHTML = `
+        <div style="font-size:1.1rem; color:#ffb300; font-weight:bold; margin-bottom:12px; text-align:center;">
+            運勢主旋律：${relation}運 (${ganZhi}運)
+        </div>
+        <p><b>天干影響 (${gan})：</b>${DICTIONARY[gan] || ""}</p>
+        <p><b>地支影響 (${zhi})：</b>${DICTIONARY[zhi] || ""}</p>
+        <hr style="border:0; border-top:1px solid #333; margin:15px 0;">
+        <p style="line-height:1.6; color:#fff;"><b>🎯 行動戰略指引：</b><br>${actionGuide}</p>
+    `;
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    document.getElementById('info-modal').classList.remove('active');
+}
+
+// --- 介面控制與時辰切換 ---
+function toggleTime(prefix) {
+    const isUnknown = document.getElementById(`${prefix}-unknown`).checked;
+    const timeInput = document.getElementById(`${prefix}-time`);
+    if (isUnknown) {
+        timeInput.disabled = true;
+        timeInput.style.opacity = "0.3";
+        timeInput.value = "";
+    } else {
+        timeInput.disabled = false;
+        timeInput.style.opacity = "1";
+        timeInput.value = "12:00";
+    }
+}
+
+function switchPage(pageId, navEl) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(`page-${pageId}`).classList.add('active');
+    
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    if (navEl) navEl.classList.add('active');
+}
+
+// --- 八字精密排盤引擎 ---
+function getBazi(dateStr, timeStr, isUnknown) {
+    if (!dateStr) return null;
+    const parts = dateStr.split('-');
+    const year = parseInt(parts[0]);
+    const month = parseInt(parts[1]);
+    const day = parseInt(parts[2]);
+    
+    let hour = 12;
+    let min = 0;
+    if (!isUnknown && timeStr) {
+        const tParts = timeStr.split(':');
+        hour = parseInt(tParts[0]);
+        min = parseInt(tParts[1]);
+    }
+    
+    const solar = Solar.fromYmdHms(year, month, day, hour, min, 0);
+    const lunar = solar.getLunar();
+    const baziList = lunar.getBaZi();
+    
+    let timeGanZhi = baziList[3];
+    if (isUnknown) {
+        timeGanZhi = "??";
+    }
+    
+    return {
+        formatStr: `${baziList[0]}年 ${baziList[1]}月 ${baziList[2]}日 ${timeGanZhi}時`,
+        stems: [baziList[0].substring(0,1), baziList[1].substring(0,1), baziList[2].substring(0,1), isUnknown ? "?" : baziList[3].substring(0,1)],
+        branches: [baziList[0].substring(1,2), baziList[1].substring(1,2), baziList[2].substring(1,2), isUnknown ? "?" : baziList[3].substring(1,2)],
+        solarDate: solar,
+        lunar: lunar
+    };
+}
+
+// --- 歲運大運精密排列演算法 ---
+function buildDayunGrid(myBazi, myBirthDateStr, myBirthTimeStr, myUnknown, myGender) {
+    const parts = myBirthDateStr.split('-');
+    const y = parseInt(parts[0]);
+    const m = parseInt(parts[1]);
+    const d = parseInt(parts[2]);
+    let h = 12;
+    if (!myUnknown && myBirthTimeStr) {
+        h = parseInt(myBirthTimeStr.split(':')[0]);
+    }
+    
+    const solar = Solar.fromYmdHms(y, m, d, h, 0, 0);
+    const lunar = solar.getLunar();
+    
+    const isYangYear = lunar.getYearGanObj().getGan() === '甲' || lunar.getYearGanObj().getGan() === '丙' || lunar.getYearGanObj().getGan() === '戊' || lunar.getYearGanObj().getGan() === '庚' || lunar.getYearGanObj().getGan() === '壬';
+    const isMale = parseInt(myGender) === 1;
+    const isForward = (isMale && isYangYear) || (!isMale && !isYangYear);
+    
+    const eightDaYun = lunar.getEightDaYun(isForward ? 1 : -1);
+    const dayunList = eightDaYun.getDaYun();
+    
+    const currentYear = new Date().getFullYear();
+    const myAgeThisYear = currentYear - y;
+    
+    const container = document.getElementById('dayun-list');
+    container.innerHTML = "";
+    
+    let activeDaYunZhi = null;
+    let activeDaYunGan = null;
+    let activeDaYunRelation = "default";
+    
+    for (let i = 1; i < dayunList.length; i++) {
+        const dy = dayunList[i];
+        const startAge = dy.getStartAge();
+        const endAge = dy.getEndAge();
+        const gz = dy.getGanZhi();
+        
+        const myDayGanElement = ELEMENT_MAP[myBazi.stems[2]];
+        const dyGanElement = ELEMENT_MAP[gz.substring(0, 1)];
+        const relation = RELATION_MAP[myDayGanElement][dyGanElement];
+        
+        const isCurrent = (myAgeThisYear >= startAge && myAgeThisYear <= endAge);
+        
+        const box = document.createElement('div');
+        box.className = `dayun-box ${isCurrent ? 'current' : ''}`;
+        box.setAttribute('onclick', `openDaYunModal('${gz}', ${startAge}, '${relation}')`);
+        
+        box.innerHTML = `
+            <span class="dayun-age">${startAge} 歲</span>
+            <span class="dayun-gz">${gz}</span>
+            <span class="dayun-age" style="color:#aaa; font-size:0.65rem;">${relation}</span>
+        `;
+        container.innerHTML += box.outerHTML;
+        
+        if (isCurrent) {
+            activeDaYunGan = gz.substring(0, 1);
+            activeDaYunZhi = gz.substring(1, 2);
+            activeDaYunRelation = relation;
+        }
+    }
+    
+    return { gan: activeDaYunGan, zhi: activeDaYunZhi, relation: activeDaYunRelation };
+}
+
+// --- 核心共振邏輯 (大運 + 流年流月流日流時) ---
+function getEnergyPrediction(stems, type, myBazi, activeDayunObj) {
+    const dayMaster = stems[2];
+    const targetStem = stems[type === 'daily' ? 2 : (type === 'monthly' ? 1 : 3)];
+    
+    const dElement = ELEMENT_MAP[dayMaster];
+    const tElement = ELEMENT_MAP[targetStem];
+    const rel = RELATION_MAP[dElement][tElement] || 'default';
+    
+    let base = ENERGY_CARD_THEMES[rel] || ENERGY_CARD_THEMES['default'];
+    let text = "";
+    let action = base.action;
+    
+    // 取得當下的歲運共振參數（僅在 daily 時注入）
+    let dyZhi = (activeDayunObj && activeDayunObj.zhi) ? activeDayunObj.zhi : null;
+    let currentYearZhi = Solar.fromDate(new Date()).getLunar().getYearZhi();
+    
+    // 今日流日地支
+    let todayZhi = Solar.fromDate(new Date()).getLunar().getDayZhi();
+    
+    if (type === 'daily') {
+        let interactionLogs = [];
+        
+        // 1. 大運與流日碰撞
+        if (dyZhi) {
+            let idx1 = DIZHI_INDEX.indexOf(dyZhi);
+            let idx2 = DIZHI_INDEX.indexOf(todayZhi);
+            if (idx1 !== -1 && idx2 !== -1) {
+                let code = RELATION_MATRIX[idx1][idx2];
+                if (code === 1) interactionLogs.push(`遭遇大運 ${dyZhi} 與流日 ${todayZhi} 六合引力鎖定，磁場和諧`);
+                if (code === 2) interactionLogs.push(`驚見大運 ${dyZhi} 與流日 ${todayZhi} 正面相衝，今日情緒動盪劇烈`);
+                if (code === 5) interactionLogs.push(`驚見大運 ${dyZhi} 與流日 ${todayZhi} 相破，事多阻礙`);
+                if (code === 6) interactionLogs.push(`驚見大運 ${dyZhi} 與流日 ${todayZhi} 相害，防小人暗箭`);
+            }
+        }
+        
+        // 2. 本命地支與流日碰撞
+        myBazi.branches.forEach((b, idx) => {
+            if (b === '?') return;
+            let idx1 = DIZHI_INDEX.indexOf(b);
+            let idx2 = DIZHI_INDEX.indexOf(todayZhi);
+            if (idx1 !== -1 && idx2 !== -1) {
+                let code = RELATION_MATRIX[idx1][idx2];
+                let loc = ['年支', '月支', '日支', '時支'][idx];
+                if (code === 2) interactionLogs.push(`注意！今日流日地支 ${todayZhi} 迎面沖擊你的本命 ${loc} (${b})`);
+            }
+        });
+        
+        let collisionNotice = interactionLogs.length > 0 ? `<br><span style="font-size:0.8rem; color:#ffb300;">⚠️ 交互感應：${interactionLogs.join('；')}</span>` : "";
+        
+        switch (rel) {
+            case '財星':
+                text = `今日正是流日「財星」高照，執行力與對物質事物的掌控感十分強烈！最適合核對報表、推進具體商業指標、理財或簽約。身強（大運比劫/印星）此時最易激發「噴寶」效應；若近期感到疲憊，應採取穩健守成策略。${collisionNotice}`;
+                break;
+            case '官殺':
+                text = `今日磁場落入「官殺」地帶，代表責任、自我約束、或者是突如其來的外界工作壓力與考驗。請把這視為「突破與攻堅」的時機，一旦專注解決，便能轉化為名望與話語權。請保持情緒平穩，切忌急躁。${collisionNotice}`;
+                break;
+            case '印星':
+                text = `今日流日「印星」守護，周圍磁場趨於緩和、滋養。最適合吸收新知、閱讀優化系統架構，或是拜訪長輩、貴人求教。今日「吸收」效率極高，宜靜心沉澱，不要急於開闢全新戰場。${collisionNotice}`;
+                break;
+            case '食傷':
+                text = `今日流日能量來到「食傷」輸出，大腦宛如超頻運轉，靈感、代碼點子與邏輯推演源源不絕！最適合進行研發、創作與全新策略發想。唯獨注意說話語氣，避免因過於犀利直白而造成不必要的摩擦。${collisionNotice}`;
+                break;
+            case '比劫':
+                text = `今日流日與你同氣，進入「比劫」自信的高峰。意志力非常強，做事不服輸且精力充沛。適合社交對接、團隊合作。但因自我主觀意識極強，切記在多方溝通時多聽他人意見，避免產生硬碰硬的摩擦。${collisionNotice}`;
+                break;
+            default:
+                text = `今日能量平穩，流日磁場波動較小，適合維持既定的工作步調，檢查常規系統，是適合按部就班推進日常事務的平穩期。${collisionNotice}`;
+        }
+    } else if (type === 'monthly') {
+        switch (rel) {
+            case '財星': text = `本月核心旋律為「目標與成果收割」。你的專注力放在具體項目的落地推進，商務與 capital management 慾望強烈。`; break;
+            case '官殺': text = `本月核心旋律為「責任與抗壓突破」。工作量增加，大環境給予較多規範，是自我修煉、提升職場權威的關鍵月。`; break;
+            case '印星': text = `本月核心旋律為「安全感、貴人與沉澱充電」。利於優化底層架構、考照、求助長輩長官，避免過度激進擴張。`; break;
+            case '食傷': text = `本月核心旋律為「才華、靈感、研發與輸出」。頭腦特別靈光，適合開拓新賽道或解決複雜代碼，但須防內耗與言語摩擦。`; break;
+            case '比劫': text = `本月核心旋律為「同儕、自我意志與社交合作」。自信、企圖心上升，利於資源整合與推展社群，也須注意避免固執。`; break;
+        }
+    } else {
+        // 時辰提示
+        switch (rel) {
+            case '財星': text = `當前時辰適合處理帳目、檢查成果、推動最核心任務。`; break;
+            case '官殺': text = `當前時辰容易有緊急事務突擊，宜保持冷靜，專注攻堅。`; break;
+            case '印星': text = `當前時辰磁場滋養，最宜研讀文件、吸收技術架構或閉目養神。`; break;
+            case '食傷': text = `當前時辰靈感最旺盛，最適合坐下來寫代碼、想點子與寫作。`; break;
+            case '比劫': text = `當前時辰意志力飽滿，適合團隊會議、主動出擊或執行高體能工作。`; break;
+        }
+    }
+    
+    return { text: text, action: action, color: base.color, vibeLabel: `流日${rel}` };
+}
+
+// --- 個人命盤主儲存與渲染觸發 ---
+function saveMyBazi() {
+    const date = document.getElementById('my-date').value;
+    const time = document.getElementById('my-time').value;
+    const unknown = document.getElementById('my-unknown').checked;
+    const gender = document.getElementById('my-gender').value;
+    
+    if (!date) {
+        alert("請選擇正確的出生日期");
+        return;
+    }
+    
+    localStorage.setItem('my_date', date);
+    localStorage.setItem('my_time', time);
+    localStorage.setItem('my_unknown', unknown);
+    localStorage.setItem('my_gender', gender);
+    
+    initHome();
+}
+
+function initHome() {
+    const date = localStorage.getItem('my_date');
+    const time = localStorage.getItem('my_time') || "";
+    const unknown = localStorage.getItem('my_unknown') === 'true';
+    const gender = localStorage.getItem('my_gender') || "1";
+    
+    if (!date) return;
+    
+    document.getElementById('my-date').value = date;
+    document.getElementById('my-time').value = unknown ? "" : time;
+    document.getElementById('my-unknown').checked = unknown;
+    document.getElementById('my-gender').value = gender;
+    toggleTime('my');
+    
+    const myBazi = getBazi(date, time, unknown);
+    if (!myBazi) return;
+    
+    const genderTerm = gender === "1" ? "乾造" : "坤造";
+    document.getElementById('my-bazi-display').style.display = 'block';
+    document.getElementById('my-bazi-display').innerHTML = formatTextKeywords(`[${genderTerm}] ${myBazi.formatStr} (日主 ${myBazi.stems[2]})`);
+    
+    // 渲染大運並取得目前大運資訊
+    const activeDayun = buildDayunGrid(myBazi, date, time, unknown, gender);
+    document.getElementById('dayun-board').style.display = 'block';
+    
+    // 取得當前流日八字
+    const now = new Date();
+    const todaySolar = Solar.fromDate(now);
+    const todayLunar = todaySolar.getLunar();
+    const todayBaziList = todayLunar.getBaZi();
+    
+    document.getElementById('today-date').innerText = `📅 西元 ${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+    document.getElementById('today-bazi').innerHTML = formatTextKeywords(`流日八字：${todayBaziList[0]}年 ${todayBaziList[1]}月 ${todayBaziList[2]}日`);
+    
+    // 呼叫核心交互預測
+    const prediction = getEnergyPrediction(myBazi.stems, 'daily', myBazi, activeDayun);
+    
+    const spectrumDisplay = document.getElementById('daily-spectrum');
+    spectrumDisplay.style.background = prediction.color;
+    spectrumDisplay.querySelector('.vibe-label').innerHTML = formatTextKeywords(`今日核心感應 (${prediction.vibeLabel})`);
+    spectrumDisplay.querySelector('.vibe-action').innerHTML = formatTextKeywords(prediction.action);
+    
+    document.getElementById('daily-description').innerHTML = formatTextKeywords(prediction.text);
+    
+    // 渲染本月能量卡
+    const monthlyPrediction = getEnergyPrediction(myBazi.stems, 'monthly', myBazi);
+    document.getElementById('monthly-energy-card').style.display = 'block';
+    document.getElementById('monthly-energy-text').innerHTML = formatTextKeywords(`<b>走勢：</b>${monthlyPrediction.text}`);
+    document.getElementById('monthly-energy-action').innerHTML = formatTextKeywords(`<b>行動核心：</b>建議採取 【${monthlyPrediction.action}】 行動方針`);
+    
+    // 渲染當前時辰能量卡
+    const hourlyPrediction = getEnergyPrediction(myBazi.stems, 'hourly', myBazi);
+    document.getElementById('hourly-energy-card').style.display = 'block';
+    document.getElementById('hourly-energy-text').innerHTML = formatTextKeywords(`<b>目前時辰感應 (${todayBaziList[3]}時)：</b>${hourlyPrediction.text}`);
+    document.getElementById('hourly-energy-action').innerHTML = formatTextKeywords(`<b>時辰聚焦：</b>適合進行 【${hourlyPrediction.action}】`);
+
+    // 歲運共振引擎解說
+    if (activeDayun && activeDayun.gan) {
+        document.getElementById('resonance-board').style.display = 'block';
+        let yearGan = todayBaziList[0].substring(0, 1);
+        let yearZhi = todayBaziList[0].substring(1, 2);
+        
+        let rDesc = `你目前正處於 <b>${activeDayun.gan}${activeDayun.zhi} 大運</b> (${activeDayun.relation}面)。<br>`;
+        rDesc += `今年流年為 <b>${todayBaziList[0]}年</b>，大運地支 <b>${activeDayun.zhi}</b> 與流年地支 <b>${yearZhi}</b> 產生持續性的交織共振。`;
+        
+        let code = RELATION_MATRIX[DIZHI_INDEX.indexOf(activeDayun.zhi)][DIZHI_INDEX.indexOf(yearZhi)];
+        if (code === 2) rDesc += `<br><span class='resonance-highlight'>🔥 警報：大運與流年發生「歲運正衝」！這是生命結構面臨重大翻轉、破繭而出的年份，環境會強烈推著你改變，切勿過度留戀舒適圈！</span>`;
+        else if (code === 1) rDesc += `<br><span class='resonance-highlight'>✨ 喜訊：大運與流年發生「歲運六合」！這是一段磁場安穩、外部資源與內在思維高度契合的和諧上升期。</span>`;
+        else rDesc += `<br>歲運能量流動平穩，大後方磁場安定，適合按照宏觀規劃穩步前行。`;
+        
+        document.getElementById('resonance-desc').innerHTML = formatTextKeywords(rDesc);
+    }
+}
+
+// --- 人際合盤精密推演引擎 ---
+function calculateMatch() {
+    const myDate = localStorage.getItem('my_date');
+    const myTime = localStorage.getItem('my_time') || "";
+    const myUnknown = localStorage.getItem('my_unknown') === 'true';
+    
+    if (!myDate) {
+        alert("請先在第一頁設定您「我的出生資訊」命盤，才能與對方進行合盤推演！");
+        switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]'));
+        return;
+    }
+    
+    const tDate = document.getElementById('target-date').value;
+    const tTime = document.getElementById('target-time').value;
+    const tUnknown = document.getElementById('target-unknown').checked;
+    
+    if (!tDate) {
+        alert("請選擇對方的出生日期");
+        return;
+    }
+    
+    const myBazi = getBazi(myDate, myTime, myUnknown);
+    const tBazi = getBazi(tDate, tTime, tUnknown);
+    
+    document.getElementById('match-result').style.display = 'block';
+    
+    document.getElementById('compare-my-bazi').innerHTML = `${myBazi.stems[2]}<br>${myBazi.branches[2]}`;
+    document.getElementById('compare-target-bazi').innerHTML = `${tBazi.stems[2]}<br>${tBazi.branches[2]}`;
+    
+    let score = 60; // 基礎分
+    
+    // 1. 日主化學反應
+    const myDayGan = myBazi.stems[2];
+    const tDayGan = tBazi.stems[2];
+    let dgDesc = "";
+    
+    const matchPairs = ["甲己", "己甲", "乙庚", "庚乙", "丙辛", "辛丙", "丁壬", "壬丁", "戊癸", "癸戊"];
+    if (matchPairs.includes(myDayGan + tDayGan)) {
+        score += 25;
+        dgDesc = `🎉 <b>天作之合（天干五合）！</b>你的日主【${myDayGan}】與對方的日主【${tDayGan}】具有極強的天然吸引力，如同磁鐵正負極。初次見面便容易產生宿命般的熟悉感與強烈默契，非常利於深層情感或核心合夥人關係的建立。`;
+    } else if (ELEMENT_MAP[myDayGan] === ELEMENT_MAP[tDayGan]) {
+        score += 10;
+        dgDesc = `🤝 <b>同氣連枝（五行同氣）！</b>你們兩人日主的五行均屬【${ELEMENT_MAP[myDayGan]}】。這意味著你們擁有非常相似的底層邏輯、思考頻率與內在價值觀。溝通時完全不需要過多解釋，對方的想法你一眼就能看穿，相處起來輕鬆無壓力。`;
+    } else {
+        dgDesc = `👥 <b>異質互補！</b>你的日主屬【${ELEMENT_MAP[myDayGan]}】，對方屬【${ELEMENT_MAP[tDayGan]}】。你們是截然不同的兩個獨立個體，看待事物視角完全不同。這雖然需要前期的磨合與理解，但若能達成共識，將會是功能極強的互補型搭檔。`;
+    }
+    document.getElementById('match-day-gan-desc').innerHTML = formatTextKeywords(dgDesc);
+    
+    // 2. 地支群體緣分
+    let groupDesc = "地支大局未觸發特殊的群體三合或三會局。這代表雙方的社交圈、家族大環境或生活背景交集處於正常狀態，無特殊的前世群體宿命拉扯。";
+    const myZhiStr = myBazi.branches.join('');
+    const tZhiStr = tBazi.branches.join('');
+    
+    const sanHe = [
+        { keys: ['亥', '卯', '未'], name: '亥卯未木局' },
+        { keys: ['寅', '午', '戌'], name: '寅午戌火局' },
+        { keys: ['巳', '酉', '丑'], name: '巳酉丑金局' },
+        { keys: ['申', '子', '辰'], name: '申子辰水局' }
+    ];
+    
+    for (let sh of sanHe) {
+        let count = 0;
+        sh.keys.forEach(k => {
+            if (myZhiStr.includes(k) || tZhiStr.includes(k)) count++;
+        });
+        if (count >= 3) {
+            score += 15;
+            groupDesc = `🔥 <b>大局引力：雙方合盤驚現【${sh.name}】！</b>這是一種極為罕見的大型磁場共鳴。你們兩人的本命地支混合在一起，竟能暗中凝聚出源源不絕的【${sh.name.substring(3,4)}】能量。這代表你們不只是兩個人相愛或合作，連周圍的外部資源、朋友圈甚至大環境都在強烈撮合你們，共同作戰能力極強！`;
+            break;
+        }
+    }
+    document.getElementById('match-group-desc').innerHTML = formatTextKeywords(groupDesc);
+    
+    // 3. 地支一對一判定 (主要看日支與月支)
+    let branchLogs = [];
+    const checkLocs = [
+        { name: '日支(夫妻宮)', my: myBazi.branches[2], target: tBazi.branches[2] },
+        { name: '月支(社交與月令)', my: myBazi.branches[1], target: tBazi.branches[1] }
+    ];
+    
+    checkLocs.forEach(loc => {
+        if (loc.my === '?' || loc.target === '?') return;
+        let idx1 = DIZHI_INDEX.indexOf(loc.my);
+        let idx2 = DIZHI_INDEX.indexOf(loc.target);
+        if (idx1 !== -1 && idx2 !== -1) {
+            let code = RELATION_MATRIX[idx1][idx2];
+            if (code === 1) { score += 10; branchLogs.push(`✨ 雙方【${loc.name}】呈現 <b>${loc.my}${loc.target} 六合</b> 和諧引力，私下相處默契十足。`); }
+            if (code === 2) { score -= 15; branchLogs.push(`💥 警告：雙方【${loc.name}】爆發 <b>${loc.my}${loc.target} 正衝</b>！這代表在${loc.name === '日支(夫妻宮)' ? '私下親密相處、價值觀深處' : '公開社交、日常共事'}中，極易因死角踩雷而引發正面衝突。務必多包容、尊重差異。`); }
+            if (code === 5) { score -= 5; branchLogs.push(`⚠️ 雙方【${loc.name}】遭遇 <b>${loc.my}${loc.target} 相破</b>，小細節處容易有些許彆扭與摩擦。`); }
+            if (code === 6) { score -= 8; branchLogs.push(`⚠️ 雙方【${loc.name}】遭遇 <b>${loc.my}${loc.target} 相害</b>，需特別防範因溝通誤會而產生內耗冷戰。`); }
+        }
+    });
+    
+    if (branchLogs.length === 0) branchLogs.push("雙方核心地支間無明顯的劇烈相衝或六合。關係穩定度屬於常規範圍，相處品質取決於日常的悉心溝通。");
+    document.getElementById('match-branch-desc').innerHTML = formatTextKeywords(branchLogs.join('<br>'));
+    
+    if (score > 100) score = 100;
+    if (score < 10) score = 10;
+    
+    document.getElementById('match-score-value').innerText = `${score}%`;
+    
+    let summaryText = "";
+    if (score >= 85) summaryText = "🌟 殿堂級神仙組合！磁場高度契合，無論是成家還是深度商務合作，都是極難得的黃金搭檔。";
+    else if (score >= 70) summaryText = "✨ 優秀的高同步關係！彼此默契良好、溝通順暢，是非常健康的相處結構。";
+    else if (score >= 55) summaryText = "⚖️ 正常平穩的常規關係。優點是相處自由，缺點是需要雙方在關鍵決策上多花心思磨合。";
+    else summaryText = "⚡ 磁場碰撞劇烈！雙方結構存在多處衝刑死角，相處時務必保持安全距離、多看對方優點，避免正面硬剛。";
+    
+    document.getElementById('match-summary').innerHTML = formatTextKeywords(summaryText);
+}
+
+// --- 分析他人流日能量與社交導航引擎 ---
 function analyzeBazi() {
-    const aDate = document.getElementById('analyze-date').value;
-    const aTime = document.getElementById('analyze-time').value;
-    const aGender = document.getElementById('analyze-gender').value;
-    const isUnknown = document.getElementById('analyze-unknown').checked;
+    const myDate = localStorage.getItem('my_date');
+    if (!myDate) {
+        alert("請先在第一頁輸入您「我的出生資訊」命盤，系統才能將他人的流日與您的八字共振，計算出社交相處導航！");
+        switchPage('home', document.querySelector('.nav-item[onclick*="\'home\'"]'));
+        return;
+    }
+
+    const date = document.getElementById('analyze-date').value;
+    const time = document.getElementById('analyze-time').value;
+    const unknown = document.getElementById('analyze-unknown').checked;
+    const gender = document.getElementById('analyze-gender').value;
     
-    if (!aDate) return alert("請選擇對方的生日日期！");
-    
-    const mDate = localStorage.getItem('my_date');
-    let myBazi = null;
-    if (mDate) {
-        const myLunar = getLunarObj(mDate, localStorage.getItem('my_time') || '12:00', localStorage.getItem('my_unknown') === 'true');
-        myBazi = getBaziArray(myLunar, localStorage.getItem('my_unknown') === 'true');
+    if (!date) {
+        alert("請選擇對方的出生日期");
+        return;
     }
     
-    localStorage.setItem('last_analyze_date', aDate);
-    localStorage.setItem('last_analyze_time', aTime);
-    localStorage.setItem('last_analyze_gender', aGender);
-    localStorage.setItem('last_analyze_unknown', isUnknown);
+    localStorage.setItem('last_analyze_date', date);
+    localStorage.setItem('last_analyze_time', time);
+    localStorage.setItem('last_analyze_unknown', unknown);
+    localStorage.setItem('last_analyze_gender', gender);
     
-    const targetLunar = getLunarObj(aDate, aTime, isUnknown);
-    const targetBazi = getBaziArray(targetLunar, isUnknown);
-    const targetDayGan = targetBazi.stems[2];
-    const genderTerm = aGender === '1' ? '乾造' : '坤造';
-    
-    // 取得對方今日的能量預測數據
-    const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
-    
-    // 🔍 核心捕捉：分析今日十神究竟屬於哪一個字典檔
-    const detectedKey = detectTenGodKey(prediction.vibeLabel + prediction.text);
+    const targetBazi = getBazi(date, time, unknown);
+    if (!targetBazi) return;
     
     document.getElementById('analyze-result').style.display = 'block';
+    const genderTerm = gender === "1" ? "乾造" : "坤造";
+    const targetDayGan = targetBazi.stems[2];
+    document.getElementById('analyze-bazi').innerHTML = formatTextKeywords(`[${genderTerm}] ${targetBazi.formatStr} (日主 ${targetDayGan})`);
     
-    // 改造渲染格式：包裝成精美的點擊膠囊按鈕
-    document.getElementById('analyze-bazi').innerHTML = `
-        [${genderTerm}] ${targetBazi.formatStr} <br>
-        <div onclick="openTenGodModal('${detectedKey}')" style="display:inline-block; margin-top:10px; background: rgba(255, 202, 40, 0.12); border: 1px solid #ffca28; color: #ffca28; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; font-weight: 500; letter-spacing: 0.5px;">
-            🔍 日主 ${targetDayGan} | ${detectedKey} (點擊解讀今日磁場)
-        </div>
-    `;
+    // 1. 取得對方今日的流日預測
+    const prediction = getEnergyPrediction(targetBazi.stems, 'daily', targetBazi);
     
     const energyCard = document.getElementById('analyze-energy-card');
     energyCard.style.display = 'block';
@@ -139,58 +1209,57 @@ function analyzeBazi() {
     document.getElementById('analyze-energy-text').innerHTML = formatTextKeywords(prediction.text);
     document.getElementById('analyze-energy-action').innerHTML = formatTextKeywords(prediction.action);
 
-    // --- 避雷與合作星級演算板塊 (精密降噪版) ---
+    // 2. 深度社交相處導航 (與我的八字地支進行衝合共振判定星級)
+    const myBazi = getBazi(myDate, localStorage.getItem('my_time'), localStorage.getItem('my_unknown') === 'true');
     const guideCard = document.getElementById('analyze-guide-card');
     const starsDisplay = document.getElementById('analyze-stars-display');
     const guideText = document.getElementById('analyze-guide-text');
     
     guideCard.style.display = 'block';
     
-    let rawScore = prediction.fortuneScore || 60; 
-    let isPositive = true;
+    let computedStars = 3; // 基礎 3 顆星
     
-    const hasCoreClash = (prediction.text.includes('【月支】') || prediction.text.includes('【日支】')) && 
-                         (prediction.text.includes('相衝') || prediction.text.includes('相刑'));
+    // 流日地支
+    let todayZhi = Solar.fromDate(new Date()).getLunar().getDayZhi();
+    let idxToday = DIZHI_INDEX.indexOf(todayZhi);
     
-    if (rawScore < 46 || hasCoreClash) {
-        isPositive = false;
+    // 檢查對方的月支或日支是否被流日嚴重衝刑
+    let isTargetStressed = false;
+    let tMonthZhi = targetBazi.branches[1];
+    let tDayZhi = targetBazi.branches[2];
+    
+    if (tMonthZhi !== '?') {
+        let code = RELATION_MATRIX[DIZHI_INDEX.indexOf(tMonthZhi)][idxToday];
+        if (code === 2 || code === 6) { computedStars -= 1; isTargetStressed = true; }
     }
-
-    let computedStars = 3;
-    if (isPositive) {
-        if (rawScore >= 82) computedStars = 5;
-        else if (rawScore >= 65) computedStars = 4;
-        else if (rawScore >= 48) computedStars = 3;
-        else computedStars = 2;
-    } else {
-        if (rawScore <= 40 || (hasCoreClash && rawScore < 50)) computedStars = 5; 
-        else if (rawScore < 46) computedStars = 4;
-        else computedStars = 3; 
+    if (tDayZhi !== '?') {
+        let code = RELATION_MATRIX[DIZHI_INDEX.indexOf(tDayZhi)][idxToday];
+        if (code === 2 || code === 6) { computedStars -= 1; isTargetStressed = true; }
     }
-
+    
+    // 檢查我的日主與對方日主的生剋關係
+    let myDayGan = myBazi.stems[2];
+    if (ELEMENT_MAP[myDayGan] === ELEMENT_MAP[targetDayGan]) {
+        computedStars += 1; // 同氣容易溝通
+    }
+    
+    if (computedStars > 5) computedStars = 5;
+    if (computedStars < 1) computedStars = 1;
+    
     let starsHtml = "";
     let guideMessage = "";
-
-    if (isPositive) {
-        starsHtml = `<span style="color: #ffca28;">` + "🌟".repeat(computedStars) + "⭐".repeat(5 - computedStars) + `</span>`;
+    
+    if (computedStars >= 4) {
+        // 🟢 正面：好的綠星
+        starsHtml = `<span style="color: #4caf50;">` + "🟢".repeat(computedStars) + "⚪".repeat(5 - computedStars) + `</span>`;
         
-        if (computedStars >= 4) {
-            guideMessage = `🔥 <b>高頻合作期（極力推薦）</b>：對方今日整體磁場順暢，心態開放！非常適合與其進行<b>重要會議、商業談判、合夥簽約或重大提案</b>。此時相處阻力最小，共識極易達成。`;
-        } else {
-            guideMessage = `😊 <b>和諧相處期（穩步推進）</b>：對方今日狀態平穩。適合正常的業務溝通、工作交接或日常聚餐。雖然可能有些外圍環境的小雜事干擾（如年支/時支輕微波動），但大局無礙，可以放心推進既定事務。`;
-        }
+        guideMessage = `✅ <b>高效合作綠燈期</b>：對方今日核心磁場能量穩定且極具建設性。此時與其商談事務、推進計畫或進行深層情感溝通，對方的包容度與配合度皆處於高峰。<br><br>`;
+        guideMessage += `🚀 <b>行動指引：</b>適合在此時主動出擊，提出您的想法或核心訴求，談判、開會或共同執行項目的成功機率將大幅提升！`;
         
-        if (myBazi) {
-            const myDayGan = myBazi.stems[2];
-            const relationMeToTarget = RELATION_MAP[ELEMENT_MAP[myDayGan]][ELEMENT_MAP[targetDayGan]];
-            if (relationMeToTarget === '財星') {
-                guideMessage += `<br>💡 <b>加碼提示：</b>此人今日磁場與您相生且為您的【財星】，探討商務方向容易碰撞出具體變現的靈感！`;
-            }
-        }
-        
-        guideCard.style.background = "rgba(46, 125, 50, 0.15)"; 
+        guideCard.style.background = "rgba(76, 175, 80, 0.15)"; 
         guideCard.style.borderColor = "#2e7d32";
     } else {
+        // ⚫ 負面：壞的灰星
         starsHtml = `<span style="color: #757575;">` + "⚫".repeat(computedStars) + "⚪".repeat(5 - computedStars) + `</span>`;
         
         guideMessage = `⚠️ <b>高能雷區預警（建議避雷）</b>：對方今日核心磁場（月支/日支）遭遇明顯衝刑摩擦，或整體能量陷入低迷、內耗狀態，容易產生焦躁、防禦心重或壓力爆棚的情況。<br><br>`;
@@ -202,6 +1271,54 @@ function analyzeBazi() {
 
     starsDisplay.innerHTML = starsHtml + `<br><span style="font-size:0.85rem; color:#aaa;">(今日磁場引力綜合判定)</span>`;
     guideText.innerHTML = guideMessage;
+}
+
+// --- 打卡監測數據提交邏輯 ---
+function submitRecord() {
+    const target = document.getElementById('rec-target').value.trim();
+    const master = document.getElementById('rec-master').value.trim();
+    const mood = document.getElementById('rec-mood').value;
+    const stability = document.getElementById('rec-stability').value;
+    const impact = document.getElementById('rec-impact').value;
+    const note = document.getElementById('rec-note').value.trim();
+    
+    if (!target || !master) {
+        alert("請至少填寫「觀測對象」與「對象日主」（如：我、戊土）");
+        return;
+    }
+    
+    const btn = document.getElementById('btn-submit-record');
+    btn.disabled = true;
+    btn.innerText = "資料同步雲端中...";
+    
+    // 取得目前時間戳記
+    const now = new Date();
+    const dateString = `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()}`;
+    const timeString = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+    
+    // 組合並編碼成 query string 傳送到 Google Sheets 後端
+    const url = `${GOOGLE_API_URL}?date=${encodeURIComponent(dateString)}&time=${encodeURIComponent(timeString)}&target=${encodeURIComponent(target)}&master=${encodeURIComponent(master)}&mood=${encodeURIComponent(mood)}&stability=${encodeURIComponent(stability)}&impact=${encodeURIComponent(impact)}&note=${encodeURIComponent(note)}`;
+    
+    fetch(url, { method: 'GET', mode: 'no-cors' })
+    .then(() => {
+        alert("🚀 能量監測數據打卡成功！已即時同步至雲端資料庫。");
+        // 清空輸入欄位
+        document.getElementById('rec-target').value = "";
+        document.getElementById('rec-master').value = "";
+        document.getElementById('rec-note').value = "";
+        document.getElementById('rec-stability').value = 5;
+        document.getElementById('rec-impact').value = 1;
+        document.getElementById('val-stability').innerText = 5;
+        document.getElementById('val-impact').innerText = 1;
+    })
+    .catch(err => {
+        console.error(err);
+        alert("網路同步失敗，請檢查網路連線或稍後再試。");
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerText = "送出打卡數據";
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
